@@ -7,6 +7,7 @@ declare module "react-qr-scanner" {
     onError?: (error: any) => void;
     onScan?: (data: string | null) => void;
     style?: React.CSSProperties;
+    constraints?: MediaTrackConstraints; // constraints 속성 추가
   }
 
   class QrScanner extends Component<QrScannerProps> {}
