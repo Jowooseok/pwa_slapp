@@ -66,6 +66,10 @@ const InstallPrompt: React.FC = () => {
     }
   };
 
+  const handleCloseClick = () => {
+    setIsVisible(false);
+  };
+
   return (
     <AnimatePresence>
       {isVisible && !isInstalled && !isIOSUser && (
@@ -82,7 +86,7 @@ const InstallPrompt: React.FC = () => {
           </Button>
         </motion.div>
       )}
-      {isIOSUser && !isInstalled && (
+      {isVisible && isIOSUser && !isInstalled && (
         <motion.div
           initial={{ y: "-100%" }}
           animate={{ y: 0 }}
@@ -94,10 +98,7 @@ const InstallPrompt: React.FC = () => {
             To install this app, tap <strong>Share</strong> and then{" "}
             <strong>Add to Home Screen</strong>.
           </p>
-          <Button
-            onClick={() => setIsVisible(false)}
-            className="px-4 py-2 rounded"
-          >
+          <Button onClick={handleCloseClick} className="px-4 py-2 rounded">
             Close
           </Button>
         </motion.div>
