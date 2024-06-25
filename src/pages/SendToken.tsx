@@ -23,6 +23,10 @@ const SendToken: React.FC = () => {
     console.error(err);
   };
 
+  const constraints = {
+    facingMode: { exact: "environment" }, // 후면 카메라 설정
+  };
+
   return (
     <div className="p-4 space-y-6 h-full">
       <PageHeader title="Send Token" />
@@ -52,7 +56,7 @@ const SendToken: React.FC = () => {
             onError={handleError}
             onScan={handleScan}
             style={{ width: "100%", borderRadius: "30px" }}
-            constraints={{ facingMode: "environment" }}
+            constraints={constraints}
           />
           <Button
             className="mt-2 w-24 self-end"
