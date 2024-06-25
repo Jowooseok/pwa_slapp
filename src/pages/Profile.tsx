@@ -1,28 +1,28 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
   Button,
   Card,
-} from '@/shared/components/ui';
-import Typography from '@/shared/components/typography';
-import { IoChevronForwardOutline, IoShareOutline } from 'react-icons/io5';
-import { AiOutlineSetting } from 'react-icons/ai';
-import { BiShareAlt, BiBell, BiCheckShield, BiHistory } from 'react-icons/bi';
-import { MdOutlineLock } from 'react-icons/md';
-import { BsPeople } from 'react-icons/bs';
+} from "@/shared/components/ui";
+import Typography from "@/shared/components/typography";
+import { IoChevronForwardOutline, IoShareOutline } from "react-icons/io5";
+import { AiOutlineSetting } from "react-icons/ai";
+import { BiShareAlt, BiBell, BiCheckShield, BiHistory } from "react-icons/bi";
+import { MdOutlineLock } from "react-icons/md";
+import { BsPeople } from "react-icons/bs";
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
 
   const handleInviteFriends = () => {
-    navigate('/referral-management');
+    navigate("/referral-management");
   };
 
   return (
-    <div className="p-4 space-y-3">
+    <div className="p-4 space-y-2">
       <header className={`flex items-center space-x-4 justify-between `}>
         <span>&nbsp; </span>
         <Typography.H3>Profile</Typography.H3>
@@ -36,7 +36,7 @@ const Profile: React.FC = () => {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              {' '}
+              {" "}
               <Typography.Large>Nick Jo</Typography.Large>
               <Typography.Muted className="text-gray-500">
                 nick@gmail.com

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   Button,
@@ -13,34 +13,35 @@ import {
   DrawerTitle,
   DrawerDescription,
   DrawerFooter,
-} from '@/shared/components/ui';
-import Typography from '@/shared/components/typography';
-import { BiBell, BiTransferAlt } from 'react-icons/bi';
-import EthImage from '@/shared/assets/eth.svg';
+} from "@/shared/components/ui";
+import Typography from "@/shared/components/typography";
+import { BiBell, BiTransferAlt } from "react-icons/bi";
+import EthImage from "@/shared/assets/eth.svg";
 import {
   IoChevronDownOutline,
   IoArrowUpOutline,
   IoArrowDownOutline,
   IoCopyOutline,
-} from 'react-icons/io5';
-import QRCode from 'react-qr-code';
+} from "react-icons/io5";
+import QRCode from "react-qr-code";
+import { IoChevronForwardOutline } from "react-icons/io5";
 
 const transactions = [
   {
-    type: 'Sent',
-    amount: '0.5 SL',
-    date: 'June 11, 2024',
-    status: 'Failed',
-    address: '0x1234abcd5678efgh9012',
-    direction: 'out',
+    type: "Sent",
+    amount: "0.5 SL",
+    date: "June 11, 2024",
+    status: "Failed",
+    address: "0x1234abcd5678efgh9012",
+    direction: "out",
   },
   {
-    type: 'Received',
-    amount: '0.5 SL',
-    date: 'June 11, 2024',
-    status: 'Succeeded',
-    address: '0x1234abcd5678efgh9012',
-    direction: 'in',
+    type: "Received",
+    amount: "0.5 SL",
+    date: "June 11, 2024",
+    status: "Succeeded",
+    address: "0x1234abcd5678efgh9012",
+    direction: "in",
   },
 ];
 
@@ -54,11 +55,11 @@ const Wallet: React.FC = () => {
   };
 
   const handleSendClick = () => {
-    navigate('/send-token');
+    navigate("/send-token");
   };
 
   const handleCopyClick = () => {
-    navigator.clipboard.writeText('0x1234abcd5678efgh9012').then(() => {
+    navigator.clipboard.writeText("0x1234abcd5678efgh9012").then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
@@ -83,16 +84,16 @@ const Wallet: React.FC = () => {
         </div>
         {/**token balance, */}
 
-        <div className="flex flex-col mt-6 gap-4">
+        <div className="flex flex-col mt-6 gap-3">
           <Typography.P>Token Balance</Typography.P>
           <Typography.H1>1200 SL</Typography.H1>
-          <div className="flex flex-row items-center justify-center gap-4">
+          <div className="flex flex-row items-center justify-center gap-2">
             <img src={EthImage} alt="EthImage" className=" w-5 h-5" />
             <p>Ethereum</p>
             <IoChevronDownOutline className="w-4 h-4" />
           </div>
         </div>
-        <Card className=" absolute top-[244px] bg-white rounded-3xl p-4 h-[120px] left-1/2 transform -translate-x-1/2 w-11/12 ">
+        <Card className=" absolute top-[244px] bg-white rounded-3xl p-4 h-[120px] left-1/2 transform -translate-x-1/2 w-11/12 font-medium">
           <div className="flex justify-evenly items-center h-full">
             <div className="flex flex-col justify-center items-center gap-2">
               <Drawer open={open} onOpenChange={setOpen}>
@@ -169,12 +170,14 @@ const Wallet: React.FC = () => {
             <Typography.H4>Transaction</Typography.H4>
             <Typography.Muted
               className="cursor-pointer"
-              onClick={() => navigate('/transactions')}
+              onClick={() => navigate("/transactions")}
             >
-              View All
+              <div className="flex flex-row gap-1 items-center font-medium">
+                View All <IoChevronForwardOutline />
+              </div>
             </Typography.Muted>
           </div>
-          <div className="space-y-4 mt-4">
+          <div className="space-y-2 mt-4">
             {transactions.map((transaction, index) => (
               <Card
                 key={index}
@@ -187,16 +190,16 @@ const Wallet: React.FC = () => {
                       <div className="flex flex-row items-center">
                         <div
                           className={`rounded-full bg-opacity-10 w-10 h-10 flex justify-center items-center min-w-10 min-h-10 ${
-                            transaction.direction === 'in'
-                              ? 'bg-blue-700'
-                              : 'bg-red-600'
+                            transaction.direction === "in"
+                              ? "bg-blue-700"
+                              : "bg-red-600"
                           }`}
                         >
                           <IoArrowDownOutline
                             className={`w-6 h-6 ${
-                              transaction.type === 'Sent'
-                                ? 'rotate-180 text-red-600'
-                                : 'text-blue-700'
+                              transaction.type === "Sent"
+                                ? "rotate-180 text-red-600"
+                                : "text-blue-700"
                             }`}
                           />
                         </div>
@@ -207,12 +210,12 @@ const Wallet: React.FC = () => {
                             </Typography.Large>
                             <Typography.Large
                               className={
-                                transaction.direction === 'in'
-                                  ? 'text-blue-700'
-                                  : 'text-red-600'
+                                transaction.direction === "in"
+                                  ? "text-blue-700"
+                                  : "text-red-600"
                               }
                             >
-                              {transaction.direction === 'in' ? '+' : '-'}{' '}
+                              {transaction.direction === "in" ? "+" : "-"}{" "}
                               {transaction.amount}
                             </Typography.Large>
                           </div>
@@ -227,18 +230,10 @@ const Wallet: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="border-b"></div>
+                      <div className="border-b pb-2"></div>
                       <div className="flex flex-row items-center justify-between w-full ">
                         <p>Status</p>
-                        <p
-                          className={
-                            transaction.direction === 'in'
-                              ? 'text-blue-700'
-                              : 'text-red-600'
-                          }
-                        >
-                          {transaction.status}
-                        </p>
+                        <p>{transaction.status}</p>
                       </div>
                     </div>
                   </div>
