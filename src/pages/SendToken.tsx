@@ -24,7 +24,7 @@ const SendToken: React.FC = () => {
   };
 
   const constraints = {
-    facingMode: { exact: "environment" }, // 후면 카메라 설정
+    video: { facingMode: { exact: "environment" } }, // Rear-facing camera
   };
 
   return (
