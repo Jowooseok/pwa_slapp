@@ -21,5 +21,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "src/global.d.ts"]
+  "include": ["src", "src/global.d.ts", "react-qr-scanner.d.ts"]
 }
