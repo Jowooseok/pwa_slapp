@@ -66,7 +66,6 @@ const SendToken: React.FC = () => {
           </Button>
         </div>
       )}
-      <div className="pb-6"></div>
 
       <Button
         className="w-full flex flex-row justify-between rounded-full h-14"
