@@ -1,5 +1,5 @@
-import React from 'react';
-import SimpleBottomNavigation from '../components/BottomNavigation';
+import React from "react";
+import SimpleBottomNavigation from "../components/BottomNavigation";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -13,8 +13,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   showBottomNav = true,
 }) => {
   return (
-    <div className={`flex flex-col h-screen bg-neutral-100 ${className || ''}`}>
-      <div className={`flex-1 overflow-y-auto ${showBottomNav ? 'pb-12' : ''}`}>
+    <div className={`flex flex-col h-screen bg-neutral-100 ${className || ""}`}>
+      <div className={`flex-1 overflow-y-auto ${showBottomNav ? "pb-20" : ""}`}>
         {children}
       </div>
       {showBottomNav && <SimpleBottomNavigation />}
