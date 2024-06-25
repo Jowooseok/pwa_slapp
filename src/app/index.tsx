@@ -13,6 +13,7 @@ import EnterAmount from "../pages/EnterAmount";
 import SendConfirmation from "../pages/SendConfirmation";
 import TransferCompleted from "../pages/TransferCompleted";
 import ReferralManagement from "../pages/ReferralManagement";
+import InstallPrompt from "./components/InstallPrompt";
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -29,6 +30,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <InstallPrompt />
       <Routes>
         <Route
           path="/"
