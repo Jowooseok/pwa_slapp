@@ -41,6 +41,7 @@ export default defineConfig({
         short_name: "SLApp",
         description: "Save the life App",
         theme_color: "#ffffff",
+        background_color: "#ffffff",
         icons: [
           {
             src: "pwa-192x192.png",
