@@ -1,5 +1,5 @@
-import { HttpAgent, Actor } from '@dfinity/agent';
-import { idlFactory as backend_idl } from '../declarations/backend';
+import { HttpAgent, Actor } from "@dfinity/agent";
+import { idlFactory as backend_idl } from "../declarations/backend";
 
 const agent = new HttpAgent();
 
