@@ -4,6 +4,7 @@ import { defineConfig } from "vite";
 import environment from "vite-plugin-environment";
 import dotenv from "dotenv";
 import path from "path";
+import { VitePWA } from "vite-plugin-pwa";
 
 dotenv.config();
 
@@ -29,7 +30,38 @@ export default defineConfig({
       },
     },
   },
-  plugins: [react(), environment({})],
+  plugins: [
+    react(),
+    environment({}),
+    VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.svg", "favicon.ico", "apple-touch-icon.png"],
+      manifest: {
+        name: "Save the life App",
+        short_name: "SLApp",
+        description: "Save the life App",
+        theme_color: "#ffffff",
+        icons: [
+          {
+            src: "pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+        ],
+      },
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
