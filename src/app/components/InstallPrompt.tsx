@@ -1,5 +1,8 @@
 // src/app/components/InstallPrompt.tsx
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/shared/components/ui";
+import "tailwindcss/tailwind.css";
 
 const InstallPrompt: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
@@ -23,6 +26,14 @@ const InstallPrompt: React.FC = () => {
     // Check if the app is already installed
     if (window.matchMedia("(display-mode: standalone)").matches) {
       setIsInstalled(true);
+    }
+
+    // Development mode: simulate the beforeinstallprompt event
+    if (import.meta.env.MODE === "development") {
+      setTimeout(() => {
+        const fakeEvent = new Event("beforeinstallprompt");
+        window.dispatchEvent(fakeEvent);
+      }, 2000); // Simulate after 3 seconds
     }
 
     return () => {
@@ -50,19 +61,22 @@ const InstallPrompt: React.FC = () => {
   };
 
   return (
-    <>
+    <AnimatePresence>
       {isVisible && !isInstalled && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg flex justify-between items-center">
+        <motion.div
+          initial={{ y: "-100%" }}
+          animate={{ y: 0 }}
+          exit={{ y: "-100%" }}
+          transition={{ duration: 0.5 }}
+          className="fixed top-0 left-0 right-0 bg-white p-4 shadow-lg flex justify-between items-center z-50"
+        >
           <p className="text-black">Install our app for a better experience!</p>
-          <button
-            onClick={handleInstallClick}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
+          <Button onClick={handleInstallClick} className=" px-4 py-2 rounded">
             Install
-          </button>
-        </div>
+          </Button>
+        </motion.div>
       )}
-    </>
+    </AnimatePresence>
   );
 };
 

@@ -1,3 +1,4 @@
+// src/app/App.tsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
@@ -30,105 +31,107 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <InstallPrompt />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <MainLayout showBottomNav={true}>
-              <HomePage />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/images"
-          element={
-            <MainLayout showBottomNav={true}>
-              <Images />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/wallet"
-          element={
-            <MainLayout showBottomNav={true}>
-              <Wallet />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <MainLayout showBottomNav={true}>
-              <Profile />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/select-hospital"
-          element={
-            <MainLayout showBottomNav={false}>
-              <SelectHospital />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/image-list"
-          element={
-            <MainLayout showBottomNav={false}>
-              <ImageList />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/detail/:id"
-          element={
-            <MainLayout showBottomNav={false}>
-              <DetailPage />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/send-token"
-          element={
-            <MainLayout showBottomNav={false}>
-              <SendToken />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/enter-amount"
-          element={
-            <MainLayout showBottomNav={false}>
-              <EnterAmount />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/send-confirmation"
-          element={
-            <MainLayout showBottomNav={false}>
-              <SendConfirmation />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/transfer-completed"
-          element={
-            <MainLayout showBottomNav={false}>
-              <TransferCompleted />
-            </MainLayout>
-          }
-        />
-        <Route
-          path="/referral-management"
-          element={
-            <MainLayout showBottomNav={false}>
-              <ReferralManagement />
-            </MainLayout>
-          }
-        />
-      </Routes>
+      <div>
+        <InstallPrompt />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <MainLayout showBottomNav={true}>
+                <HomePage />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/images"
+            element={
+              <MainLayout showBottomNav={true}>
+                <Images />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/wallet"
+            element={
+              <MainLayout showBottomNav={true}>
+                <Wallet />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <MainLayout showBottomNav={true}>
+                <Profile />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/select-hospital"
+            element={
+              <MainLayout showBottomNav={false}>
+                <SelectHospital />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/image-list"
+            element={
+              <MainLayout showBottomNav={false}>
+                <ImageList />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/detail/:id"
+            element={
+              <MainLayout showBottomNav={false}>
+                <DetailPage />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/send-token"
+            element={
+              <MainLayout showBottomNav={false}>
+                <SendToken />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/enter-amount"
+            element={
+              <MainLayout showBottomNav={false}>
+                <EnterAmount />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/send-confirmation"
+            element={
+              <MainLayout showBottomNav={false}>
+                <SendConfirmation />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/transfer-completed"
+            element={
+              <MainLayout showBottomNav={false}>
+                <TransferCompleted />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/referral-management"
+            element={
+              <MainLayout showBottomNav={false}>
+                <ReferralManagement />
+              </MainLayout>
+            }
+          />
+        </Routes>
+      </div>
     </Router>
   );
 };
