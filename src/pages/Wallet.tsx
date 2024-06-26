@@ -16,7 +16,7 @@ import {
 } from "@/shared/components/ui";
 import Typography from "@/shared/components/typography";
 import { BiBell, BiTransferAlt } from "react-icons/bi";
-import EthImage from "@/shared/assets/eth.svg";
+import ICP from "@/shared/assets/favicon.ico";
 import {
   IoChevronDownOutline,
   IoArrowUpOutline,
@@ -88,8 +88,8 @@ const Wallet: React.FC = () => {
           <Typography.P>Token Balance</Typography.P>
           <Typography.H1>1200 SL</Typography.H1>
           <div className="flex flex-row items-center justify-center gap-2">
-            <img src={EthImage} alt="EthImage" className=" w-5 h-5" />
-            <p>Ethereum</p>
+            <img src={ICP} alt="EthImage" className=" w-5 h-5" />
+            <p>Internet Computer Protocol</p>
             <IoChevronDownOutline className="w-4 h-4" />
           </div>
         </div>
