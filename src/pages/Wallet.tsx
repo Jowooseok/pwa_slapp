@@ -16,7 +16,7 @@ import {
 } from "@/shared/components/ui";
 import Typography from "@/shared/components/typography";
 import { BiBell, BiTransferAlt } from "react-icons/bi";
-import ICP from "@/shared/assets/favicon.ico";
+import ICP from "@/shared/assets/icp.ico";
 import {
   IoChevronDownOutline,
   IoArrowUpOutline,
