@@ -15,6 +15,7 @@ import SendConfirmation from "../pages/SendConfirmation";
 import TransferCompleted from "../pages/TransferCompleted";
 import ReferralManagement from "../pages/ReferralManagement";
 import InstallPrompt from "./components/InstallPrompt";
+import StepCounter from "@/pages/StepCounter";
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -127,6 +128,14 @@ const App: React.FC = () => {
             element={
               <MainLayout showBottomNav={false}>
                 <ReferralManagement />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/step-counter"
+            element={
+              <MainLayout showBottomNav={false}>
+                <StepCounter />
               </MainLayout>
             }
           />
