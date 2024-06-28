@@ -4,7 +4,7 @@ const StepCounter: React.FC = () => {
   const [steps, setSteps] = useState<number>(0);
   const [lastPeakTime, setLastPeakTime] = useState<number>(0);
   const stepThreshold = 12;
-  const stepTimeThreshold = 250; // milliseconds
+  const stepTimeThreshold = 500; // milliseconds
 
   useEffect(() => {
     const handleMotion = (event: DeviceMotionEvent) => {
@@ -37,7 +37,7 @@ const StepCounter: React.FC = () => {
   }, [lastPeakTime]);
 
   return (
-    <div className="flex text-center h-full flex-col items-center justify-center">
+    <div className="p-5 text-center flex flex-col h-full justify-center">
       <h1 className="text-3xl font-bold text-blue-600">Step Counter</h1>
       <p className="text-xl mt-5">
         Steps: <span className="font-semibold">{steps}</span>

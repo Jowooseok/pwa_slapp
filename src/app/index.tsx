@@ -16,6 +16,7 @@ import TransferCompleted from "../pages/TransferCompleted";
 import ReferralManagement from "../pages/ReferralManagement";
 import InstallPrompt from "./components/InstallPrompt";
 import StepCounter from "@/pages/StepCounter";
+import TonTest from "@/pages/TonTest";
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -136,6 +137,14 @@ const App: React.FC = () => {
             element={
               <MainLayout showBottomNav={false}>
                 <StepCounter />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/ton-test"
+            element={
+              <MainLayout showBottomNav={false}>
+                <TonTest />
               </MainLayout>
             }
           />
