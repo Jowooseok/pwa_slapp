@@ -5,7 +5,6 @@ import environment from "vite-plugin-environment";
 import dotenv from "dotenv";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
-import fs from "fs";
 
 dotenv.config();
 
@@ -30,12 +29,6 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
-    https: {
-      key: fs.readFileSync(path.resolve(__dirname, "localhost-key.pem")),
-      cert: fs.readFileSync(path.resolve(__dirname, "localhost.pem")),
-    },
-    port: 3000,
-    host: true, // 네트워크에서 접근할 수 있도록 호스트 설정
   },
   plugins: [
     react(),

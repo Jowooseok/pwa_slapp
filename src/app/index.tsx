@@ -17,6 +17,7 @@ import ReferralManagement from "../pages/ReferralManagement";
 import InstallPrompt from "./components/InstallPrompt";
 import StepCounter from "@/pages/StepCounter";
 import TonTest from "@/pages/TonTest";
+import DiceEvent from "@/pages/DiceEvent";
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -34,7 +35,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <div>
-        <InstallPrompt />
+        {/* <InstallPrompt /> */}
         <Routes>
           <Route
             path="/"
@@ -145,6 +146,14 @@ const App: React.FC = () => {
             element={
               <MainLayout showBottomNav={false}>
                 <TonTest />
+              </MainLayout>
+            }
+          />
+          <Route
+            path="/dice-event"
+            element={
+              <MainLayout showBottomNav={false}>
+                <DiceEvent />
               </MainLayout>
             }
           />
