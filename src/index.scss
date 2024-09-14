@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'pretendard/dist/web/static/pretendard.css';
 
 @layer base {
   :root {
@@ -83,6 +84,10 @@ body {
   -moz-user-select: none; /* Prevent text selection in Firefox */
   -ms-user-select: none; /* Prevent text selection in IE/Edge */
   overscroll-behavior-y: none; /* Prevent pull-to-refresh in Chrome and Safari */
+  font-family: 'Pretendard Variable', Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI',
+    'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }
 
 img {
@@ -92,4 +97,26 @@ img {
   user-select: none; /* Standard property */
 
   -webkit-user-drag: none; /* Prevent image drag in WebKit browsers */
+}
+
+@font-face {
+  font-family: 'Jalnan';
+  src: url('@/shared/assets/fonts/Jalnan2TTF.ttf') format('truetype'),
+    url('@/shared/assets/fonts/Jalnan2.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-pretendard {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI',
+    'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+.font-jalnan {
+  font-family: 'Jalnan', 'Pretendard Variable', Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI',
+    'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }

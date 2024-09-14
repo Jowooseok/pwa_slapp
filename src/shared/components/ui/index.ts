@@ -83,3 +83,28 @@ export { Popover, PopoverTrigger, PopoverContent } from './popover';
 export { Skeleton } from './skeleton';
 
 export { Avatar, AvatarImage, AvatarFallback } from './avatar';
+
+export { TopTitle } from './topTitle';
+
+export {
+  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from './alert-dialog';
+
+export { Slider } from './slider';
+
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from './tooltip';
