@@ -89,19 +89,22 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
     }
   }, [diceCount, originalRollDice]);
 
-  // 수정: handleTileClick 함수 업데이트
   const handleTileClick = useCallback(
     (tileId: number) => {
+      if (!selectingTile || tileId === 18) return; // 선택 중이 아닌 경우 클릭 동작 중단
+
       if (tileId === 5) {
-        // 5번 타일 클릭 시에도 RPS 게임 활성화만 하고 startGame은 하지 않음
-        setIsRPSGameActive(true);
-        rpsGameStore.setBetAmount(diceCount); // 베팅 금액만 설정
-      } else if (!selectingTile || tileId === 18) return;
-      else {
+        // 5번 타일 클릭 시 가위바위보 게임 시작
+        if (!rpsGameStore.isGameStarted) {
+          setIsRPSGameActive(true); // RPS 게임 활성화
+          rpsGameStore.setBetAmount(diceCount); // 베팅 금액 설정
+        }
+      } else {
+        // 다른 타일을 클릭했을 때의 동작
         setPosition(tileId);
-        setSelectingTile(false);
-        setMoving(false);
-        setButtonDisabled(false);
+        setSelectingTile(false); // 타일 선택 상태 종료
+        setMoving(false); // 이동 상태 해제
+        setButtonDisabled(false); // 버튼 비활성화 해제
 
         if (tileId !== 19) {
           setStarPoints((prev) => prev + 200);
@@ -117,15 +120,20 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
     [selectingTile, showReward, diceCount, rpsGameStore]
   );
 
-  // RPS 게임 종료 처리 함수
+  // 가위바위보 게임 종료 처리 함수 수정
   const handleRPSGameEnd = useCallback(
     (result: "win" | "lose", winnings: number) => {
       setIsRPSGameActive(false); // RPS 게임 비활성화
+      setSelectingTile(false); // 타일 선택 비활성화 (RPS 게임 후에 다시 타일을 선택할 수 없게 설정)
+      setButtonDisabled(false); // 버튼 활성화
+      setMoving(false); // 이동 상태 해제
+
       if (result === "win") {
-        setDiceCount((prev) => prev + winnings);
+        setDiceCount((prev) => prev + winnings); // 이긴 경우 상금 추가
         showReward("star", winnings);
       }
-      setPosition(6); // 예시: 6번 타일로 이동
+
+      setPosition(6); // 예시로 6번 타일로 이동
     },
     [setDiceCount, showReward]
   );
