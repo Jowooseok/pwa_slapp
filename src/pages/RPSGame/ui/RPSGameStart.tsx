@@ -1,25 +1,30 @@
-import React, { useState } from 'react';
-import { AiFillQuestionCircle } from 'react-icons/ai';
+import React, { useState } from "react";
+import { AiFillQuestionCircle } from "react-icons/ai";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/shared/components/ui';
-import Images from '@/shared/assets/images';
-import { formatNumber } from '@/shared/utils/formatNumber';
+} from "@/shared/components/ui";
+import Images from "@/shared/assets/images";
+import { formatNumber } from "@/shared/utils/formatNumber";
 
 interface RPSGameStartProps {
   onStart: (betAmount: number) => void;
   userPoints: number;
+  onCancel: () => void; // 캔슬 버튼을 위한 콜백 추가
 }
 
-const RPSGameStart: React.FC<RPSGameStartProps> = ({ onStart, userPoints }) => {
-  const [betAmount, setBetAmount] = useState<string>('');
+const RPSGameStart: React.FC<RPSGameStartProps> = ({
+  onStart,
+  userPoints,
+  onCancel,
+}) => {
+  const [betAmount, setBetAmount] = useState<string>("");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     if (
-      value === '' ||
+      value === "" ||
       (/^\d+$/.test(value) && parseInt(value) <= userPoints)
     ) {
       setBetAmount(value);
@@ -29,8 +34,12 @@ const RPSGameStart: React.FC<RPSGameStartProps> = ({ onStart, userPoints }) => {
   const handleStartClick = () => {
     const amount = parseInt(betAmount);
     if (amount > 0 && amount <= userPoints) {
-      onStart(amount);
+      onStart(amount); // 베팅 금액으로 게임 시작
     }
+  };
+
+  const handleCancelClick = () => {
+    onCancel(); // 취소 시 호출하여 주사위 게임으로 돌아감
   };
 
   return (
@@ -57,8 +66,8 @@ const RPSGameStart: React.FC<RPSGameStartProps> = ({ onStart, userPoints }) => {
             <PopoverContent
               className="rounded-3xl border-2 border-[#21212f] bg-white"
               style={{
-                maxHeight: '65vh',
-                overflowY: 'auto',
+                maxHeight: "65vh",
+                overflowY: "auto",
               }}
             >
               <div className="text-black p-4 rounded-lg shadow-lg w-full max-w-lg">
@@ -114,17 +123,20 @@ const RPSGameStart: React.FC<RPSGameStartProps> = ({ onStart, userPoints }) => {
           className="border-2 border-[#21212f] rounded-2xl h-12 text-sm font-medium px-4 mt-4 w-[342px]"
         />
         <div className="flex flex-row mt-4 gap-3">
-          <button className="bg-gray-200 text-[#171717] rounded-full font-medium h-14 w-[165px]">
+          <button
+            className="bg-gray-200 text-[#171717] rounded-full font-medium h-14 w-[165px]"
+            onClick={handleCancelClick} // 취소 버튼 클릭 시 onCancel 호출
+          >
             Cancel
           </button>
           <button
             className={`${
               betAmount && parseInt(betAmount) > 0
-                ? 'bg-[#21212F] text-white'
-                : ' bg-[#21212F] opacity-70 text-white cursor-not-allowed'
+                ? "bg-[#21212F] text-white"
+                : " bg-[#21212F] opacity-70 text-white cursor-not-allowed"
             } rounded-full font-medium h-14 w-[165px]`}
             disabled={!betAmount || parseInt(betAmount) <= 0}
-            onClick={handleStartClick}
+            onClick={handleStartClick} // 베팅 금액으로 게임 시작
           >
             Bet
           </button>

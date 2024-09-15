@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react';
-import Images from '@/shared/assets/images';
-import { motion } from 'framer-motion';
-import { formatNumber } from '@/shared/utils/formatNumber';
-import RPSResultDialog from './ui/RPSResultDialog';
-import RPSGameStart from './ui/RPSGameStart';
-import { useRPSGameStore } from './store';
+import React, { useEffect } from "react";
+import Images from "@/shared/assets/images";
+import { motion } from "framer-motion";
+import { formatNumber } from "@/shared/utils/formatNumber";
+import RPSResultDialog from "./ui/RPSResultDialog";
+import RPSGameStart from "./ui/RPSGameStart";
+import { useRPSGameStore } from "./store";
+
+interface RPSGameProps {
+  onGameEnd: (result: "win" | "lose", winnings: number) => void;
+  onCancel: () => void; // 새로 추가: onCancel 속성
+}
 
 const rpsImages = {
   rock: Images.Rock,
@@ -12,7 +17,7 @@ const rpsImages = {
   scissors: Images.Scissors,
 };
 
-const RPSGame: React.FC = () => {
+const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
   const {
     betAmount,
     isSpinning,
@@ -35,12 +40,12 @@ const RPSGame: React.FC = () => {
   } = useRPSGameStore();
 
   const handleSpin = (choice: string) => {
-    if (isSpinning) return; // Prevent multiple spins
+    if (isSpinning) return;
 
     spin();
 
     setTimeout(() => {
-      stopSpin('rock');
+      stopSpin(choice); // 유저의 선택을 반영
       checkResult();
     }, 2000);
   };
@@ -52,7 +57,7 @@ const RPSGame: React.FC = () => {
 
   const handleContinue = () => {
     if (consecutiveWins > 3) {
-      endGame();
+      handleQuit();
     } else {
       continueGame();
     }
@@ -60,27 +65,36 @@ const RPSGame: React.FC = () => {
 
   const handleQuit = () => {
     endGame();
+    if (gameResult !== null) {
+      onGameEnd(gameResult, betAmount * winMultiplier);
+    } else {
+      onGameEnd("lose", 0);
+    }
   };
 
   useEffect(() => {
     if (consecutiveWins > 3) {
       setTimeout(() => {
-        endGame();
+        handleQuit();
       }, 0);
     }
-  }, [consecutiveWins, endGame]);
+  }, [consecutiveWins]);
 
   return (
     <div
       className="flex flex-col z-50 h-screen bg-white w-full drop-shadow"
       style={{
         backgroundImage: `url(${Images.BGRPSGame})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
       {!isGameStarted ? (
-        <RPSGameStart onStart={handleGameStart} userPoints={userPoints} />
+        <RPSGameStart
+          onStart={handleGameStart}
+          userPoints={userPoints}
+          onCancel={onCancel} // 취소 기능 추가
+        />
       ) : (
         <div className="flex flex-col items-center justify-center mt-20">
           <div className="flex flex-row items-center justify-center h-[86px] w-[264px] border-2 border-[#21212f] rounded-3xl bg-white gap-3">
@@ -101,16 +115,16 @@ const RPSGame: React.FC = () => {
               className="w-[353px] h-[481px]"
             />
             {[
-              { id: 'First-RPS', left: '32px' },
-              { id: 'Second-RPS', left: '120px' },
-              { id: 'Third-RPS', left: '210px' },
+              { id: "First-RPS", left: "32px" },
+              { id: "Second-RPS", left: "120px" },
+              { id: "Third-RPS", left: "210px" },
             ].map((slot, index) => (
               <div
                 key={slot.id}
                 style={{
                   left: slot.left,
-                  position: 'absolute',
-                  bottom: '211px',
+                  position: "absolute",
+                  bottom: "211px",
                 }}
                 className="gap-2 flex flex-row items-center justify-center pl-1 w-[87px] overflow-y-hidden h-[80px] transform"
               >
@@ -120,13 +134,13 @@ const RPSGame: React.FC = () => {
                   animate={{
                     y:
                       isSpinning && index === currentRound - 1
-                        ? ['-100%', '0%']
-                        : '0%',
+                        ? ["-100%", "0%"]
+                        : "0%",
                   }}
                   transition={{
                     duration:
                       isSpinning && index === currentRound - 1 ? 0.1 : 0.5,
-                    ease: 'linear',
+                    ease: "linear",
                     repeat:
                       isSpinning && index === currentRound - 1 ? Infinity : 0,
                   }}
@@ -134,7 +148,7 @@ const RPSGame: React.FC = () => {
                   {slotResults[index] ? (
                     <div
                       className="slot-item text-5xl flex items-center justify-center"
-                      style={{ height: '100%', width: '100%' }}
+                      style={{ height: "100%", width: "100%" }}
                     >
                       <img
                         src={
@@ -149,7 +163,7 @@ const RPSGame: React.FC = () => {
                   ) : (
                     <div
                       className="slot-item text-5xl flex items-center justify-center"
-                      style={{ height: '100%', width: '100%' }}
+                      style={{ height: "100%", width: "100%" }}
                     >
                       <img
                         src={Images.Scissors}
@@ -166,19 +180,19 @@ const RPSGame: React.FC = () => {
                 src={Images.RockButton}
                 alt="rock"
                 className="w-[68px] h-[68px]"
-                onClick={() => handleSpin('rock')}
+                onClick={() => handleSpin("rock")}
               />
               <img
                 src={Images.PaperButton}
                 alt="paper"
                 className="w-[68px] h-[68px]"
-                onClick={() => handleSpin('paper')}
+                onClick={() => handleSpin("paper")}
               />
               <img
                 src={Images.ScissorsButton}
                 alt="scissors"
                 className="w-[68px] h-[68px]"
-                onClick={() => handleSpin('scissors')}
+                onClick={() => handleSpin("scissors")}
               />
             </div>
           </div>

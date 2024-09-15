@@ -1,7 +1,7 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { motion, useAnimation } from 'framer-motion';
-import './Dice.css';
-import Images from '@/shared/assets/images'; // 이미지 경로에 맞게 수정
+import React, { useState, forwardRef, useImperativeHandle } from "react";
+import { motion, useAnimation } from "framer-motion";
+import "./Dice.css";
+import Images from "@/shared/assets/images"; // 이미지 경로에 맞게 수정
 
 interface DiceProps {
   onRollComplete?: (value: number) => void;
@@ -38,7 +38,7 @@ const Dice = forwardRef(({ onRollComplete }: DiceProps, ref) => {
         ],
         transition: {
           duration: 1,
-          ease: 'linear',
+          ease: "linear",
         },
       })
       .then(() => {
@@ -50,7 +50,8 @@ const Dice = forwardRef(({ onRollComplete }: DiceProps, ref) => {
 
         setFrontFace(front); // 앞면 상태값 업데이트
         if (onRollComplete) {
-          onRollComplete(front); // 콜백 함수 호출
+          // onRollComplete(front); // 콜백 함수 호출
+          onRollComplete(5); // 콜백 함수 호출
         }
       });
 

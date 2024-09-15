@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from "react";
 import { useDice, useGauge, useUserLevel } from "@/features/DiceEvent";
 import { movePiece, applyReward } from "./diceEventHandlers";
+import { useRPSGameStore } from "../RPSGame/store"; // 새로 추가: RPSGame 스토어 import
 
 export interface Reward {
   type: string;
@@ -19,6 +20,11 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
   const [showDiceValue, setShowDiceValue] = useState<boolean>(false);
   const [rolledValue, setRolledValue] = useState<number>(0);
   const [reward, setReward] = useState<Reward | null>(null);
+
+  // 새로 추가: RPS 게임 활성화 상태
+  const [isRPSGameActive, setIsRPSGameActive] = useState(false);
+  // 새로 추가: RPS 게임 스토어 사용
+  const rpsGameStore = useRPSGameStore();
 
   const {
     diceRef,
@@ -41,6 +47,7 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
     }, 1000);
   }, []);
 
+  // 주사위 결과 처리 함수
   const handleRollComplete = useCallback(
     (value: number) => {
       setRolledValue(value);
@@ -50,6 +57,7 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
       }, 1000);
       originalHandleRollComplete(value);
       setButtonDisabled(true);
+
       movePiece(
         value,
         position,
@@ -60,10 +68,18 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
         setDiceCount,
         setLotteryCount,
         showReward,
-        () => setButtonDisabled(false)
+        () => {
+          if (position + value === 5) {
+            // 5번 칸에 도착했을 때 RPS 게임 활성화만 하고 startGame은 하지 않음
+            setIsRPSGameActive(true);
+            rpsGameStore.setBetAmount(diceCount); // 베팅 금액만 설정
+          } else {
+            setButtonDisabled(false);
+          }
+        }
       );
     },
-    [position, originalHandleRollComplete, showReward]
+    [position, originalHandleRollComplete, showReward, diceCount, rpsGameStore]
   );
 
   const rollDice = useCallback(() => {
@@ -73,25 +89,45 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
     }
   }, [diceCount, originalRollDice]);
 
+  // 수정: handleTileClick 함수 업데이트
   const handleTileClick = useCallback(
     (tileId: number) => {
-      if (!selectingTile || tileId === 18) return;
-      setPosition(tileId);
-      setSelectingTile(false);
-      setMoving(false);
-      setButtonDisabled(false);
+      if (tileId === 5) {
+        // 5번 타일 클릭 시에도 RPS 게임 활성화만 하고 startGame은 하지 않음
+        setIsRPSGameActive(true);
+        rpsGameStore.setBetAmount(diceCount); // 베팅 금액만 설정
+      } else if (!selectingTile || tileId === 18) return;
+      else {
+        setPosition(tileId);
+        setSelectingTile(false);
+        setMoving(false);
+        setButtonDisabled(false);
 
-      if (tileId !== 19) {
-        setStarPoints((prev) => prev + 200);
-        setDiceCount((prev) => prev + 1);
-        setLotteryCount((prev) => prev + 1);
-        showReward("star", 200);
-        setTimeout(() => showReward("lottery", 1), 500);
+        if (tileId !== 19) {
+          setStarPoints((prev) => prev + 200);
+          setDiceCount((prev) => prev + 1);
+          setLotteryCount((prev) => prev + 1);
+          showReward("star", 200);
+          setTimeout(() => showReward("lottery", 1), 500);
+        }
+
+        applyReward(tileId, setStarPoints, setDiceCount, showReward);
       }
-
-      applyReward(tileId, setStarPoints, setDiceCount, showReward);
     },
-    [selectingTile, showReward]
+    [selectingTile, showReward, diceCount, rpsGameStore]
+  );
+
+  // RPS 게임 종료 처리 함수
+  const handleRPSGameEnd = useCallback(
+    (result: "win" | "lose", winnings: number) => {
+      setIsRPSGameActive(false); // RPS 게임 비활성화
+      if (result === "win") {
+        setDiceCount((prev) => prev + winnings);
+        showReward("star", winnings);
+      }
+      setPosition(6); // 예시: 6번 타일로 이동
+    },
+    [setDiceCount, showReward]
   );
 
   const handleMouseDown = useCallback(() => {
@@ -141,5 +177,8 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
     setRolledValue,
     setReward,
     setButtonDisabled,
+    // 새로 추가: RPS 게임 관련 상태와 함수
+    isRPSGameActive,
+    handleRPSGameEnd,
   };
 };
