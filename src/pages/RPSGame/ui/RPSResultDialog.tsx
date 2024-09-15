@@ -1,6 +1,6 @@
-import React from 'react';
-import { AlertDialog, AlertDialogContent } from '@/shared/components/ui';
-import Images from '@/shared/assets/images';
+import React from "react";
+import { AlertDialog, AlertDialogContent } from "@/shared/components/ui";
+import Images from "@/shared/assets/images";
 
 interface ResultWinProps {
   winnings: number;
@@ -40,7 +40,7 @@ const ResultWin: React.FC<ResultWinProps> = ({
           <div className="font-jalnan text-[24px] text-center">
             Congratulations!
             <br />
-            You've won 8x your bet!
+            You've won 27x your bet!
           </div>
         ) : (
           <div className="font-jalnan text-[30px]">
@@ -48,7 +48,7 @@ const ResultWin: React.FC<ResultWinProps> = ({
               Continue with <br />
               <div className="flex flex-row items-center justify-center">
                 <div className="flex flex-row items-center justify-center font-semibold font-pretendard text-base w-12 h-8 bg-[#21212F] rounded-full">
-                  <p>x{Math.pow(2, consecutiveWins + 1)}</p>
+                  <p>x{Math.pow(3, consecutiveWins + 1)}</p>
                 </div>
                 ?
               </div>
@@ -122,7 +122,7 @@ const ResultLose: React.FC<ResultLoseProps> = ({ winnings, onQuit }) => {
 interface RPSResultDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  result: 'win' | 'lose' | null;
+  result: "win" | "lose" | null;
   winnings: number;
   onContinue: () => void;
   onQuit: () => void;
@@ -144,11 +144,11 @@ const RPSResultDialog: React.FC<RPSResultDialogProps> = ({
         className="rounded-3xl bg-[#21212F] text-white border-none w-[342px] h-[384px] "
         style={{
           background: `url(${Images.RPSResultBG})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
-        {result === 'win' ? (
+        {result === "win" ? (
           <ResultWin
             winnings={winnings}
             onContinue={onContinue}
