@@ -38,16 +38,20 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
     endGame,
     closeDialog,
   } = useRPSGameStore();
-
   const handleSpin = (choice: string) => {
-    if (isSpinning) return;
+    if (isSpinning) return; // 이미 스핀 중이라면 다시 클릭 불가
 
-    spin();
+    spin(); // 게임 시작 (회전 시작)
 
     setTimeout(() => {
-      stopSpin(choice); // 유저의 선택을 반영
-      checkResult();
-    }, 2000);
+      // 컴퓨터의 선택을 랜덤으로 결정
+      const computerChoice = ["rock", "paper", "scissors"][
+        Math.floor(Math.random() * 3)
+      ];
+
+      stopSpin(choice, computerChoice); // 유저와 컴퓨터 선택을 전달
+      checkResult(choice, computerChoice); // 승리/패배/무승부 결정
+    }, 2000); // 2초 후 컴퓨터 선택 및 결과 확인
   };
 
   const handleGameStart = (amount: number) => {
@@ -150,10 +154,12 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
                       className="slot-item text-5xl flex items-center justify-center"
                       style={{ height: "100%", width: "100%" }}
                     >
+                      {/* 컴퓨터의 선택을 표시 */}
                       <img
                         src={
                           rpsImages[
-                            slotResults[index] as keyof typeof rpsImages
+                            slotResults[index]
+                              .computerChoice as keyof typeof rpsImages
                           ]
                         }
                         alt={`slot-${index}`}

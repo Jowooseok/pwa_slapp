@@ -5,7 +5,7 @@ interface RPSGameState {
   currentRound: number;
   totalRounds: number;
   isSpinning: boolean;
-  slotResults: string[];
+  slotResults: { userChoice: string; computerChoice: string }[]; // 타입 수정
   winMultiplier: number;
   isGameStarted: boolean;
   isDialogOpen: boolean;
@@ -17,8 +17,8 @@ interface RPSGameState {
   setUserPoints: (points: number) => void;
   startGame: () => void;
   spin: () => void;
-  stopSpin: (result: string) => void;
-  checkResult: () => void;
+  stopSpin: (userChoice: string, computerChoice: string) => void;
+  checkResult: (userChoice: string, computerChoice: string) => void;
   continueGame: () => void;
   endGame: () => void;
   openDialog: () => void;
@@ -54,28 +54,22 @@ export const useRPSGameStore = create<RPSGameState>((set, get) => ({
 
   spin: () => set({ isSpinning: true }),
 
-  stopSpin: (result: string) =>
+  // stopSpin 함수 수정: 두 개의 인자를 받도록 원래대로 수정
+  stopSpin: (userChoice: string, computerChoice: string) =>
     set((state) => ({
       isSpinning: false,
-      slotResults: [...state.slotResults, result], // 결과를 동적으로 반영
+      slotResults: [
+        ...state.slotResults,
+        { userChoice, computerChoice }, // 객체로 저장
+      ],
     })),
 
-  checkResult: () => {
-    const { currentRound, totalRounds, consecutiveWins, slotResults } = get();
-
-    // 플레이어의 선택 (slotResults는 유저의 선택을 담고 있음)
-    const playerChoice = slotResults[currentRound - 1];
-    // 컴퓨터의 선택 (랜덤으로 설정)
-    const computerChoice = ["rock", "paper", "scissors"][
-      Math.floor(Math.random() * 3)
-    ];
-
-    // 승리 또는 패배 처리 (무승부는 패배로 처리)
+  checkResult: (userChoice: string, computerChoice: string) => {
     let gameResult: "win" | "lose" = "lose";
     if (
-      (playerChoice === "rock" && computerChoice === "scissors") ||
-      (playerChoice === "scissors" && computerChoice === "paper") ||
-      (playerChoice === "paper" && computerChoice === "rock")
+      (userChoice === "rock" && computerChoice === "scissors") ||
+      (userChoice === "scissors" && computerChoice === "paper") ||
+      (userChoice === "paper" && computerChoice === "rock")
     ) {
       gameResult = "win";
     }
@@ -83,15 +77,15 @@ export const useRPSGameStore = create<RPSGameState>((set, get) => ({
     // 결과 업데이트
     set((state) => ({
       winMultiplier:
-        gameResult === "win" ? state.winMultiplier * 3 : state.winMultiplier, // 승리 시 3배로 변경
+        gameResult === "win" ? state.winMultiplier * 3 : state.winMultiplier,
       userPoints:
         gameResult === "win"
           ? state.userPoints + state.betAmount * state.winMultiplier
           : state.userPoints,
-      gameResult: gameResult, // 승리 또는 패배 결과 설정
+      gameResult,
       isDialogOpen: true,
       currentRound:
-        state.currentRound < totalRounds
+        state.currentRound < state.totalRounds
           ? state.currentRound + 1
           : state.currentRound,
       consecutiveWins:
