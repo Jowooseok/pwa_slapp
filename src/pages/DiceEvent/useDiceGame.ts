@@ -23,6 +23,9 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
 
   // 새로 추가: RPS 게임 활성화 상태
   const [isRPSGameActive, setIsRPSGameActive] = useState(false);
+  // 스핀 게임 활성화 상태
+  const [isSpinGameActive, setIsSpinGameActive] = useState(false);
+
   // 새로 추가: RPS 게임 스토어 사용
   const rpsGameStore = useRPSGameStore();
 
@@ -73,6 +76,9 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
             // 5번 칸에 도착했을 때 RPS 게임 활성화만 하고 startGame은 하지 않음
             setIsRPSGameActive(true);
             rpsGameStore.setBetAmount(diceCount); // 베팅 금액만 설정
+          } else if (position + value === 15) {
+            // 15번 타일에 도착 시 스핀 게임 시작
+            setIsSpinGameActive(true); // 스핀 게임 활성화
           } else {
             setButtonDisabled(false);
           }
@@ -99,6 +105,11 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
           setIsRPSGameActive(true); // RPS 게임 활성화
           rpsGameStore.setBetAmount(diceCount); // 베팅 금액 설정
         }
+      } else if (tileId === 15) {
+        // 15번 타일 클릭 시 스핀 게임 시작
+        if (!isSpinGameActive) {
+          setIsSpinGameActive(true); // 스핀 게임 활성화
+        }
       } else {
         // 다른 타일을 클릭했을 때의 동작
         setPosition(tileId);
@@ -117,8 +128,17 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
         applyReward(tileId, setStarPoints, setDiceCount, showReward);
       }
     },
-    [selectingTile, showReward, diceCount, rpsGameStore]
+    [selectingTile, showReward, diceCount, rpsGameStore, isSpinGameActive]
   );
+
+  // 스핀 게임 종료 처리 함수
+  const handleSpinGameEnd = useCallback(() => {
+    setIsSpinGameActive(false); // 스핀 게임 비활성화
+    setSelectingTile(false); // 타일 선택 비활성화
+    setButtonDisabled(false); // 버튼 비활성화 해제
+    setMoving(false); // 이동 상태 해제
+    setPosition(16); // 예시: 16번 타일로 이동
+  }, [setPosition, setButtonDisabled]);
 
   // 가위바위보 게임 종료 처리 함수 수정
   const handleRPSGameEnd = useCallback(
@@ -187,6 +207,8 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
     setButtonDisabled,
     // 새로 추가: RPS 게임 관련 상태와 함수
     isRPSGameActive,
+    isSpinGameActive,
     handleRPSGameEnd,
+    handleSpinGameEnd,
   };
 };

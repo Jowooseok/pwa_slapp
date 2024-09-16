@@ -1,104 +1,104 @@
-import React, { useState } from 'react';
-import Images from '@/shared/assets/images';
-import { Wheel } from 'react-custom-roulette';
+import React, { useState } from "react";
+import Images from "@/shared/assets/images";
+import { Wheel } from "react-custom-roulette";
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/shared/components/ui';
-import { HiX } from 'react-icons/hi';
+} from "@/shared/components/ui";
+import { HiX } from "react-icons/hi";
 
 const data = [
   {
-    option: '0',
+    option: "0",
     image: {
       uri: `${Images.Star}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: '#2FAF74' },
+    style: { backgroundColor: "#2FAF74" },
   },
   {
-    option: '1',
+    option: "1",
     image: {
       uri: `${Images.Dice}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: '#39A1E8' },
+    style: { backgroundColor: "#39A1E8" },
   },
   {
-    option: '2',
+    option: "2",
     image: {
       uri: `${Images.TokenReward}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: '#FBA629' },
+    style: { backgroundColor: "#FBA629" },
   },
   {
-    option: '3',
+    option: "3",
     image: {
       uri: `${Images.Star}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: '#F3F3E9' },
+    style: { backgroundColor: "#F3F3E9" },
   },
   {
-    option: '4',
+    option: "4",
     image: {
       uri: `${Images.Dice}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: '#2FAF74' },
+    style: { backgroundColor: "#2FAF74" },
   },
   {
-    option: '5',
+    option: "5",
     image: {
       uri: `${Images.TokenReward}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: '#39A1E8' },
+    style: { backgroundColor: "#39A1E8" },
   },
   {
-    option: '6',
+    option: "6",
     image: {
       uri: `${Images.Star}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: '#FBA629' },
+    style: { backgroundColor: "#FBA629" },
   },
   {
-    option: '7',
+    option: "7",
     image: {
       uri: `${Images.Dice}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: '#F3F3E9' },
+    style: { backgroundColor: "#F3F3E9" },
   },
   {
-    option: '8',
+    option: "8",
     image: {
       uri: `${Images.TokenReward}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: '#2FAF74' },
+    style: { backgroundColor: "#2FAF74" },
   },
   {
-    option: '9',
+    option: "9",
     image: {
       uri: `${Images.LosingTicket}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: '#39A1E8' },
+    style: { backgroundColor: "#39A1E8" },
   },
 ];
 
@@ -126,7 +126,7 @@ const SpinGameStart: React.FC<{ onStart: () => void }> = ({ onStart }) => {
   );
 };
 
-const Spin: React.FC = () => {
+const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -139,15 +139,16 @@ const Spin: React.FC = () => {
 
   const handleSpinEnd = () => {
     setMustSpin(false);
-    setIsDialogOpen(true);
+    setIsDialogOpen(true); // 스핀 종료 후 다이얼로그 오픈
   };
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
+    onSpinEnd(); // 다이얼로그에서 닫기 버튼을 눌렀을 때 주사위 게임으로 돌아가기
   };
 
   return (
-    <div className="relative flex flex-col items-center ">
+    <div className="relative flex flex-col items-center">
       <img src={Images.Spin} alt="Spin-game" className="w-[368px] mt-2" />
       <img
         src={Images.SpinPin}
@@ -160,14 +161,14 @@ const Spin: React.FC = () => {
           prizeNumber={prizeNumber}
           data={data}
           outerBorderColor="#DEDEDE"
-          onStopSpinning={handleSpinEnd}
+          onStopSpinning={handleSpinEnd} // 스핀 종료 후 처리
           spinDuration={0.5}
           outerBorderWidth={10}
           radiusLineColor="none"
           pointerProps={{
             style: {
-              width: '0px',
-              height: '0px',
+              width: "0px",
+              height: "0px",
             },
           }}
         />
@@ -180,7 +181,6 @@ const Spin: React.FC = () => {
         Spin the Roulette
       </button>
 
-      {/* AlertDialog for showing the result */}
       <AlertDialog open={isDialogOpen}>
         <AlertDialogContent className="rounded-3xl bg-[#21212F] text-white border-none">
           <AlertDialogHeader>
@@ -213,7 +213,7 @@ const Spin: React.FC = () => {
             <div className="space-y-3 w-full">
               <button
                 className="w-full h-14 rounded-full bg-[#0147e5]"
-                onClick={handleCloseDialog}
+                onClick={handleCloseDialog} // 확인 버튼 클릭 시 주사위 게임으로 돌아가도록 설정
               >
                 OK
               </button>
@@ -225,7 +225,7 @@ const Spin: React.FC = () => {
   );
 };
 
-const SpinGame: React.FC = () => {
+const SpinGame: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
   const [showSpin, setShowSpin] = useState(false);
 
   const handleStartClick = () => {
@@ -237,8 +237,8 @@ const SpinGame: React.FC = () => {
       className="flex flex-col z-50 h-screen bg-white w-full  items-center"
       style={{
         backgroundImage: `url(${Images.BGSpinGame})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
       <h1 className="text-[#fde047] font-jalnan text-center text-[36px] mt-8 ">
@@ -247,7 +247,11 @@ const SpinGame: React.FC = () => {
         Roulette Game!
       </h1>
 
-      {showSpin ? <Spin /> : <SpinGameStart onStart={handleStartClick} />}
+      {showSpin ? (
+        <Spin onSpinEnd={onSpinEnd} />
+      ) : (
+        <SpinGameStart onStart={handleStartClick} />
+      )}
     </div>
   );
 };

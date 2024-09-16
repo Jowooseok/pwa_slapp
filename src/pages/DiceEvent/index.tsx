@@ -11,6 +11,7 @@ import { useDiceGame } from "./useDiceGame";
 import GameBoard from "./GameBoard";
 import { Board } from "@/features/DiceEvent";
 import RPSGame from "../RPSGame"; // 새로 추가: RPSGame 컴포넌트 import
+import SpinGame from "../SpinGame"; // SpinGame 컴포넌트 추가
 
 export interface WeeklyPrizeData {
   week: string;
@@ -39,6 +40,11 @@ const DiceEventPage: React.FC = () => {
     game.handleRPSGameEnd(result, winnings); // 주사위 게임으로 돌아가기 위한 로직
   };
 
+  // SpinGameEnd로 스핀 게임이 끝났을 때 호출
+  const handleSpinGameEnd = () => {
+    game.handleSpinGameEnd(); // 스핀 게임 종료 처리 후 주사위 게임으로 돌아가기 위한 로직
+  };
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -62,8 +68,9 @@ const DiceEventPage: React.FC = () => {
     <div className="flex flex-col items-center md:h-screen bg-[#0D1226] relative">
       {/* 수정: RPS 게임 활성화 상태에 따라 다른 컴포넌트 렌더링 */}
       {game.isRPSGameActive ? (
-        // 여기서 onCancel과 onGameEnd를 추가하여 베팅 화면과 게임을 관리
         <RPSGame onGameEnd={handleRPSGameEnd} onCancel={handleRPSCancel} />
+      ) : game.isSpinGameActive ? (
+        <SpinGame onSpinEnd={handleSpinGameEnd} />
       ) : (
         <>
           <div className="w-full flex justify-center mb-4 mt-8 gap-4">
