@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import UserLevel from "@/entities/User/components/UserLevel";
 import "@/features/DiceEvent/DiceEvent.css";
 import Images from "@/shared/assets/images";

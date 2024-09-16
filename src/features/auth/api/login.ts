@@ -1,5 +1,5 @@
-// Custom Hook using useMutation from react-query
-import { useMutation, useQuery } from "@tanstack/react-query";
+// auth.ts
+import { useMutation } from "@tanstack/react-query";
 
 interface LoginData {
   userId: string;
@@ -51,50 +51,14 @@ const refreshAccessToken = async (data: RefreshTokenData) => {
 
 // 로그인 훅
 export const useLoginMutation = () => {
-  return useMutation<ReturnType<typeof login>, Error, LoginData>({
+  return useMutation({
     mutationFn: login,
   });
 };
 
 // 토큰 재발급 훅
 export const useRefreshTokenMutation = () => {
-  return useMutation<
-    ReturnType<typeof refreshAccessToken>,
-    Error,
-    RefreshTokenData
-  >({
+  return useMutation({
     mutationFn: refreshAccessToken,
-  });
-};
-
-// /home API를 호출하는 함수
-const fetchHomeData = async () => {
-  const accessToken = localStorage.getItem("accessToken");
-  if (!accessToken) {
-    throw new Error("No access token found");
-  }
-
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/home`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch home data");
-  }
-
-  return response.json();
-};
-
-// 홈 데이터를 가져오는 커스텀 훅
-export const useHomeDataQuery = () => {
-  return useQuery({
-    queryKey: ["homeData"],
-    queryFn: fetchHomeData,
-    retry: false, // 실패 시 자동 재시도를 하지 않도록 설정
-    staleTime: 60000, // 1분 동안 데이터가 최신으로 간주됨
   });
 };
