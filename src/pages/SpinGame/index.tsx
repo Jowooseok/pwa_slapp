@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Images from "@/shared/assets/images";
-import { Wheel } from "react-custom-roulette";
+// import { Wheel } from "react-custom-roulette";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -156,7 +156,7 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
         className="w-[126px] h-[142] absolute z-10 top-28 transform rotate-45"
       />
       <div className="absolute top-10 left-1/2 transform -translate-x-1/2 z-0">
-        <Wheel
+        {/* <Wheel
           mustStartSpinning={mustSpin}
           prizeNumber={prizeNumber}
           data={data}
@@ -171,7 +171,7 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
               height: "0px",
             },
           }}
-        />
+        /> */}
       </div>
 
       <button

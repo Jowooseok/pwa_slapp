@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { FiCheckCircle, FiCircle } from 'react-icons/fi';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { FiCheckCircle, FiCircle } from "react-icons/fi";
+import { motion } from "framer-motion";
 
-const TelegramActivityCheck: React.FC = () => {
+const TelegramActivityCheck: React.FC<{ onContinue: () => void }> = ({
+  onContinue,
+}) => {
   const [progress, setProgress] = useState({
     accountAge: 0,
     activityLevel: 0,
@@ -24,19 +26,19 @@ const TelegramActivityCheck: React.FC = () => {
     };
 
     // 모든 작업을 동시에 시작
-    updateProgress('accountAge');
-    updateProgress('activityLevel');
-    updateProgress('telegramPremium');
-    updateProgress('ogStatus');
+    updateProgress("accountAge");
+    updateProgress("activityLevel");
+    updateProgress("telegramPremium");
+    updateProgress("ogStatus");
   }, []);
 
   const isComplete = (value: number) => value === 100;
 
   const progressVariants = {
-    initial: { width: '0%' },
+    initial: { width: "0%" },
     animate: (value: number) => ({
       width: `${value}%`,
-      transition: { duration: 0.5, ease: 'easeInOut' },
+      transition: { duration: 0.5, ease: "easeInOut" },
     }),
   };
 
@@ -130,9 +132,10 @@ const TelegramActivityCheck: React.FC = () => {
       <div className=" bottom-10 absolute flex w-full self-center">
         <button
           className={`h-14 bg-[#0147e5] rounded-full w-full mx-6 ${
-            allTasksComplete() ? 'opacity-100' : 'opacity-50 cursor-not-allowed'
+            allTasksComplete() ? "opacity-100" : "opacity-50 cursor-not-allowed"
           }`}
-          disabled={!allTasksComplete()} // 모든 작업이 완료되지 않으면 버튼 비활성화
+          onClick={onContinue}
+          disabled={!allTasksComplete()} // Enable after tasks are complete
         >
           Continue
         </button>

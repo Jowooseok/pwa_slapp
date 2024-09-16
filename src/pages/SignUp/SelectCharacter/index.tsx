@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import Images from '@/shared/assets/images';
+import React, { useState } from "react";
+import Images from "@/shared/assets/images";
 
-const SelectCharacter: React.FC = () => {
-  const [selectedCharacter, setSelectedCharacter] = useState<'dog' | 'cat'>(
-    'dog',
+const SelectCharacter: React.FC<{
+  onSelect: (character: "DOG" | "CAT") => void;
+}> = ({ onSelect }) => {
+  const [selectedCharacter, setSelectedCharacter] = useState<"DOG" | "CAT">(
+    "DOG"
   );
 
   return (
@@ -16,30 +18,30 @@ const SelectCharacter: React.FC = () => {
       <div className="flex flex-row mt-14 gap-3">
         <div
           className="flex flex-col items-center justify-center gap-3 cursor-pointer"
-          onClick={() => setSelectedCharacter('dog')}
+          onClick={() => setSelectedCharacter("DOG")}
         >
           <div
             className={`w-40 h-48 rounded-[30px] border-2 ${
-              selectedCharacter === 'dog'
-                ? 'border-[#0147E5] bg-[#1E1B4B]'
-                : 'border-[#737373] bg-[#1f1e27]'
+              selectedCharacter === "DOG"
+                ? "border-[#0147E5] bg-[#1E1B4B]"
+                : "border-[#737373] bg-[#1f1e27]"
             } flex items-center justify-center`}
           >
             <img
               src={
-                selectedCharacter === 'dog'
+                selectedCharacter === "DOG"
                   ? Images.DogLv19to20
                   : Images.DogLv1to2
               }
-              alt="dog"
+              alt="DOG"
               className="w-36 h-36"
             />
           </div>
           <div
             className={`flex w-11 h-7 border rounded-full items-center justify-center text-xs font-medium ${
-              selectedCharacter === 'dog'
-                ? 'border-white text-white'
-                : 'border-[#737373]'
+              selectedCharacter === "DOG"
+                ? "border-white text-white"
+                : "border-[#737373]"
             }`}
           >
             Dog
@@ -47,30 +49,30 @@ const SelectCharacter: React.FC = () => {
         </div>
         <div
           className="flex flex-col items-center justify-center gap-3 cursor-pointer"
-          onClick={() => setSelectedCharacter('cat')}
+          onClick={() => setSelectedCharacter("CAT")}
         >
           <div
             className={`w-40 h-48 rounded-[30px] border-2 ${
-              selectedCharacter === 'cat'
-                ? 'border-[#0147E5] bg-[#1E1B4B]'
-                : 'border-[#737373] bg-[#1f1e27]'
+              selectedCharacter === "CAT"
+                ? "border-[#0147E5] bg-[#1E1B4B]"
+                : "border-[#737373] bg-[#1f1e27]"
             } flex items-center justify-center`}
           >
             <img
               src={
-                selectedCharacter === 'cat'
+                selectedCharacter === "CAT"
                   ? Images.CatLv19to20
                   : Images.CatLv1to2
               }
-              alt="cat"
+              alt="CAT"
               className="w-36 h-36"
             />
           </div>
           <div
             className={`flex w-11 h-7 border rounded-full items-center justify-center text-xs font-medium ${
-              selectedCharacter === 'cat'
-                ? 'border-white text-white'
-                : 'border-[#737373]'
+              selectedCharacter === "CAT"
+                ? "border-white text-white"
+                : "border-[#737373]"
             }`}
           >
             Cat
@@ -78,8 +80,11 @@ const SelectCharacter: React.FC = () => {
         </div>
       </div>
       <div className="bottom-10 absolute flex w-full self-center">
-        <button className="h-14 bg-[#0147e5] rounded-full w-full mx-6">
-          Continue
+        <button
+          className="h-14 bg-[#0147e5] rounded-full w-full mx-6"
+          onClick={() => onSelect(selectedCharacter!)}
+        >
+          Create
         </button>
       </div>
     </div>
