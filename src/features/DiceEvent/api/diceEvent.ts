@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useDiceEventStore } from "../store/diceEventStore"; // 상태 저장소 사용
 
-// /home API를 호출하는 함수
 const fetchDiceEventData = async () => {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
     throw new Error("No access token found");
   }
-
   const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/home`, {
     method: "GET",
     headers: {
@@ -22,12 +22,25 @@ const fetchDiceEventData = async () => {
   return response.json();
 };
 
-// 주사위 이벤트 데이터를 가져오는 커스텀 훅
 export const useDiceEventDataQuery = () => {
-  return useQuery({
-    queryKey: ["diceEventData"], // queryKey 수정
+  const { setPosition, setDiceCount, setStarPoints, setLotteryCount } =
+    useDiceEventStore(); // 스토어 상태 업데이트
+
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: ["diceEventData"],
     queryFn: fetchDiceEventData,
-    retry: false,
-    staleTime: 60000,
   });
+
+  // 데이터를 성공적으로 받아오면 상태 업데이트
+  useEffect(() => {
+    if (data) {
+      const { nowDice, rank } = data.data;
+      setPosition(nowDice.currentTileId);
+      setDiceCount(nowDice.dice);
+      setStarPoints(rank.star);
+      setLotteryCount(rank.ticket);
+    }
+  }, [data, setPosition, setDiceCount, setStarPoints, setLotteryCount]);
+
+  return { data, error, isLoading, refetch }; // refetch 추가
 };

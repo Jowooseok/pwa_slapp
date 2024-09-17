@@ -39,7 +39,7 @@ const SignUpPage: React.FC = () => {
         {
           onSuccess: (data) => {
             console.log("Signup successful:", data);
-            navigate("/dice-event"); // 회원가입 성공 후 이동
+            navigate(`/dice-event?hash=${telegramHash}`); // 회원가입 성공 후 해시 값을 URL에 포함하여 이동
           },
           onError: (error) => {
             console.error("Signup failed:", error);

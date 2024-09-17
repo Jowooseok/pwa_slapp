@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from "react";
 
 export const handleMouseDown = (
   event:
@@ -6,7 +6,7 @@ export const handleMouseDown = (
     | React.TouchEvent<HTMLButtonElement>,
   buttonDisabled: boolean,
   diceCount: number,
-  setIsHolding: Dispatch<SetStateAction<boolean>>,
+  setIsHolding: Dispatch<SetStateAction<boolean>>
 ) => {
   event.preventDefault();
   if (buttonDisabled || diceCount < 1) return;
@@ -21,7 +21,7 @@ export const handleMouseUp = (
   diceCount: number,
   setIsHolding: Dispatch<SetStateAction<boolean>>,
   rollDice: () => void,
-  setDiceCount: Dispatch<SetStateAction<number>>,
+  setDiceCount: Dispatch<SetStateAction<number>>
 ) => {
   event.preventDefault();
   if (buttonDisabled || diceCount < 1) return;
@@ -40,7 +40,7 @@ export const movePiece = (
   setDiceCount: Dispatch<SetStateAction<number>>,
   setLotteryCount: Dispatch<SetStateAction<number>>, // 추가
   showReward: (type: string, value: number) => void,
-  onMoveComplete: () => void, // 추가
+  onMoveComplete: () => void // 추가
 ) => {
   setMoving(true);
 
@@ -51,10 +51,10 @@ export const movePiece = (
 
     if (currentPosition === 0) {
       setStarPoints((prev) => prev + 200);
-      showReward('star', 200);
+      showReward("star", 200);
       setDiceCount((prev) => prev + 1);
       setLotteryCount((prev) => prev + 1); // 추첨권 증가
-      setTimeout(() => showReward('lottery', 1), 200);
+      setTimeout(() => showReward("lottery", 1), 200);
     }
 
     if (steps > 1) {
@@ -78,8 +78,8 @@ export const movePiece = (
             setStarPoints((prev) => prev + 200);
             setDiceCount((prev) => prev + 1);
             setLotteryCount((prev) => prev + 1); // 추첨권 증가
-            showReward('star', 200);
-            setTimeout(() => showReward('lottery', 1), 200);
+            showReward("star", 200);
+            setTimeout(() => showReward("lottery", 1), 200);
             applyReward(5, setStarPoints, setDiceCount, showReward);
             setMoving(false);
             onMoveComplete();
@@ -111,24 +111,24 @@ export const applyReward = (
   tileNumber: number,
   setStarPoints: Dispatch<SetStateAction<number>>,
   setDiceCount: Dispatch<SetStateAction<number>>,
-  showReward: (type: string, value: number) => void,
+  showReward: (type: string, value: number) => void
 ) => {
   const tile = document.getElementById(tileNumber.toString());
   if (tile) {
-    const starReward = parseInt(tile.getAttribute('data-star') || '0', 10);
-    const diceReward = parseInt(tile.getAttribute('data-dice') || '0', 10);
+    const starReward = parseInt(tile.getAttribute("data-star") || "0", 10);
+    const diceReward = parseInt(tile.getAttribute("data-dice") || "0", 10);
 
     if (starReward > 0) {
       setStarPoints((prev) => prev + starReward);
-      showReward('star', starReward);
+      showReward("star", starReward);
     }
     if (diceReward > 0) {
       setDiceCount((prev) => prev + diceReward);
-      showReward('dice', diceReward);
+      showReward("dice", diceReward);
     }
 
     if ([2, 8, 13, 18].includes(tileNumber)) {
-      showReward('airplane', 0);
+      showReward("airplane", 0);
     }
   }
 };
@@ -143,7 +143,7 @@ export const handleTileClick = (
   setStarPoints: Dispatch<SetStateAction<number>>,
   setDiceCount: Dispatch<SetStateAction<number>>,
   setLotteryCount: Dispatch<SetStateAction<number>>,
-  showReward: (type: string, value: number) => void,
+  showReward: (type: string, value: number) => void
 ) => {
   if (!selectingTile || tileNumber === 18) return;
   setPosition(tileNumber);
@@ -155,8 +155,8 @@ export const handleTileClick = (
     setStarPoints((prev) => prev + 200);
     setDiceCount((prev) => prev + 1);
     setLotteryCount((prev) => prev + 1); // 추첨권 증가
-    showReward('star', 200);
-    setTimeout(() => showReward('lottery', 1), 500);
+    showReward("star", 200);
+    setTimeout(() => showReward("lottery", 1), 500);
   }
 
   applyRewardCallback(tileNumber);

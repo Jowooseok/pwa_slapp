@@ -32,7 +32,7 @@ const MyRankingWidget: React.FC = () => {
         <div className="w-full h-full flex flex-row items-center justify-around text-xs">
           <div className="flex flex-col items-center justify-center gap-2">
             <img src={Images.Star} alt="star" className="w-6 h-6" />
-            <p>{formatNumber(1234)}</p>
+            <p>{formatNumber(1234)}</p> {/* StartPoint */}
           </div>
           <div className="flex flex-col items-center justify-center gap-2">
             <img
@@ -40,7 +40,7 @@ const MyRankingWidget: React.FC = () => {
               alt="lottery-ticket"
               className="w-6 h-6"
             />
-            <p>{formatNumber(1234)}</p>
+            <p>{formatNumber(1234)}</p> {/* lotteryCount */}
           </div>
           <div className="flex flex-col items-center justify-center gap-2">
             <img
@@ -48,7 +48,7 @@ const MyRankingWidget: React.FC = () => {
               alt="RankingSLToken"
               className="w-6 h-6"
             />
-            <p>{formatNumber(1234)}</p>
+            <p>{formatNumber(1234)}</p> {/* server의 slToken */}
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDiceEventDataQuery } from "@/features/DiceEvent/api/diceEvent"; // 서버에서 데이터 가져오기
 import UserLevel from "@/entities/User/components/UserLevel";
 import "@/features/DiceEvent/DiceEvent.css";
 import Images from "@/shared/assets/images";
@@ -9,43 +10,59 @@ import MissionWidget from "@/widgets/MissionWidget/MissionWidget";
 import { useDiceGame } from "./useDiceGame";
 import GameBoard from "./GameBoard";
 import { Board } from "@/features/DiceEvent";
-import RPSGame from "../RPSGame"; // 새로 추가: RPSGame 컴포넌트 import
-import SpinGame from "../SpinGame"; // SpinGame 컴포넌트 추가
-
-export interface WeeklyPrizeData {
-  week: string;
-  prizeName: string;
-  prizeValue: string;
-}
+import RPSGame from "../RPSGame";
+import SpinGame from "../SpinGame";
+import { useDiceEventStore } from "@/features/DiceEvent/store/diceEventStore"; // zustand 상태 가져오기
 
 const DiceEventPage: React.FC = () => {
+  const { setPosition, setDiceCount, setStarPoints, setLotteryCount } =
+    useDiceEventStore();
+
   const game = useDiceGame("dog");
   const [initialX, setInitialX] = useState<number>(140);
   const [initialY, setInitialY] = useState<number>(474);
   const [delta, setDelta] = useState<number>(56);
 
-  const [weeklyPrizeData, setWeeklyPrizeData] = useState<WeeklyPrizeData>({
-    week: "Week 2",
-    prizeName: "SL Coin",
-    prizeValue: "Approx. $8,000",
-  });
+  // 서버에서 데이터를 받아오는 query 훅
+  const { data: diceEventData, error, isLoading } = useDiceEventDataQuery();
+
+  // 데이터가 성공적으로 로드되었을 때 상태 업데이트
+  useEffect(() => {
+    console.log("Fetching dice event data...");
+    if (diceEventData) {
+      console.log("Dice event data received:", diceEventData);
+      const { nowDice, rank } = diceEventData.data;
+      setPosition(nowDice.currentTileId);
+      setDiceCount(nowDice.dice);
+      setStarPoints(rank.star);
+      setLotteryCount(rank.ticket);
+    }
+  }, [
+    diceEventData,
+    setPosition,
+    setDiceCount,
+    setStarPoints,
+    setLotteryCount,
+  ]);
 
   const handleRPSCancel = () => {
-    game.handleRPSGameEnd("lose", 0); // 가위바위보 게임에서 캔슬 시 주사위 게임으로 돌아감
+    console.log("RPS game canceled");
+    game.handleRPSGameEnd("lose", 0);
   };
 
-  // RPSGameEnd로 가위바위보 게임에서 'onGameEnd'로 게임이 끝났을때 호출
   const handleRPSGameEnd = (result: "win" | "lose", winnings: number) => {
-    game.handleRPSGameEnd(result, winnings); // 주사위 게임으로 돌아가기 위한 로직
+    console.log(`RPS game ended with result: ${result}, winnings: ${winnings}`);
+    game.handleRPSGameEnd(result, winnings);
   };
 
-  // SpinGameEnd로 스핀 게임이 끝났을 때 호출
   const handleSpinGameEnd = () => {
-    game.handleSpinGameEnd(); // 스핀 게임 종료 처리 후 주사위 게임으로 돌아가기 위한 로직
+    console.log("Spin game ended");
+    game.handleSpinGameEnd();
   };
 
   useEffect(() => {
     const handleResize = () => {
+      console.log("Window resized");
       if (window.innerWidth >= 768) {
         setInitialX(250);
         setInitialY(730);
@@ -64,69 +81,84 @@ const DiceEventPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center md:h-screen bg-[#0D1226] relative">
-      {/* 수정: RPS 게임 활성화 상태에 따라 다른 컴포넌트 렌더링 */}
-      {game.isRPSGameActive ? (
-        <RPSGame onGameEnd={handleRPSGameEnd} onCancel={handleRPSCancel} />
-      ) : game.isSpinGameActive ? (
-        <SpinGame onSpinEnd={handleSpinGameEnd} />
+    <div className="flex flex-col items-center md:h-screen bg-[#0D1226] relative ">
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <>
+          <p>Error fetching data</p>
+          <pre>{error.message}</pre> {/* 에러 메시지 로그 */}
+        </>
       ) : (
         <>
-          <div className="w-full flex justify-center mb-4 mt-8 gap-4">
-            <UserLevel
-              userLv={game.userLv}
-              charactorImageSrc={game.charactorImageSrc}
-              mainColorClassName={game.mainColorClassName}
-            />
-            <WeeklyPrize
-              week={weeklyPrizeData.week}
-              prizeName={weeklyPrizeData.prizeName}
-              prizeValue={weeklyPrizeData.prizeValue}
-            />
-          </div>
-          <GameBoard
-            position={game.position}
-            selectingTile={game.selectingTile}
-            handleTileClick={game.handleTileClick}
-            gaugeValue={game.gaugeValue}
-            diceCount={game.diceCount}
-            showDiceValue={game.showDiceValue}
-            rolledValue={game.rolledValue}
-            buttonDisabled={game.buttonDisabled}
-            diceRef={game.diceRef}
-            handleRollComplete={game.handleRollComplete}
-            reward={game.reward}
-            isHolding={game.isHolding}
-            handleMouseDown={game.handleMouseDown}
-            handleMouseUp={game.handleMouseUp}
-          />
-          {game.selectingTile && (
-            <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-20">
-              <div className="absolute top-0 left-0 w-full h-full bg-black opacity-75"></div>
-              <div className="text-white text-lg z-30 flex flex-col items-center justify-center mb-96 md:mb-[442px]">
-                <img
-                  src={Images.Airplane}
-                  alt="airplane"
-                  className="h-20 md:h-24"
+          {game.isRPSGameActive ? (
+            <>
+              <p>RPS Game is active</p>
+              <RPSGame
+                onGameEnd={handleRPSGameEnd}
+                onCancel={handleRPSCancel}
+              />
+            </>
+          ) : game.isSpinGameActive ? (
+            <>
+              <p>Spin Game is active</p>
+              <SpinGame onSpinEnd={handleSpinGameEnd} />
+            </>
+          ) : (
+            <>
+              <div className="w-full flex justify-center mb-4 mt-8 gap-4">
+                <UserLevel
+                  userLv={game.userLv}
+                  charactorImageSrc={game.charactorImageSrc}
+                  mainColorClassName={game.mainColorClassName}
                 />
-                Select a tile to move
+                <WeeklyPrize
+                  week="Week 2"
+                  prizeName="SL Coin"
+                  prizeValue="Approx. $8,000"
+                />
               </div>
-            </div>
+              <GameBoard
+                position={game.position}
+                selectingTile={game.selectingTile}
+                handleTileClick={game.handleTileClick}
+                gaugeValue={game.gaugeValue}
+                diceCount={game.diceCount}
+                showDiceValue={game.showDiceValue}
+                rolledValue={game.rolledValue}
+                buttonDisabled={game.buttonDisabled}
+                diceRef={game.diceRef}
+                handleRollComplete={game.handleRollComplete}
+                reward={game.reward}
+                isHolding={game.isHolding}
+                handleMouseDown={game.handleMouseDown}
+                handleMouseUp={game.handleMouseUp}
+              />
+              {game.selectingTile && (
+                <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-20">
+                  <div className="absolute top-0 left-0 w-full h-full bg-black opacity-75"></div>
+                  <div className="text-white text-lg z-30 flex flex-col items-center justify-center mb-96 md:mb-[442px]">
+                    <img
+                      src={Images.Airplane}
+                      alt="airplane"
+                      className="h-20 md:h-24"
+                    />
+                    Select a tile to move
+                  </div>
+                </div>
+              )}
+              <Attendance />
+              <MyRankingWidget />
+              <MissionWidget />
+              <Board
+                position={game.position}
+                charactorImageSrc={game.charactorImageSrc}
+                initialX={initialX}
+                initialY={initialY}
+                delta={delta}
+              />
+            </>
           )}
-          <Attendance />
-          <MyRankingWidget />
-          <MissionWidget />
-          <br /> <br /> <br />
-          <br />
-          <br />
-          <Board
-            position={game.position}
-            charactorImageSrc={game.charactorImageSrc}
-            initialX={initialX}
-            initialY={initialY}
-            delta={delta}
-          />
-          <div className="hidden md:block md:mb-40"> &nbsp;</div>
         </>
       )}
     </div>

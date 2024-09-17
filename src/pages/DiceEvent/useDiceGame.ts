@@ -1,7 +1,6 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { useDice, useGauge, useUserLevel } from "@/features/DiceEvent";
-import { movePiece, applyReward } from "./diceEventHandlers";
-import { useRPSGameStore } from "../RPSGame/store"; // 새로 추가: RPSGame 스토어 import
+import { useRPSGameStore } from "../RPSGame/store"; // RPSGame 스토어 import
 
 export interface Reward {
   type: string;
@@ -21,12 +20,9 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
   const [rolledValue, setRolledValue] = useState<number>(0);
   const [reward, setReward] = useState<Reward | null>(null);
 
-  // 새로 추가: RPS 게임 활성화 상태
+  // RPS, Spin 게임 상태
   const [isRPSGameActive, setIsRPSGameActive] = useState(false);
-  // 스핀 게임 활성화 상태
   const [isSpinGameActive, setIsSpinGameActive] = useState(false);
-
-  // 새로 추가: RPS 게임 스토어 사용
   const rpsGameStore = useRPSGameStore();
 
   const {
@@ -45,47 +41,104 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
     const randomTop = `${Math.random() * 80 + 10}%`;
     const randomLeft = `${Math.random() * 80 + 10}%`;
     setReward({ type, value, top: randomTop, left: randomLeft });
-    setTimeout(() => {
-      setReward(null);
-    }, 1000);
+    setTimeout(() => setReward(null), 1000);
   }, []);
 
-  // 주사위 결과 처리 함수
+  const applyReward = useCallback(
+    (tileNumber: number) => {
+      const rewards: { [key: number]: number } = { 2: 300, 8: 200, 13: 100 };
+      const starReward = rewards[tileNumber] || 0;
+
+      if (starReward > 0) {
+        setStarPoints((prev) => prev + starReward);
+        showReward("star", starReward);
+      }
+      if (tileNumber === 5) {
+        setIsRPSGameActive(true);
+      } else if (tileNumber === 15) {
+        setIsSpinGameActive(true);
+      }
+    },
+    [setStarPoints, showReward]
+  );
+
+  const movePiece = useCallback(
+    (steps: number) => {
+      setMoving(true);
+      let currentPosition = position;
+
+      const moveStep = () => {
+        currentPosition = (currentPosition + 1) % 20;
+        setPosition(currentPosition);
+
+        if (currentPosition === 0) {
+          setStarPoints((prev) => prev + 200);
+          setDiceCount((prev) => prev + 1);
+          setLotteryCount((prev) => prev + 1);
+          showReward("star", 200);
+        }
+
+        if (steps > 1) {
+          steps--;
+          setTimeout(moveStep, 300);
+        } else {
+          switch (currentPosition) {
+            case 2:
+              setTimeout(() => {
+                setPosition(15);
+                applyReward(15);
+              }, 300);
+              break;
+            case 8:
+              setTimeout(() => {
+                setPosition(5);
+                applyReward(5);
+              }, 300);
+              break;
+            case 13:
+              setTimeout(() => {
+                setPosition(0);
+                applyReward(0);
+              }, 300);
+              break;
+            case 18:
+              setSelectingTile(true);
+              break;
+            default:
+              applyReward(currentPosition);
+          }
+
+          setMoving(false);
+          setButtonDisabled(false);
+        }
+      };
+
+      moveStep();
+    },
+    [
+      position,
+      setPosition,
+      setStarPoints,
+      setDiceCount,
+      setLotteryCount,
+      showReward,
+      applyReward,
+      setButtonDisabled,
+      setSelectingTile,
+    ]
+  );
+
   const handleRollComplete = useCallback(
     (value: number) => {
       setRolledValue(value);
       setShowDiceValue(true);
-      setTimeout(() => {
-        setShowDiceValue(false);
-      }, 1000);
+      setTimeout(() => setShowDiceValue(false), 1000);
       originalHandleRollComplete(value);
       setButtonDisabled(true);
 
-      movePiece(
-        value,
-        position,
-        setPosition,
-        setMoving,
-        setSelectingTile,
-        setStarPoints,
-        setDiceCount,
-        setLotteryCount,
-        showReward,
-        () => {
-          if (position + value === 5) {
-            // 5번 칸에 도착했을 때 RPS 게임 활성화만 하고 startGame은 하지 않음
-            setIsRPSGameActive(true);
-            rpsGameStore.setBetAmount(diceCount); // 베팅 금액만 설정
-          } else if (position + value === 15) {
-            // 15번 타일에 도착 시 스핀 게임 시작
-            setIsSpinGameActive(true); // 스핀 게임 활성화
-          } else {
-            setButtonDisabled(false);
-          }
-        }
-      );
+      movePiece(value);
     },
-    [position, originalHandleRollComplete, showReward, diceCount, rpsGameStore]
+    [movePiece, originalHandleRollComplete]
   );
 
   const rollDice = useCallback(() => {
@@ -97,66 +150,60 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
 
   const handleTileClick = useCallback(
     (tileId: number) => {
-      if (!selectingTile || tileId === 18) return; // 선택 중이 아닌 경우 클릭 동작 중단
+      if (!selectingTile || tileId === 18) return;
 
-      if (tileId === 5) {
-        // 5번 타일 클릭 시 가위바위보 게임 시작
-        if (!rpsGameStore.isGameStarted) {
-          setIsRPSGameActive(true); // RPS 게임 활성화
-          rpsGameStore.setBetAmount(diceCount); // 베팅 금액 설정
-        }
-      } else if (tileId === 15) {
-        // 15번 타일 클릭 시 스핀 게임 시작
-        if (!isSpinGameActive) {
-          setIsSpinGameActive(true); // 스핀 게임 활성화
-        }
-      } else {
-        // 다른 타일을 클릭했을 때의 동작
-        setPosition(tileId);
-        setSelectingTile(false); // 타일 선택 상태 종료
-        setMoving(false); // 이동 상태 해제
-        setButtonDisabled(false); // 버튼 비활성화 해제
+      setPosition(tileId);
+      setSelectingTile(false);
+      setMoving(false);
+      setButtonDisabled(false);
 
-        if (tileId !== 19) {
-          setStarPoints((prev) => prev + 200);
-          setDiceCount((prev) => prev + 1);
-          setLotteryCount((prev) => prev + 1);
-          showReward("star", 200);
-          setTimeout(() => showReward("lottery", 1), 500);
-        }
-
-        applyReward(tileId, setStarPoints, setDiceCount, showReward);
+      if (tileId !== 19) {
+        setStarPoints((prev) => prev + 200);
+        setDiceCount((prev) => prev + 1);
+        setLotteryCount((prev) => prev + 1);
+        showReward("star", 200);
       }
+
+      applyReward(tileId);
     },
-    [selectingTile, showReward, diceCount, rpsGameStore, isSpinGameActive]
+    [
+      selectingTile,
+      setPosition,
+      setSelectingTile,
+      setMoving,
+      setButtonDisabled,
+      setStarPoints,
+      setDiceCount,
+      setLotteryCount,
+      showReward,
+      applyReward,
+    ]
   );
 
-  // 스핀 게임 종료 처리 함수
-  const handleSpinGameEnd = useCallback(() => {
-    setIsSpinGameActive(false); // 스핀 게임 비활성화
-    setSelectingTile(false); // 타일 선택 비활성화
-    setButtonDisabled(false); // 버튼 비활성화 해제
-    setMoving(false); // 이동 상태 해제
-    setPosition(16); // 예시: 16번 타일로 이동
-  }, [setPosition, setButtonDisabled]);
-
-  // 가위바위보 게임 종료 처리 함수 수정
   const handleRPSGameEnd = useCallback(
     (result: "win" | "lose", winnings: number) => {
-      setIsRPSGameActive(false); // RPS 게임 비활성화
-      setSelectingTile(false); // 타일 선택 비활성화 (RPS 게임 후에 다시 타일을 선택할 수 없게 설정)
-      setButtonDisabled(false); // 버튼 활성화
-      setMoving(false); // 이동 상태 해제
+      setIsRPSGameActive(false);
+      setSelectingTile(false);
+      setButtonDisabled(false);
+      setMoving(false);
 
       if (result === "win") {
-        setDiceCount((prev) => prev + winnings); // 이긴 경우 상금 추가
+        setDiceCount((prev) => prev + winnings);
         showReward("star", winnings);
       }
 
-      setPosition(6); // 예시로 6번 타일로 이동
+      setPosition(6);
     },
     [setDiceCount, showReward]
   );
+
+  const handleSpinGameEnd = useCallback(() => {
+    setIsSpinGameActive(false);
+    setSelectingTile(false);
+    setButtonDisabled(false);
+    setMoving(false);
+    setPosition(16);
+  }, [setPosition, setButtonDisabled]);
 
   const handleMouseDown = useCallback(() => {
     if (!buttonDisabled && diceCount > 0) {
@@ -205,7 +252,6 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
     setRolledValue,
     setReward,
     setButtonDisabled,
-    // 새로 추가: RPS 게임 관련 상태와 함수
     isRPSGameActive,
     isSpinGameActive,
     handleRPSGameEnd,

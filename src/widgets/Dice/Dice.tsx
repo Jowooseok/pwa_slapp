@@ -51,7 +51,7 @@ const Dice = forwardRef(({ onRollComplete }: DiceProps, ref) => {
         setFrontFace(front); // 앞면 상태값 업데이트
         if (onRollComplete) {
           // onRollComplete(front); // 콜백 함수 호출
-          onRollComplete(18); // 콜백 함수 호출
+          onRollComplete(1); // 콜백 함수 호출
         }
       });
 
