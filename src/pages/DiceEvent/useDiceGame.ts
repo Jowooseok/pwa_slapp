@@ -1,7 +1,6 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { useDice, useGauge, useUserLevel } from "@/features/DiceEvent";
-import { movePiece, applyReward } from "./diceEventHandlers";
-import { useRPSGameStore } from "../RPSGame/store"; // 새로 추가: RPSGame 스토어 import
+import { useRPSGameStore } from "../RPSGame/store"; // RPSGame 스토어 import
 
 export interface Reward {
   type: string;
@@ -21,12 +20,11 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
   const [rolledValue, setRolledValue] = useState<number>(0);
   const [reward, setReward] = useState<Reward | null>(null);
 
-  // 새로 추가: RPS 게임 활성화 상태
+  // RPS 게임 및 스핀 게임 상태
   const [isRPSGameActive, setIsRPSGameActive] = useState(false);
-  // 스핀 게임 활성화 상태
   const [isSpinGameActive, setIsSpinGameActive] = useState(false);
 
-  // 새로 추가: RPS 게임 스토어 사용
+  // RPS 게임 스토어 사용
   const rpsGameStore = useRPSGameStore();
 
   const {
@@ -41,6 +39,7 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
   const { userLv, mainColorClassName, charactorImageSrc } =
     useUserLevel(initialCharacterType);
 
+  // 보상 표시 함수
   const showReward = useCallback((type: string, value: number) => {
     const randomTop = `${Math.random() * 80 + 10}%`;
     const randomLeft = `${Math.random() * 80 + 10}%`;
@@ -49,6 +48,109 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
       setReward(null);
     }, 1000);
   }, []);
+
+  // 보상 적용 함수 - 먼저 선언
+  const applyReward = useCallback(
+    (tileNumber: number) => {
+      const tile = document.getElementById(tileNumber.toString());
+      if (tile) {
+        const starReward = parseInt(tile.getAttribute("data-star") || "0", 10);
+        const diceReward = parseInt(tile.getAttribute("data-dice") || "0", 10);
+
+        if (starReward > 0) {
+          setStarPoints((prev) => prev + starReward);
+          showReward("star", starReward);
+        }
+        if (diceReward > 0) {
+          setDiceCount((prev) => prev + diceReward);
+          showReward("dice", diceReward);
+        }
+
+        if ([2, 8, 13, 18].includes(tileNumber)) {
+          showReward("airplane", 0);
+        }
+      }
+    },
+    [showReward, setStarPoints, setDiceCount]
+  );
+
+  // 이동 함수 - 먼저 선언
+  const movePiece = useCallback(
+    (steps: number, currentPosition: number, onMoveComplete: () => void) => {
+      setMoving(true);
+
+      const moveStep = () => {
+        currentPosition = (currentPosition + 1) % 20;
+        setPosition(currentPosition);
+
+        if (currentPosition === 0) {
+          setStarPoints((prev) => prev + 200);
+          showReward("star", 200);
+          setDiceCount((prev) => prev + 1);
+          setLotteryCount((prev) => prev + 1);
+          setTimeout(() => showReward("lottery", 1), 200);
+        }
+
+        if (steps > 1) {
+          steps--;
+          setTimeout(moveStep, 300);
+        } else {
+          applyReward(currentPosition);
+
+          switch (currentPosition) {
+            case 2:
+              setTimeout(() => {
+                setPosition(15);
+                applyReward(15);
+                setMoving(false);
+                onMoveComplete();
+              }, 300);
+              break;
+            case 8:
+              setTimeout(() => {
+                setPosition(5);
+                setStarPoints((prev) => prev + 200);
+                setDiceCount((prev) => prev + 1);
+                setLotteryCount((prev) => prev + 1);
+                showReward("star", 200);
+                setTimeout(() => showReward("lottery", 1), 200);
+                applyReward(5);
+                setMoving(false);
+                onMoveComplete();
+              }, 300);
+              break;
+            case 13:
+              setTimeout(() => {
+                setPosition(0);
+                applyReward(0);
+                setMoving(false);
+                onMoveComplete();
+              }, 300);
+              break;
+            case 18:
+              setSelectingTile(true);
+              setMoving(false);
+              break;
+            default:
+              setMoving(false);
+              onMoveComplete();
+              break;
+          }
+        }
+      };
+      moveStep();
+    },
+    [
+      applyReward,
+      setDiceCount,
+      setLotteryCount,
+      setMoving,
+      setPosition,
+      setSelectingTile,
+      setStarPoints,
+      showReward,
+    ]
+  );
 
   // 주사위 결과 처리 함수
   const handleRollComplete = useCallback(
@@ -61,31 +163,27 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
       originalHandleRollComplete(value);
       setButtonDisabled(true);
 
-      movePiece(
-        value,
-        position,
-        setPosition,
-        setMoving,
-        setSelectingTile,
-        setStarPoints,
-        setDiceCount,
-        setLotteryCount,
-        showReward,
-        () => {
-          if (position + value === 5) {
-            // 5번 칸에 도착했을 때 RPS 게임 활성화만 하고 startGame은 하지 않음
-            setIsRPSGameActive(true);
-            rpsGameStore.setBetAmount(diceCount); // 베팅 금액만 설정
-          } else if (position + value === 15) {
-            // 15번 타일에 도착 시 스핀 게임 시작
-            setIsSpinGameActive(true); // 스핀 게임 활성화
-          } else {
-            setButtonDisabled(false);
-          }
+      movePiece(value, position, () => {
+        const newPosition = (position + value) % 20;
+
+        if (newPosition === 5) {
+          setIsRPSGameActive(true);
+          rpsGameStore.setBetAmount(diceCount);
+        } else if (newPosition === 15) {
+          setIsSpinGameActive(true);
+        } else {
+          setButtonDisabled(false);
         }
-      );
+      });
     },
-    [position, originalHandleRollComplete, showReward, diceCount, rpsGameStore]
+    [
+      position,
+      originalHandleRollComplete,
+      diceCount,
+      rpsGameStore,
+      movePiece,
+      setButtonDisabled,
+    ]
   );
 
   const rollDice = useCallback(() => {
@@ -95,27 +193,25 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
     }
   }, [diceCount, originalRollDice]);
 
+  // 타일 클릭 핸들러
   const handleTileClick = useCallback(
     (tileId: number) => {
-      if (!selectingTile || tileId === 18) return; // 선택 중이 아닌 경우 클릭 동작 중단
+      if (!selectingTile || tileId === 18) return;
 
       if (tileId === 5) {
-        // 5번 타일 클릭 시 가위바위보 게임 시작
         if (!rpsGameStore.isGameStarted) {
-          setIsRPSGameActive(true); // RPS 게임 활성화
-          rpsGameStore.setBetAmount(diceCount); // 베팅 금액 설정
+          setIsRPSGameActive(true);
+          rpsGameStore.setBetAmount(diceCount);
         }
       } else if (tileId === 15) {
-        // 15번 타일 클릭 시 스핀 게임 시작
         if (!isSpinGameActive) {
-          setIsSpinGameActive(true); // 스핀 게임 활성화
+          setIsSpinGameActive(true);
         }
       } else {
-        // 다른 타일을 클릭했을 때의 동작
         setPosition(tileId);
-        setSelectingTile(false); // 타일 선택 상태 종료
-        setMoving(false); // 이동 상태 해제
-        setButtonDisabled(false); // 버튼 비활성화 해제
+        setSelectingTile(false);
+        setMoving(false);
+        setButtonDisabled(false);
 
         if (tileId !== 19) {
           setStarPoints((prev) => prev + 200);
@@ -125,38 +221,52 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
           setTimeout(() => showReward("lottery", 1), 500);
         }
 
-        applyReward(tileId, setStarPoints, setDiceCount, showReward);
+        applyReward(tileId);
       }
     },
-    [selectingTile, showReward, diceCount, rpsGameStore, isSpinGameActive]
+    [
+      selectingTile,
+      showReward,
+      diceCount,
+      rpsGameStore,
+      isSpinGameActive,
+      applyReward,
+      setPosition,
+      setSelectingTile,
+      setMoving,
+      setButtonDisabled,
+      setStarPoints,
+      setDiceCount,
+      setLotteryCount,
+    ]
+  );
+
+  // 가위바위보 게임 종료 처리 함수
+  const handleRPSGameEnd = useCallback(
+    (result: "win" | "lose", winnings: number) => {
+      setIsRPSGameActive(false);
+      setSelectingTile(false);
+      setButtonDisabled(false);
+      setMoving(false);
+
+      if (result === "win") {
+        setDiceCount((prev) => prev + winnings);
+        showReward("star", winnings);
+      }
+
+      setPosition(6);
+    },
+    [showReward]
   );
 
   // 스핀 게임 종료 처리 함수
   const handleSpinGameEnd = useCallback(() => {
-    setIsSpinGameActive(false); // 스핀 게임 비활성화
-    setSelectingTile(false); // 타일 선택 비활성화
-    setButtonDisabled(false); // 버튼 비활성화 해제
-    setMoving(false); // 이동 상태 해제
-    setPosition(16); // 예시: 16번 타일로 이동
-  }, [setPosition, setButtonDisabled]);
-
-  // 가위바위보 게임 종료 처리 함수 수정
-  const handleRPSGameEnd = useCallback(
-    (result: "win" | "lose", winnings: number) => {
-      setIsRPSGameActive(false); // RPS 게임 비활성화
-      setSelectingTile(false); // 타일 선택 비활성화 (RPS 게임 후에 다시 타일을 선택할 수 없게 설정)
-      setButtonDisabled(false); // 버튼 활성화
-      setMoving(false); // 이동 상태 해제
-
-      if (result === "win") {
-        setDiceCount((prev) => prev + winnings); // 이긴 경우 상금 추가
-        showReward("star", winnings);
-      }
-
-      setPosition(6); // 예시로 6번 타일로 이동
-    },
-    [setDiceCount, showReward]
-  );
+    setIsSpinGameActive(false);
+    setSelectingTile(false);
+    setButtonDisabled(false);
+    setMoving(false);
+    setPosition(16);
+  }, []);
 
   const handleMouseDown = useCallback(() => {
     if (!buttonDisabled && diceCount > 0) {
@@ -205,7 +315,6 @@ export const useDiceGame = (initialCharacterType: "dog" | "cat") => {
     setRolledValue,
     setReward,
     setButtonDisabled,
-    // 새로 추가: RPS 게임 관련 상태와 함수
     isRPSGameActive,
     isSpinGameActive,
     handleRPSGameEnd,
