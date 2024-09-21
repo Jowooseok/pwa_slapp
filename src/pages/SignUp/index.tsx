@@ -13,21 +13,28 @@ const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleContinue = async () => {
+    console.log('SignUpPage: Continue 버튼 클릭됨. signup 함수 호출.');
     try {
       const telegram = window.Telegram?.WebApp;
       const initData = telegram?.initData || '';
+      console.log('SignUpPage: Telegram initData:', initData);
+      console.log('SignUpPage: 선택된 캐릭터:', selectedPet);
       await signup(initData, selectedPet);
+      console.log('SignUpPage: signup 성공. /dice-event 페이지로 이동합니다.');
       navigate('/dice-event');
     } catch (err: any) {
-      console.error('Signup failed:', err);
+      console.error('SignUpPage: signup 실패:', err);
       alert('Signup failed. Please try again.');
     }
   };
 
   return (
-    <div>
+    <div className="relative">
       {step === 'activityCheck' && (
-        <TelegramActivityCheck onComplete={() => setStep('selectCharacter')} />
+        <TelegramActivityCheck onComplete={() => {
+          console.log('SignUpPage: TelegramActivityCheck 완료. SelectCharacter 단계로 이동.');
+          setStep('selectCharacter');
+        }} />
       )}
       {step === 'selectCharacter' && (
         <SelectCharacter selectedPet={selectedPet} setSelectedPet={setSelectedPet} />
