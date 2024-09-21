@@ -78,6 +78,9 @@ import PaperButton from './paper-button.png';
 import RPSResultBG from './bg-RPS-result.png';
 import Victory from './victory.png';
 import Defeat from './defeat.png';
+import DesertIsland from './desert-island.png';
+import SpinImage from './SpinImage.png';
+import RPSImage from './RPSImage.png';
 
 const Images = {
   HorizontalLogo,
@@ -160,6 +163,9 @@ const Images = {
   RPSResultBG,
   Victory,
   Defeat,
+  DesertIsland,
+  SpinImage,
+  RPSImage,
 };
 
 export default Images;
