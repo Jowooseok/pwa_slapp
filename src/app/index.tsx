@@ -10,8 +10,6 @@ import DiceEventLayout from "./layout/DiceEventLayout";
 import MiniGame from "@/pages/MiniGame";
 import InviteFriends from "@/pages/InviteFriends";
 import SlotMachine from "@/pages/SlotMachine";
-import TelegramActivityCheck from "@/pages/TelegramActivityCheck";
-import SelectCharacter from "@/pages/SelectCharacter";
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -31,11 +29,7 @@ const App: React.FC = () => {
       <div>
         {/* <InstallPrompt /> */}
         <Routes>
-          <Route
-            path="/telegramActivityCheck"
-            element={<TelegramActivityCheck />}
-          />
-          <Route path="/selectCharacter" element={<SelectCharacter />} />
+     
           <Route
             path="/wallet"
             element={
