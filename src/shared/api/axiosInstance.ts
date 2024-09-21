@@ -27,16 +27,21 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // 401 에러이며, 토큰 갱신 시도하지 않은 경우
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      error.response.data.message === 'JWT Token has expired' &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
-      const { refreshToken, refreshToken: refreshTokenFunction } = useUserStore.getState();
+
+      const { refreshToken } = useUserStore.getState();
 
       try {
-        const response = await api.post('/auth/refresh', { refreshToken });
-        const newAccessToken = response.data.data.accessToken;
-        localStorage.setItem('accessToken', newAccessToken);
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest);
+        const success = await useUserStore.getState().refreshToken();
+        if (success) {
+          // 새로운 accessToken은 요청 인터셉터에 의해 자동으로 추가됨
+          return api(originalRequest);
+        }
       } catch (refreshError) {
         // 토큰 갱신 실패 시 로그아웃
         useUserStore.getState().logout();
