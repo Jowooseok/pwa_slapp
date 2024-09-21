@@ -11,6 +11,7 @@ import MiniGame from "@/pages/MiniGame";
 import InviteFriends from "@/pages/InviteFriends";
 import SlotMachine from "@/pages/SlotMachine";
 import SignUpPage from "@/pages/SignUp";
+import MainPage from "@/pages/MainPage";
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -31,6 +32,7 @@ const App: React.FC = () => {
         {/* <InstallPrompt /> */}
         <Routes>
       <Route path="/sign-up" element={<SignUpPage />} />
+          <Route path="/" element={<MainPage />} />
           <Route
             path="/wallet"
             element={
