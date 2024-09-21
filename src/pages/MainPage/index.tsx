@@ -3,7 +3,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/entities/User/model/userModel';
-import '@/pages/MainPage/MainPage.css';
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
