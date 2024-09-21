@@ -33,6 +33,9 @@ interface ActivityData {
 // 사용자 상태 인터페이스
 interface UserState {
   // 사용자 관련 상태들
+  userId: string | null;
+  setUserId: (userId: string | null) => void;
+
   position: number;
   setPosition: (position: number) => void;
 
@@ -77,6 +80,9 @@ interface UserState {
 
 export const useUserStore = create<UserState>((set, get) => ({
   // 초기 상태 값 설정
+  userId: null,
+  setUserId: (userId) => set({ userId }),
+
   position: 0,
   setPosition: (position) => set({ position }),
 
@@ -174,11 +180,12 @@ export const useUserStore = create<UserState>((set, get) => ({
       const response = await api.post('/auth/login', { initData });
 
       if (response.data.code === 'OK') {
-        const { accessToken, refreshToken } = response.data.data;
-        console.log('userModel: login 성공, accessToken:', accessToken, 'refreshToken:', refreshToken);
-        // 토큰 저장
+        const { userId, accessToken, refreshToken } = response.data.data;
+        console.log('userModel: login 성공, userId:', userId, 'accessToken:', accessToken, 'refreshToken:', refreshToken);
+        // 토큰 및 userId 저장
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
+        set({ userId });
 
         // 사용자 데이터 가져오기
         await get().fetchUserData();
@@ -207,14 +214,19 @@ export const useUserStore = create<UserState>((set, get) => ({
       if (response.data.code === 'OK') {
         console.log('userModel: signup 성공. 로그인 시도.');
         // 서버로부터 활동량 데이터 받기
-        const activityScores: ActivityData = response.data.data.activityScores;
+        const { userId, accessToken, refreshToken, activityScores } = response.data.data;
         console.log('userModel: 받은 activityScores:', activityScores);
+
+        // 토큰 및 userId 저장
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        set({ userId });
 
         // activityData 상태 설정
         set({ activityData: activityScores });
 
-        // 회원가입 성공 후 로그인 진행
-        await get().login(initData);
+        // 회원가입 성공 후 로그인 진행 (이미 토큰을 저장했으므로 fetchUserData만 호출)
+        await get().fetchUserData();
 
         // activityData 반환
         return activityScores;
@@ -231,10 +243,11 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   // 로그아웃 함수
   logout: () => {
-    console.log('userModel: logout 실행. 토큰 제거 및 상태 초기화.');
+    console.log('userModel: logout 실행. 토큰 및 userId 제거 및 상태 초기화.');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     set({
+      userId: null,
       position: 0,
       diceCount: 0,
       starPoints: 0,

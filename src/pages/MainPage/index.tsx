@@ -10,6 +10,7 @@ const MainPage: React.FC = () => {
   const {
     login,
     fetchUserData,
+    userId,
     isLoading,
     error,
     // 기타 필요한 상태들
@@ -26,24 +27,15 @@ const MainPage: React.FC = () => {
       const accessToken = localStorage.getItem('accessToken');
       console.log('MainPage: accessToken:', accessToken);
 
-      if (accessToken) {
-        console.log('MainPage: accessToken이 존재합니다. 토큰 검증을 시작합니다.');
-        // 토큰에서 telegram_user_id 추출 (JWT 디코딩 필요)
-        const decodedToken = parseJwt(accessToken);
-        console.log('MainPage: decodedToken:', decodedToken);
-        const tokenTelegramUserId = decodedToken?.sub; // 'sub' 필드에 telegram_user_id가 저장되어 있다고 가정
-        console.log('MainPage: tokenTelegramUserId:', tokenTelegramUserId);
+      if (accessToken && userId) {
+        console.log('MainPage: accessToken과 userId가 존재합니다. 토큰 검증을 시작합니다.');
 
         // 현재 텔레그램 사용자 ID 얻기
         const currentTelegramUserId = telegram?.initDataUnsafe?.user?.id;
         console.log('MainPage: currentTelegramUserId:', currentTelegramUserId);
 
         // ID 비교
-        if (
-          tokenTelegramUserId &&
-          currentTelegramUserId &&
-          tokenTelegramUserId.toString() === currentTelegramUserId.toString()
-        ) {
+        if (currentTelegramUserId && userId === currentTelegramUserId.toString()) {
           console.log('MainPage: 사용자 ID 일치. 토큰 서버 검증을 시작합니다.');
           // 토큰 서버 검증
           try {
@@ -65,8 +57,8 @@ const MainPage: React.FC = () => {
           authenticateWithInitData(initData);
         }
       } else {
-        console.log('MainPage: accessToken이 없습니다. 인증을 진행합니다.');
-        // 토큰 없음: 인증을 진행
+        console.log('MainPage: accessToken 또는 userId가 없습니다. 인증을 진행합니다.');
+        // 토큰 또는 userId 없음: 인증을 진행
         authenticateWithInitData(initData);
       }
     };
@@ -85,7 +77,7 @@ const MainPage: React.FC = () => {
           console.log('MainPage: 신규 사용자. /sign-up 페이지로 이동합니다.');
           // 신규 사용자: 회원가입 페이지로 이동
           navigate('/sign-up');
-        } else if (err.response && err.response.status === 401) {
+        } else if (err.message === 'Invalid initData') {
           console.log('MainPage: initData 문제. 로그인 재시도 필요.');
           // initData 문제가 있을 경우, 사용자에게 알림 표시
           alert('Authentication failed due to invalid data. Please try again.');
@@ -96,27 +88,8 @@ const MainPage: React.FC = () => {
       }
     };
 
-    const parseJwt = (token: string) => {
-      try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(
-          atob(base64)
-            .split('')
-            .map(function (c) {
-              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join('')
-        );
-        return JSON.parse(jsonPayload);
-      } catch (e) {
-        console.error('MainPage: JWT 파싱 실패:', e);
-        return null;
-      }
-    };
-
     checkAuthentication();
-  }, [fetchUserData, login, navigate]);
+  }, [fetchUserData, login, navigate, userId]);
 
   if (isLoading) {
     console.log('MainPage: 로딩 중...');
