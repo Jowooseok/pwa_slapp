@@ -3,7 +3,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // useHistory 대신 useNavigate 사용
 import { useUserStore } from '@/entities/User/model/userModel';
-import '@/pages/MainPage/MainPage.css'; // 필요한 경우 CSS 파일 임포트
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
