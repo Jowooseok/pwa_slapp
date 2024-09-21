@@ -10,6 +10,7 @@ import DiceEventLayout from "./layout/DiceEventLayout";
 import MiniGame from "@/pages/MiniGame";
 import InviteFriends from "@/pages/InviteFriends";
 import SlotMachine from "@/pages/SlotMachine";
+import SignUpPage from "@/pages/SignUp";
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -29,7 +30,7 @@ const App: React.FC = () => {
       <div>
         {/* <InstallPrompt /> */}
         <Routes>
-     
+      <Route path="/sign-up" element={<SignUpPage />} />
           <Route
             path="/wallet"
             element={
