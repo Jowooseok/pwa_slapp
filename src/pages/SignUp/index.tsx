@@ -1,6 +1,6 @@
 // src/pages/SignUp/index.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TelegramActivityCheck from './TelegramActivityCheck';
 import SelectCharacter from './SelectCharacter';
 import { useUserStore } from '@/entities/User/model/userModel';
@@ -27,6 +27,10 @@ const SignUpPage: React.FC = () => {
       alert('Signup failed. Please try again.');
     }
   };
+
+  useEffect(() => {
+    console.log("sign-up 페이지 진입");
+    }, []);
 
   return (
     <div className="relative">

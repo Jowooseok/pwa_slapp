@@ -199,8 +199,19 @@ export const useUserStore = create<UserState>((set, get) => ({
       set({ isLoading: false, error: null });
     } catch (error: any) {
       console.error('userModel: login 실패:', error);
-      set({ isLoading: false, error: error.message });
-      throw error; // 에러를 다시 던져 호출한 쪽에서 인지할 수 있도록 함
+      let errorMessage = 'Login failed. Please try again.';
+      if (error.response) {
+        // 서버가 응답을 했지만, 상태 코드가 2xx가 아닌 경우
+        errorMessage = error.response.data.message || errorMessage;
+      } else if (error.request) {
+        // 요청이 이루어졌으나, 응답을 받지 못한 경우
+        errorMessage = 'No response from server. Please try again later.';
+      } else {
+        // 다른 에러
+        errorMessage = error.message;
+      }
+      set({ isLoading: false, error: errorMessage });
+      throw new Error(errorMessage); // 에러를 다시 던져 호출한 쪽에서 인지할 수 있도록 함
     }
   },
 
@@ -236,8 +247,16 @@ export const useUserStore = create<UserState>((set, get) => ({
       }
     } catch (error: any) {
       console.error('userModel: signup 실패:', error);
-      set({ isLoading: false, error: error.message });
-      throw error; // 에러를 다시 던져 호출한 쪽에서 인지할 수 있도록 함
+      let errorMessage = 'Signup failed. Please try again.';
+      if (error.response) {
+        errorMessage = error.response.data.message || errorMessage;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please try again later.';
+      } else {
+        errorMessage = error.message;
+      }
+      set({ isLoading: false, error: errorMessage });
+      throw new Error(errorMessage); // 에러를 다시 던져 호출한 쪽에서 인지할 수 있도록 함
     }
   },
 
@@ -305,7 +324,15 @@ export const useUserStore = create<UserState>((set, get) => ({
       console.error('userModel: refreshToken 실패:', error);
       // Refresh 실패 시 로그아웃 처리
       get().logout();
-      set({ error: error.message });
+      let errorMessage = 'Token refresh failed. Please log in again.';
+      if (error.response) {
+        errorMessage = error.response.data.message || errorMessage;
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please try again later.';
+      } else {
+        errorMessage = error.message;
+      }
+      set({ error: errorMessage });
       return false;
     }
   },
