@@ -22,6 +22,14 @@ interface WeekAttendance {
   sun: boolean | null;
 }
 
+// 활동량 데이터 인터페이스
+interface ActivityData {
+  accountAge: number;
+  activityLevel: number;
+  telegramPremium: number;
+  ogStatus: number;
+}
+
 // 사용자 상태 인터페이스
 interface UserState {
   // 사용자 관련 상태들
@@ -52,12 +60,14 @@ interface UserState {
 
   currentMiniGame: string;
 
+  activityData: ActivityData | null;
+
   isLoading: boolean;
   error: string | null;
 
   // 인증 관련 함수들
   login: (initData: string) => Promise<void>;
-  signup: (initData: string, petType: 'DOG' | 'CAT') => Promise<void>;
+  signup: (initData: string, petType: 'DOG' | 'CAT') => Promise<ActivityData>;
   logout: () => void;
   refreshToken: () => Promise<boolean>;
 
@@ -107,15 +117,19 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   currentMiniGame: '',
 
+  activityData: null,
+
   isLoading: false,
   error: null,
 
   // 사용자 데이터 설정 함수
   fetchUserData: async () => {
+    console.log('userModel: fetchUserData 시작');
     set({ isLoading: true, error: null });
     try {
       const response = await api.get('/home');
       const data = response.data.data;
+      console.log('userModel: fetchUserData 성공, 데이터:', data);
 
       set({
         position: data.nowDice.tileSequence,
@@ -146,56 +160,78 @@ export const useUserStore = create<UserState>((set, get) => ({
         error: null,
       });
     } catch (error: any) {
-      console.error('Failed to fetch user data:', error);
+      console.error('userModel: fetchUserData 실패:', error);
       set({ isLoading: false, error: error.message });
+      throw error; // 에러를 다시 던져 호출한 쪽에서 인지할 수 있도록 함
     }
   },
 
   // 로그인 함수
-  login: async (initData: string) => {
+  login: async (initData: string): Promise<void> => {
+    console.log('userModel: login 시작, initData:', initData);
     set({ isLoading: true, error: null });
     try {
       const response = await api.post('/auth/login', { initData });
 
       if (response.data.code === 'OK') {
         const { accessToken, refreshToken } = response.data.data;
+        console.log('userModel: login 성공, accessToken:', accessToken, 'refreshToken:', refreshToken);
         // 토큰 저장
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
 
         // 사용자 데이터 가져오기
         await get().fetchUserData();
+      } else if (response.data.code === 'ENTITY_NOT_FOUND') {
+        console.warn('userModel: login 응답 코드 ENTITY_NOT_FOUND:', response.data.message);
+        throw new Error(response.data.message || 'User not found');
       } else {
+        console.warn('userModel: login 응답 코드가 OK가 아님:', response.data.message);
         throw new Error(response.data.message || 'Login failed');
       }
       set({ isLoading: false, error: null });
     } catch (error: any) {
-      console.error('Login failed:', error);
+      console.error('userModel: login 실패:', error);
       set({ isLoading: false, error: error.message });
+      throw error; // 에러를 다시 던져 호출한 쪽에서 인지할 수 있도록 함
     }
   },
 
   // 회원가입 함수
-  signup: async (initData: string, petType: 'DOG' | 'CAT') => {
+  signup: async (initData: string, petType: 'DOG' | 'CAT'): Promise<ActivityData> => {
+    console.log('userModel: signup 시작, initData:', initData, 'petType:', petType);
     set({ isLoading: true, error: null });
     try {
       const response = await api.post('/auth/signup', { initData, petType });
 
       if (response.data.code === 'OK') {
+        console.log('userModel: signup 성공. 로그인 시도.');
+        // 서버로부터 활동량 데이터 받기
+        const activityScores: ActivityData = response.data.data.activityScores;
+        console.log('userModel: 받은 activityScores:', activityScores);
+
+        // activityData 상태 설정
+        set({ activityData: activityScores });
+
         // 회원가입 성공 후 로그인 진행
         await get().login(initData);
+
+        // activityData 반환
+        return activityScores;
       } else {
+        console.warn('userModel: signup 응답 코드가 OK가 아님:', response.data.message);
         throw new Error(response.data.message || 'Signup failed');
       }
-      set({ isLoading: false, error: null });
     } catch (error: any) {
-      console.error('Signup failed:', error);
+      console.error('userModel: signup 실패:', error);
       set({ isLoading: false, error: error.message });
+      throw error; // 에러를 다시 던져 호출한 쪽에서 인지할 수 있도록 함
     }
   },
 
   // 로그아웃 함수
   logout: () => {
+    console.log('userModel: logout 실행. 토큰 제거 및 상태 초기화.');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     set({
@@ -223,30 +259,37 @@ export const useUserStore = create<UserState>((set, get) => ({
         sun: null,
       },
       currentMiniGame: '',
+      activityData: null,
       isLoading: false,
       error: null,
     });
   },
 
   // 토큰 갱신 함수
-  refreshToken: async () => {
+  refreshToken: async (): Promise<boolean> => {
+    console.log('userModel: refreshToken 시작');
     try {
       const refreshToken = localStorage.getItem('refreshToken');
+      console.log('userModel: 현재 refreshToken:', refreshToken);
       if (!refreshToken) {
+        console.warn('userModel: refreshToken이 없습니다.');
         throw new Error('No refresh token available');
       }
 
       const response = await api.post('/auth/refresh', { refreshToken });
+      console.log('userModel: refreshToken 응답:', response.data);
 
       if (response.data.code === 'OK') {
         const { accessToken } = response.data.data;
+        console.log('userModel: 새로운 accessToken:', accessToken);
         localStorage.setItem('accessToken', accessToken);
         return true;
       } else {
+        console.warn('userModel: refreshToken 응답 코드가 OK가 아님:', response.data.message);
         throw new Error(response.data.message || 'Token refresh failed');
       }
     } catch (error: any) {
-      console.error('Token refresh failed:', error);
+      console.error('userModel: refreshToken 실패:', error);
       // Refresh 실패 시 로그아웃 처리
       get().logout();
       set({ error: error.message });
