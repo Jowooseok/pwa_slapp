@@ -9,12 +9,6 @@ import { useNavigate } from 'react-router-dom';
 const SignUpPage: React.FC = () => {
   const [step, setStep] = useState<'selectCharacter' | 'activityCheck'>('selectCharacter');
   const [selectedPet, setSelectedPet] = useState<'DOG' | 'CAT'>('DOG');
-  const [activityData, setActivityData] = useState<{
-    accountAge: number;
-    activityLevel: number;
-    telegramPremium: number;
-    ogStatus: number;
-  } | null>(null);
   
   const { signup, login, isLoading, error, activityData: storeActivityData } = useUserStore();
   const navigate = useNavigate();
@@ -36,8 +30,7 @@ const SignUpPage: React.FC = () => {
       await signup(initData, selectedPet);
       console.log('Step 5-5: signup 함수 호출 완료.');
 
-      // 활동량 게이지가 업데이트 되었으므로, 단계 전환
-      setActivityData(storeActivityData); // Zustand 스토어에서 가져온 activityData 설정
+      // 단계 전환
       setStep('activityCheck');
       console.log('Step 5-6: 단계 전환 - activityCheck');
     } catch (err: any) {
@@ -89,9 +82,10 @@ const SignUpPage: React.FC = () => {
           </button>
         </div>
       )}
-      {step === 'activityCheck' && activityData && (
-        <TelegramActivityCheck activityData={activityData} onComplete={handleActivityCheckComplete} />
+      {step === 'activityCheck' && storeActivityData && (
+        <TelegramActivityCheck activityData={storeActivityData} onComplete={handleActivityCheckComplete} />
       )}
+      {error && <p className="error-message text-red-500 text-center mt-4">{error}</p>}
     </div>
   );
 };

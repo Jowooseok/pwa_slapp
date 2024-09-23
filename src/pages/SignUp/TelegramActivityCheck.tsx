@@ -12,7 +12,7 @@ interface ActivityData {
 }
 
 interface TelegramActivityCheckProps {
-  activityData: ActivityData | null; // null일 수도 있으므로 타입 수정
+  activityData: ActivityData;
   onComplete: () => void;
 }
 
@@ -24,10 +24,6 @@ const TelegramActivityCheck: React.FC<TelegramActivityCheckProps> = ({ activityD
       console.log('Step 5-14: TelegramActivityCheck 컴포넌트 언마운트됨.');
     };
   }, [activityData]);
-
-  if (!activityData) {
-    return <div>활동량 데이터를 불러오는 중...</div>;
-  }
 
   const isComplete = (value: number) => value === 100;
 
@@ -77,7 +73,7 @@ const TelegramActivityCheck: React.FC<TelegramActivityCheckProps> = ({ activityD
         className="mt-8 bg-[#0147e5] hover:bg-[#013bb5] text-white font-semibold py-2 px-4 rounded-full"
         onClick={onComplete}
       >
-        Confirm
+        확인
       </button>
     </div>
   );
