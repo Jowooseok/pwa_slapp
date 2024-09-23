@@ -16,7 +16,7 @@ const SignUpPage: React.FC = () => {
     ogStatus: number;
   } | null>(null);
   
-  const { signup, isLoading, error } = useUserStore();
+  const { signup, login, isLoading, error, activityData: storeActivityData } = useUserStore();
   const navigate = useNavigate();
 
   const handleCharacterSelect = () => {
@@ -33,11 +33,11 @@ const SignUpPage: React.FC = () => {
       console.log('Step 5-4: 선택된 캐릭터:', selectedPet);
       
       // 회원가입 요청 보내기
-      const activityScores = await signup(initData, selectedPet);
-      console.log('Step 5-5: signup 함수 호출 완료. activityScores:', activityScores);
-      
-      // 활동량 점수 설정 및 단계 전환
-      setActivityData(activityScores);
+      await signup(initData, selectedPet);
+      console.log('Step 5-5: signup 함수 호출 완료.');
+
+      // 활동량 게이지가 업데이트 되었으므로, 단계 전환
+      setActivityData(storeActivityData); // Zustand 스토어에서 가져온 activityData 설정
       setStep('activityCheck');
       console.log('Step 5-6: 단계 전환 - activityCheck');
     } catch (err: any) {
@@ -58,9 +58,17 @@ const SignUpPage: React.FC = () => {
     }
   };
 
-  const handleActivityCheckComplete = () => {
-    console.log('Step 5-11: 활동량 점수 확인 완료. /dice-event 페이지로 이동');
-    navigate('/dice-event');
+  const handleActivityCheckComplete = async () => {
+    console.log('Step 5-11: 활동량 점수 확인 완료. 로그인 시도 및 페이지 이동');
+    try {
+      const telegram = window.Telegram?.WebApp;
+      const initData = telegram?.initData || '';
+      await login(initData);
+      navigate('/dice-event');
+    } catch (err: any) {
+      console.error('Step 5-12: 로그인 실패:', err);
+      alert('Login failed. Please try again.');
+    }
   };
 
   return (
@@ -84,7 +92,7 @@ const SignUpPage: React.FC = () => {
       {step === 'activityCheck' && activityData && (
         <TelegramActivityCheck activityData={activityData} onComplete={handleActivityCheckComplete} />
       )}
-      {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+      {error && <p className="error-message text-red-500 text-center mt-4">{error}</p>}
     </div>
   );
 };

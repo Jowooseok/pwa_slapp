@@ -70,7 +70,7 @@ interface UserState {
 
   // 인증 관련 함수들
   login: (initData: string) => Promise<void>;
-  signup: (initData: string, petType: 'DOG' | 'CAT') => Promise<ActivityData>;
+  signup: (initData: string, petType: 'DOG' | 'CAT') => Promise<void>;
   logout: () => void;
   refreshToken: () => Promise<boolean>;
 
@@ -174,14 +174,14 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   // 로그인 함수
   login: async (initData: string): Promise<void> => {
-    console.log('Step 5-1: login 시작, initData:', initData);
+    console.log('Step: login 시작, initData:', initData);
     set({ isLoading: true, error: null });
     try {
       const response = await api.post('/auth/login', { initData });
 
       if (response.data.code === 'OK') {
         const { userId, accessToken, refreshToken } = response.data.data;
-        console.log('Step 5-2: login 성공, userId:', userId, 'accessToken:', accessToken, 'refreshToken:', refreshToken);
+        console.log('Step: login 성공, userId:', userId);
         // 토큰 및 userId 저장
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
@@ -189,16 +189,16 @@ export const useUserStore = create<UserState>((set, get) => ({
 
         // 사용자 데이터 가져오기
         await get().fetchUserData();
+        set({ isLoading: false, error: null });
       } else if (response.data.code === 'ENTITY_NOT_FOUND') {
-        console.warn('Step 5-3: login 응답 코드 ENTITY_NOT_FOUND:', response.data.message);
+        console.warn('Step: login 응답 코드 ENTITY_NOT_FOUND:', response.data.message);
         throw new Error(response.data.message || 'User not found');
       } else {
-        console.warn('Step 5-4: login 응답 코드가 OK가 아님:', response.data.message);
+        console.warn('Step: login 응답 코드가 OK가 아님:', response.data.message);
         throw new Error(response.data.message || 'Login failed');
       }
-      set({ isLoading: false, error: null });
     } catch (error: any) {
-      console.error('Step 5-5: login 실패:', error);
+      console.error('Step: login 실패:', error);
       let errorMessage = 'Login failed. Please try again.';
       if (error.response) {
         // 서버가 응답을 했지만, 상태 코드가 2xx가 아닌 경우
@@ -216,37 +216,20 @@ export const useUserStore = create<UserState>((set, get) => ({
   },
 
   // 회원가입 함수
-  signup: async (initData: string, petType: 'DOG' | 'CAT'): Promise<ActivityData> => {
-    console.log('Step 5-1: signup 시작, initData:', initData, 'petType:', petType);
+  signup: async (initData: string, petType: 'DOG' | 'CAT'): Promise<void> => {
+    console.log('Step: signup 시작, initData:', initData, 'petType:', petType);
     set({ isLoading: true, error: null });
     try {
-      const response = await api.post('/auth/signup', { initData, petType });
+      // 회원가입 요청 보내기
+      await api.post('/auth/signup', { initData, petType });
 
-      if (response.data.code === 'OK') {
-        console.log('Step 5-2: signup 성공. 로그인 시도.');
-        // 서버로부터 활동량 데이터 받기
-        const { userId, accessToken, refreshToken, activityScores } = response.data.data;
-        console.log('Step 5-3: 받은 activityScores:', activityScores);
+      // 응답을 무시하고 에러가 없으면 활동량 게이지를 채움 (하드코딩)
+      console.log('Step: signup 성공. 활동량 게이지 업데이트');
+      set({ activityData: { accountAge: 100, activityLevel: 100, telegramPremium: 100, ogStatus: 100 } }); // 예시 하드코딩 값
 
-        // 토큰 및 userId 저장
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        set({ userId });
-
-        // activityData 상태 설정
-        set({ activityData: activityScores });
-
-        // 회원가입 성공 후 로그인 진행 (이미 토큰을 저장했으므로 fetchUserData만 호출)
-        await get().fetchUserData();
-
-        // activityData 반환
-        return activityScores;
-      } else {
-        console.warn('Step 5-4: signup 응답 코드가 OK가 아님:', response.data.message);
-        throw new Error(response.data.message || 'Signup failed');
-      }
+      set({ isLoading: false, error: null });
     } catch (error: any) {
-      console.error('Step 5-5: signup 실패:', error);
+      console.error('Step: signup 실패:', error);
       let errorMessage = 'Signup failed. Please try again.';
       if (error.response) {
         errorMessage = error.response.data.message || errorMessage;
@@ -262,7 +245,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   // 로그아웃 함수
   logout: () => {
-    console.log('Step 6: logout 실행. 토큰 및 userId 제거 및 상태 초기화.');
+    console.log('Step: logout 실행. 토큰 및 userId 제거 및 상태 초기화.');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     set({
@@ -299,29 +282,29 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   // 토큰 갱신 함수
   refreshToken: async (): Promise<boolean> => {
-    console.log('Step 7: refreshToken 시작');
+    console.log('Step: refreshToken 시작');
     try {
       const refreshToken = localStorage.getItem('refreshToken');
-      console.log('Step 7-1: 현재 refreshToken:', refreshToken);
+      console.log('Step: 현재 refreshToken:', refreshToken);
       if (!refreshToken) {
-        console.warn('Step 7-2: refreshToken이 없습니다.');
+        console.warn('Step: refreshToken이 없습니다.');
         throw new Error('No refresh token available');
       }
 
       const response = await api.post('/auth/refresh', { refreshToken });
-      console.log('Step 7-3: refreshToken 응답:', response.data);
+      console.log('Step: refreshToken 응답:', response.data);
 
       if (response.data.code === 'OK') {
         const { accessToken } = response.data.data;
-        console.log('Step 7-4: 새로운 accessToken:', accessToken);
+        console.log('Step: 새로운 accessToken:', accessToken);
         localStorage.setItem('accessToken', accessToken);
         return true;
       } else {
-        console.warn('Step 7-5: refreshToken 응답 코드가 OK가 아님:', response.data.message);
+        console.warn('Step: refreshToken 응답 코드가 OK가 아님:', response.data.message);
         throw new Error(response.data.message || 'Token refresh failed');
       }
     } catch (error: any) {
-      console.error('Step 7-6: refreshToken 실패:', error);
+      console.error('Step: refreshToken 실패:', error);
       // Refresh 실패 시 로그아웃 처리
       get().logout();
       let errorMessage = 'Token refresh failed. Please log in again.';

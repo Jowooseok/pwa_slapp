@@ -12,24 +12,22 @@ interface ActivityData {
 }
 
 interface TelegramActivityCheckProps {
-  activityData: ActivityData;
+  activityData: ActivityData | null; // null일 수도 있으므로 타입 수정
   onComplete: () => void;
 }
 
 const TelegramActivityCheck: React.FC<TelegramActivityCheckProps> = ({ activityData, onComplete }) => {
   useEffect(() => {
     console.log('Step 5-12: TelegramActivityCheck 컴포넌트 마운트됨. activityData:', activityData);
-    // 활동량 점수를 표시한 후 자동으로 이동하도록 설정
-    const timer = setTimeout(() => {
-      console.log('Step 5-13: 활동량 점수 확인 완료. onComplete 호출.');
-      onComplete();
-    }, 3000); // 3초 후 이동 (필요에 따라 조정)
-    
+    // 타이머 제거하여 자동 이동 방지
     return () => {
-      clearTimeout(timer);
-      console.log('Step 5-14: TelegramActivityCheck 컴포넌트 언마운트됨. 타이머 정리.');
+      console.log('Step 5-14: TelegramActivityCheck 컴포넌트 언마운트됨.');
     };
-  }, [activityData, onComplete]);
+  }, [activityData]);
+
+  if (!activityData) {
+    return <div>활동량 데이터를 불러오는 중...</div>;
+  }
 
   const isComplete = (value: number) => value === 100;
 
@@ -42,11 +40,11 @@ const TelegramActivityCheck: React.FC<TelegramActivityCheckProps> = ({ activityD
   };
 
   return (
-    <div className="flex flex-col bg-[#0D1226] h-screen text-white items-center">
+    <div className="flex flex-col bg-[#0D1226] h-screen text-white items-center p-6">
       <h1 className="text-3xl font-bold mt-32 text-center">
         Your Activity Scores
       </h1>
-      <div className="flex flex-col mt-12 font-medium w-full px-6 gap-4">
+      <div className="flex flex-col mt-12 font-medium w-full gap-4">
         {Object.entries(activityData).map(([key, value]) => (
           <div className="flex flex-col gap-3" key={key}>
             <div className="flex flex-row justify-between items-center">
@@ -75,6 +73,12 @@ const TelegramActivityCheck: React.FC<TelegramActivityCheckProps> = ({ activityD
           </div>
         ))}
       </div>
+      <button
+        className="mt-8 bg-[#0147e5] hover:bg-[#013bb5] text-white font-semibold py-2 px-4 rounded-full"
+        onClick={onComplete}
+      >
+        Confirm
+      </button>
     </div>
   );
 };
