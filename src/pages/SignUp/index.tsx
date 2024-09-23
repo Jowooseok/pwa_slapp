@@ -1,14 +1,14 @@
 // src/pages/SignUp/index.tsx
 
-import React, { useState } from 'react';
+import React from 'react';
 import TelegramActivityCheck from './TelegramActivityCheck';
 import SelectCharacter from './SelectCharacter';
 import { useUserStore } from '@/entities/User/model/userModel';
 import { useNavigate } from 'react-router-dom';
 
 const SignUpPage: React.FC = () => {
-  const [step, setStep] = useState<'selectCharacter' | 'activityCheck'>('selectCharacter');
-  const [selectedPet, setSelectedPet] = useState<'DOG' | 'CAT'>('DOG');
+  const [step, setStep] = React.useState<'selectCharacter' | 'activityCheck'>('selectCharacter');
+  const [selectedPet, setSelectedPet] = React.useState<'DOG' | 'CAT'>('DOG');
   
   const { signup, login, isLoading, error, activityData: storeActivityData } = useUserStore();
   const navigate = useNavigate();

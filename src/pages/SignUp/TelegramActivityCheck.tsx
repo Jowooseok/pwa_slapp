@@ -1,6 +1,6 @@
 // src/pages/SignUp/TelegramActivityCheck.tsx
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FiCheckCircle, FiCircle } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
@@ -17,7 +17,7 @@ interface TelegramActivityCheckProps {
 }
 
 const TelegramActivityCheck: React.FC<TelegramActivityCheckProps> = ({ activityData, onComplete }) => {
-  useEffect(() => {
+  React.useEffect(() => {
     console.log('Step 5-12: TelegramActivityCheck 컴포넌트 마운트됨. activityData:', activityData);
     // 타이머 제거하여 자동 이동 방지
     return () => {

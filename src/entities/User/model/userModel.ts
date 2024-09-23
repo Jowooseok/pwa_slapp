@@ -1,6 +1,7 @@
 // src/entities/User/model/userModel.ts
 
 import create from 'zustand';
+import { fetchHomeData } from '@/entities/User/api/userApi';
 import api from '@/shared/api/axiosInstance';
 
 // 월간 보상 정보 인터페이스
@@ -52,21 +53,34 @@ interface UserState {
   incrementLotteryCount: (amount: number) => void;
 
   userLv: number;
+  setUserLv: (userLv: number) => void;
+
   characterType: 'dog' | 'cat';
+  setCharacterType: (type: 'dog' | 'cat') => void;
 
   slToken: number;
+  setSlToken: (slToken: number) => void;
+
   rank: number;
+  setRank: (rank: number) => void;
 
   monthlyPrize: MonthlyPrize;
+  setMonthlyPrize: (monthlyPrize: MonthlyPrize) => void;
 
   weekAttendance: WeekAttendance;
+  setWeekAttendance: (weekAttendance: WeekAttendance) => void;
 
   currentMiniGame: string;
+  setCurrentMiniGame: (game: string) => void;
 
   activityData: ActivityData | null;
+  setActivityData: (activityData: ActivityData | null) => void;
 
   isLoading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
+
   error: string | null;
+  setError: (error: string | null) => void;
 
   // 인증 관련 함수들
   login: (initData: string) => Promise<void>;
@@ -99,10 +113,16 @@ export const useUserStore = create<UserState>((set, get) => ({
   incrementLotteryCount: (amount) => set({ lotteryCount: get().lotteryCount + amount }),
 
   userLv: 1,
+  setUserLv: (userLv) => set({ userLv }),
+
   characterType: 'cat',
+  setCharacterType: (type) => set({ characterType: type }),
 
   slToken: 0,
+  setSlToken: (slToken) => set({ slToken }),
+
   rank: 0,
+  setRank: (rank) => set({ rank }),
 
   monthlyPrize: {
     year: 0,
@@ -110,6 +130,7 @@ export const useUserStore = create<UserState>((set, get) => ({
     prizeType: '',
     amount: 0,
   },
+  setMonthlyPrize: (monthlyPrize) => set({ monthlyPrize }),
 
   weekAttendance: {
     mon: null,
@@ -120,23 +141,30 @@ export const useUserStore = create<UserState>((set, get) => ({
     sat: null,
     sun: null,
   },
+  setWeekAttendance: (weekAttendance) => set({ weekAttendance }),
 
   currentMiniGame: '',
+  setCurrentMiniGame: (game) => set({ currentMiniGame: game }),
 
   activityData: null,
+  setActivityData: (activityData) => set({ activityData }),
 
   isLoading: false,
+  setIsLoading: (isLoading) => set({ isLoading }),
+
   error: null,
+  setError: (error) => set({ error }),
 
   // 사용자 데이터 설정 함수
   fetchUserData: async () => {
     console.log('Step 4-1: fetchUserData 시작');
     set({ isLoading: true, error: null });
     try {
-      const response = await api.get('/home');
-      const data = response.data.data;
+      const data = await fetchHomeData(); // userApi.ts의 fetchHomeData 사용
+      if (!data) {
+        throw new Error('No data returned from /home API');
+      }
       console.log('Step 4-2: fetchUserData 성공, 데이터:', data);
-
       set({
         position: data.nowDice.tileSequence,
         diceCount: data.nowDice.dice,
@@ -161,7 +189,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           sat: data.weekAttendance.sat,
           sun: data.weekAttendance.sun,
         },
-        currentMiniGame: data.nowDice.currentMiniGame, // 설정
+        currentMiniGame: data.nowDice.currentMiniGame || '', // 설정
         isLoading: false,
         error: null,
       });
@@ -223,9 +251,9 @@ export const useUserStore = create<UserState>((set, get) => ({
       // 회원가입 요청 보내기
       await api.post('/auth/signup', { initData, petType });
 
-      // 응답을 무시하고 에러가 없으면 활동량 게이지를 채움 (하드코딩)
+      // 활동량 데이터 하드코딩
       console.log('Step: signup 성공. 활동량 게이지 업데이트');
-      set({ activityData: { accountAge: 100, activityLevel: 100, telegramPremium: 100, ogStatus: 100 } }); // 예시 하드코딩 값
+      set({ activityData: { accountAge: 30, activityLevel: 75, telegramPremium: 1, ogStatus: 1 } }); // 예시 하드코딩 값
 
       set({ isLoading: false, error: null });
     } catch (error: any) {
