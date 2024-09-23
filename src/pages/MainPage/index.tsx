@@ -28,7 +28,7 @@ const MainPage: React.FC = () => {
       console.log('Step 2-1: accessToken:', accessToken);
 
       if (accessToken && userId) {
-        console.log('Step 2-1: 토큰이 존재함. Step 3으로 진행');
+        console.log('Step 2-2: 토큰이 존재함. Step 3으로 진행');
         console.log('Step 3-1: 토큰의 텔레그램 사용자 ID와 현재 사용자 ID 비교 시작');
 
         // 현재 텔레그램 사용자 ID 얻기
@@ -59,7 +59,7 @@ const MainPage: React.FC = () => {
           authenticateWithInitData(initData);
         }
       } else {
-        console.log('Step 2-2: 토큰이 없거나 userId가 없음. Step 5로 진행');
+        console.log('Step 2-3: 토큰이 없거나 userId가 없음. Step 5로 진행');
         // 토큰 또는 userId 없음: 인증을 진행
         authenticateWithInitData(initData);
       }
@@ -81,12 +81,12 @@ const MainPage: React.FC = () => {
           navigate('/sign-up');
         } else if (err.message === 'Invalid initData') {
           console.log('Step 5-5: initData 문제. 로그인 재시도 필요.');
-          // initData 문제가 있을 경우, 사용자에게 알림 표시
-          alert('Authentication failed due to invalid data. Please try again.');
+          // initData 문제가 있을 경우, 로그로 대체
+          console.log('Authentication failed due to invalid data. Please try again.');
         } else {
           // 기타 에러 처리
           console.log('Step 5-6: 기타 에러 발생. 사용자에게 알림 표시');
-          alert('Authentication failed. Please try again.');
+          console.log('Authentication failed. Please try again.');
         }
       }
     };
