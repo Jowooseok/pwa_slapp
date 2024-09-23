@@ -85,7 +85,6 @@ const SignUpPage: React.FC = () => {
       {step === 'activityCheck' && storeActivityData && (
         <TelegramActivityCheck activityData={storeActivityData} onComplete={handleActivityCheckComplete} />
       )}
-      {error && <p className="error-message text-red-500 text-center mt-4">{error}</p>}
     </div>
   );
 };

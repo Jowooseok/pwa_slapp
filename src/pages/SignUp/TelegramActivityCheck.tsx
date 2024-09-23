@@ -69,12 +69,14 @@ const TelegramActivityCheck: React.FC<TelegramActivityCheckProps> = ({ activityD
           </div>
         ))}
       </div>
+      <div className='bottom-10 absolute flex w-full self-center'>
       <button
-        className="mt-8 bg-[#0147e5] hover:bg-[#013bb5] text-white font-semibold py-2 px-4 rounded-full"
+        className="h-14 bg-[#0147e5] hover:bg-[#013bb5] text-white font-semibold mx-6 w-full rounded-full"
         onClick={onComplete}
       >
-        확인
+        Confirm
       </button>
+      </div>
     </div>
   );
 };
