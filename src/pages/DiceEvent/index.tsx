@@ -71,9 +71,9 @@ const DiceEventPage: React.FC = () => {
 
   const charactorImageSrc = getCharacterImageSrc();
 
-  // useEffect(() => {
-  //   fetchUserData();
-  // }, [fetchUserData]);
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
   useEffect(() => {
     const handleResize = () => {
