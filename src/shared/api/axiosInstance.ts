@@ -5,50 +5,45 @@ import { useUserStore } from '@/entities/User/model/userModel';
 
 // Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000', // 환경 변수 사용
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// 요청 인터셉터: 모든 요청에 Authorization 헤더 추가
+// 환경 변수 값 확인을 위한 콘솔 로그 추가
+console.log('🔍 [Axios] REACT_APP_API_BASE_URL:', process.env.REACT_APP_API_BASE_URL);
+
+// 요청 인터셉터 설정 (필요 시)
 api.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken && config.headers) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
-// 응답 인터셉터: 401 에러 시 토큰 갱신 시도
+// 응답 인터셉터 설정 (필요 시)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
-    // 401 에러이며, 토큰 갱신 시도하지 않은 경우
-    if (
-      error.response?.status === 401 &&
-      error.response.data.message === 'JWT Token has expired' &&
-      !originalRequest._retry
-    ) {
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
-      const { refreshToken } = useUserStore.getState();
-
-      try {
-        const success = await useUserStore.getState().refreshToken();
-        if (success) {
-          // 새로운 accessToken은 요청 인터셉터에 의해 자동으로 추가됨
+      const refreshSuccessful = await useUserStore.getState().refreshToken();
+      if (refreshSuccessful) {
+        const newAccessToken = localStorage.getItem('accessToken');
+        if (newAccessToken) {
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
           return api(originalRequest);
         }
-      } catch (refreshError) {
-        // 토큰 갱신 실패 시 로그아웃
-        useUserStore.getState().logout();
-        return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );
