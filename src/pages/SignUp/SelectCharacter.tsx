@@ -9,6 +9,18 @@ interface SelectCharacterProps {
 }
 
 const SelectCharacter: React.FC<SelectCharacterProps> = ({ selectedPet, setSelectedPet }) => {
+  React.useEffect(() => {
+    console.log('Step 5-0: SelectCharacter 컴포넌트 마운트됨.');
+    return () => {
+      console.log('Step 5-0: SelectCharacter 컴포넌트 언마운트됨.');
+    };
+  }, []);
+
+  const handlePetSelection = (pet: 'DOG' | 'CAT') => {
+    console.log(`Step 5-0: ${pet} 선택됨.`);
+    setSelectedPet(pet);
+  };
+
   return (
     <div className="flex flex-col bg-[#0D1226] h-screen text-white items-center">
       <h2 className="font-semibold text-xl text-center mt-32">
@@ -19,7 +31,7 @@ const SelectCharacter: React.FC<SelectCharacterProps> = ({ selectedPet, setSelec
       <div className="flex flex-row mt-14 gap-3">
         <div
           className="flex flex-col items-center justify-center gap-3 cursor-pointer"
-          onClick={() => setSelectedPet('DOG')}
+          onClick={() => handlePetSelection('DOG')}
         >
           <div
             className={`w-40 h-48 rounded-[30px] border-2 ${
@@ -50,7 +62,7 @@ const SelectCharacter: React.FC<SelectCharacterProps> = ({ selectedPet, setSelec
         </div>
         <div
           className="flex flex-col items-center justify-center gap-3 cursor-pointer"
-          onClick={() => setSelectedPet('CAT')}
+          onClick={() => handlePetSelection('CAT')}
         >
           <div
             className={`w-40 h-48 rounded-[30px] border-2 ${
