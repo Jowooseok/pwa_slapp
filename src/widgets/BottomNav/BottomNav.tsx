@@ -7,7 +7,11 @@ import { BiWallet } from "react-icons/bi";
 import { useNavigationStore } from "@/shared/store/navigationStore";
 import { IoGameControllerOutline } from "react-icons/io5";
 
-const BottomNavigation: React.FC = () => {
+interface BottomNavigationProps {
+  hidden?: boolean;
+}
+
+const BottomNavigation: React.FC<BottomNavigationProps> = ({hidden}) => {
   const { selected, setSelected } = useNavigationStore();
 
   const handleNavigation = (path: string) => {
@@ -17,8 +21,9 @@ const BottomNavigation: React.FC = () => {
   return (
     <div
       id="bottomNav"
-      className="fixed bottom-8 self-center rounded-full flex flex-row items-center justify-evenly bottomNav-bg h-16 w-80 font-medium text-[10px] bg-white shadow-lg z-10"
-    >
+      className={`fixed bottom-8 self-center rounded-full flex flex-row items-center justify-evenly bottomNav-bg h-16 w-80 font-medium text-[10px] bg-white shadow-lg z-10 ${hidden ? 'hidden' : ''}`}
+  
+   >
       <Link to="/home" onClick={() => handleNavigation("/home")}>
         <motion.div
           className={`flex flex-col items-center justify-center rounded-lg w-12 h-12 ${

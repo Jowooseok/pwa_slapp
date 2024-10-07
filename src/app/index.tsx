@@ -13,6 +13,7 @@ import SlotMachine from "@/pages/SlotMachine";
 import SignUpPage from "@/pages/SignUp";
 import MainPage from "@/pages/MainPage";
 import Home from "@/pages/Home";
+import AIDentalExamination from "@/pages/AIDentalExamination";
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -35,6 +36,7 @@ const App: React.FC = () => {
           <Route path="/home" element={
                <DiceEventLayout><Home /></DiceEventLayout>
             } />
+          <Route path="/ai-dental-examination" element={<DiceEventLayout hidden={true}><AIDentalExamination /></DiceEventLayout>} />
           <Route
             path="/dice-event"
             element={
