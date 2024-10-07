@@ -22,7 +22,7 @@ const OneTimeMissionCard: React.FC<OneTimeMissionCardProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col rounded-3xl  h-36 items-center justify-center gap-3  ${
+      className={` flex flex-col rounded-3xl  h-36 items-center justify-center gap-3  ${
         className && className
       }`}
     >

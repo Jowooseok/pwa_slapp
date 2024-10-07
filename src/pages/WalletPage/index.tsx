@@ -127,7 +127,7 @@ const WalletPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col text-white mb-32">
+    <div className="flex flex-col text-white mb-32  mx-6 md:mx-28">
       <TopTitle title="Wallet" />
       {/* *월렛이 선택되어있지 않은 경우 */}
       {/* <div className="flex flex-col gap-3">
@@ -319,7 +319,7 @@ const WalletPage: React.FC = () => {
           Please select a defualt wallet or add a new wallet.
         </p>
         <div className=" mt-12">
-          <div className="h-[345px] space-y-2 overflow-y-scroll">
+          <div className="h-[345px] space-y-2 overflow-y-hidden">
             <div className="flex flex-row rounded-2xl px-5 justify-between items-center h-16 border-2 bg-[#1f1e27] border-[#737373] box-border">
               <div className="flex flex-row items-center gap-3  ">
                 <img src={Images.IcpLogo} className="w-6 h-6" alt="ICP logo" />

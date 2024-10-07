@@ -81,6 +81,9 @@ import Defeat from './defeat.png';
 import DesertIsland from './desert-island.png';
 import SpinImage from './SpinImage.png';
 import RPSImage from './RPSImage.png';
+import HomeReport from './home-report.png';
+import HomeXray from "./home-xray.png";
+import HomeTooth from "./home-tooth.png";
 
 const Images = {
   HorizontalLogo,
@@ -166,6 +169,9 @@ const Images = {
   DesertIsland,
   SpinImage,
   RPSImage,
+  HomeReport,
+  HomeXray,
+  HomeTooth,
 };
 
 export default Images;

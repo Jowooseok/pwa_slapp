@@ -12,6 +12,7 @@ import InviteFriends from "@/pages/InviteFriends";
 import SlotMachine from "@/pages/SlotMachine";
 import SignUpPage from "@/pages/SignUp";
 import MainPage from "@/pages/MainPage";
+import Home from "@/pages/Home";
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -31,6 +32,58 @@ const App: React.FC = () => {
       <div>
         {/* <InstallPrompt /> */}
         <Routes>
+          <Route path="/home" element={
+               <DiceEventLayout><Home /></DiceEventLayout>
+            } />
+          <Route
+            path="/dice-event"
+            element={
+              <DiceEventLayout>
+                <DiceEvent />
+              </DiceEventLayout>
+            }
+          />
+
+          <Route
+            path="/mission"
+            element={
+              <DiceEventLayout>
+                <MissionPage />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/rank"
+            element={
+              <DiceEventLayout>
+                <RankPage />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/mini-game"
+            element={
+              <DiceEventLayout>
+                <MiniGame />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/invite-friends"
+            element={
+              <DiceEventLayout>
+                <InviteFriends />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/test"
+            element={
+              <DiceEventLayout>
+                <SlotMachine />
+              </DiceEventLayout>
+            }
+          />
       <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/" element={<MainPage />} />
           <Route

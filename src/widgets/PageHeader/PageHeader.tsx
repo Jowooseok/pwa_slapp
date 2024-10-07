@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoChevronBackOutline } from 'react-icons/io5';
-import Typography from '@/shared/components/typography';
 
 interface PageHeaderProps {
   title: string;
@@ -13,12 +12,12 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, className }) => {
 
   return (
     <header
-      className={`flex items-center space-x-4 justify-between ${className}`}
+      className={`h-14 flex items-center justify-center font-bold text-xl mb-8 ${className}`}
     >
       <button onClick={() => navigate(-1)}>
         <IoChevronBackOutline className="w-6 h-6" />
       </button>
-      <Typography.H3>{title}</Typography.H3>
+      <p>{title}</p>
       <span> </span>
     </header>
   );

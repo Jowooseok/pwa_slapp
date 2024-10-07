@@ -5,6 +5,7 @@ import { AiOutlineHome, AiOutlineTrophy } from "react-icons/ai";
 import { TbTargetArrow } from "react-icons/tb";
 import { BiWallet } from "react-icons/bi";
 import { useNavigationStore } from "@/shared/store/navigationStore";
+import { IoGameControllerOutline } from "react-icons/io5";
 
 const BottomNavigation: React.FC = () => {
   const { selected, setSelected } = useNavigationStore();
@@ -18,6 +19,39 @@ const BottomNavigation: React.FC = () => {
       id="bottomNav"
       className="fixed bottom-8 self-center rounded-full flex flex-row items-center justify-evenly bottomNav-bg h-16 w-80 font-medium text-[10px] bg-white shadow-lg z-10"
     >
+      <Link to="/home" onClick={() => handleNavigation("/home")}>
+        <motion.div
+          className={`flex flex-col items-center justify-center rounded-lg w-12 h-12 ${
+            selected === "/home"
+              ? "text-[#0147e5] bg-[#e0f2fe]"
+              : "text-[#A3A3A3]"
+          }`}
+          animate={{
+            backgroundColor: selected === "/home" ? "#e0f2fe" : "#ffffff",
+            color: selected === "/home" ? "#0147e5" : "#A3A3A3",
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.div
+            className="flex items-center justify-center"
+            animate={{
+              scale: selected === "/home" ? 0.9 : 1,
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <AiOutlineHome className="w-6 h-6" />
+          </motion.div>
+          {selected === "/home" && (
+            <motion.p
+              animate={{ opacity: 1 }}
+              initial={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              Home
+            </motion.p>
+          )}
+        </motion.div>
+      </Link>
       <Link to="/dice-event" onClick={() => handleNavigation("/dice-event")}>
         <motion.div
           className={`flex flex-col items-center justify-center rounded-lg w-12 h-12 ${
@@ -38,7 +72,7 @@ const BottomNavigation: React.FC = () => {
             }}
             transition={{ duration: 0.3 }}
           >
-            <AiOutlineHome className="w-6 h-6" />
+            <IoGameControllerOutline className="w-6 h-6" />
           </motion.div>
           {selected === "/dice-event" && (
             <motion.p
@@ -46,7 +80,7 @@ const BottomNavigation: React.FC = () => {
               initial={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              Home
+              Game
             </motion.p>
           )}
         </motion.div>
