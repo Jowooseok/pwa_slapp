@@ -1,3 +1,5 @@
+//src\widgets\Dice\Dice.tsx
+
 import React, { useState, forwardRef, useImperativeHandle } from "react";
 import { motion, useAnimation } from "framer-motion";
 import "./Dice.css";
@@ -50,14 +52,13 @@ const Dice = forwardRef(({ onRollComplete }: DiceProps, ref) => {
 
         setFrontFace(front); // 앞면 상태값 업데이트
         if (onRollComplete) {
-          // onRollComplete(front); // 콜백 함수 호출
-          onRollComplete(1); // 콜백 함수 호출
+          onRollComplete(front); // 콜백 함수 호출
         }
       });
 
     // 주사위가 공중에 떠있는 동안 숫자 변경
     setTimeout(() => {
-      // setFaceOrder(newFaceOrder);
+      setFaceOrder(newFaceOrder);
     }, 777); // 숫자 변경 시간 조정
   };
 

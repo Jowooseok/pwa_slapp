@@ -1,3 +1,4 @@
+//src\features\DiceEvent\hooks\useGauge.ts
 import { useState, useEffect } from 'react';
 
 const useGauge = () => {

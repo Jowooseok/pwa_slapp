@@ -40,7 +40,7 @@ const Board: React.FC<BoardProps> = ({
       ></div>
       <img
         src={charactorImageSrc}
-        alt="userLv20"
+        alt="charactorImageSrc"
         className="w-12 h-12 md:w-20 md:h-20"
       />
     </motion.div>
