@@ -1,35 +1,42 @@
-//src\features\DiceEvent\hooks\useGauge.ts
-import { useState, useEffect } from 'react';
+// src/features/DiceEvent/hooks/useGauge.ts
+import { useEffect, useState } from 'react';
+import useGaugeStore from '../store/useGaugeStore';
 
 const useGauge = () => {
-  const [gaugeValue, setGaugeValue] = useState<number>(0.5);
+  const { gaugeValue, setGaugeValue } = useGaugeStore();
   const [isHolding, setIsHolding] = useState<boolean>(false);
   const [isIncreasing, setIsIncreasing] = useState<boolean>(true);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    let interval: number | undefined;
+
     if (isHolding) {
-      interval = setInterval(() => {
-        setGaugeValue((prev) => {
-          if (prev >= 6) {
+      interval = window.setInterval(() => {
+        setGaugeValue((prevValue) => {
+          let newValue = isIncreasing ? prevValue + 0.25 : prevValue - 0.25;
+          
+          // Gauge bounds and direction control
+          if (newValue >= 6) {
+            newValue = 6;
             setIsIncreasing(false);
-            return prev - 0.25;
-          } else if (prev <= 0) {
+          } else if (newValue <= 0) {
+            newValue = 0;
             setIsIncreasing(true);
-            return prev + 0.25;
           }
-          return isIncreasing ? prev + 0.25 : prev - 0.25;
+
+          return newValue;
         });
       }, 21);
-    } else if (interval) {
-      clearInterval(interval);
+    } else if (interval !== undefined) {
+      window.clearInterval(interval);
     }
+
     return () => {
-      if (interval) {
-        clearInterval(interval);
+      if (interval !== undefined) {
+        window.clearInterval(interval);
       }
     };
-  }, [isHolding, isIncreasing]);
+  }, [isHolding, isIncreasing, setGaugeValue]);
 
   return { gaugeValue, isHolding, setIsHolding };
 };

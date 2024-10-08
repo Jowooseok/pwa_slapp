@@ -1,3 +1,5 @@
+//src\pages\DiceEvent\useDiceGame.ts
+
 import { useState, useCallback } from "react";
 import { useDice, useGauge } from "@/features/DiceEvent";
 import { useRPSGameStore } from "../RPSGame/store";
