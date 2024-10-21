@@ -26,7 +26,7 @@ async function refreshToken(refreshTokenValue: string) {
 }
 
 // 반려동물 등록 함수
-async function registerPet(petInfo: { name: string, image: File }) {
+async function registerPet(petInfo: { name: string, image: File }): Promise<any> {
     let accessToken = localStorage.getItem('accessToken');
     const refreshTokenValue = localStorage.getItem('refreshToken');
 

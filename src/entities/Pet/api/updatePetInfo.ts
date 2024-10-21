@@ -26,7 +26,7 @@ async function refreshToken(refreshTokenValue: string) {
 }
 
 // 반려동물 정보 업데이트 함수
-async function updatePetInfo(formData: FormData) {
+async function updatePetInfo(formData: FormData): Promise<any> {
     let accessToken = localStorage.getItem('accessToken');
     const refreshTokenValue = localStorage.getItem('refreshToken');
 

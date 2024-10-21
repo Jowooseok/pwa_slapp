@@ -24,7 +24,7 @@ async function refreshToken(refreshTokenValue: string) {
 }
 
 // 진단 정보 가져오는 함수
-async function getDiagnosisInfo(id: string) {
+async function getDiagnosisInfo(id: string): Promise<any> {
     let accessToken = localStorage.getItem('accessToken');
     const refreshTokenValue = localStorage.getItem('refreshToken');
 

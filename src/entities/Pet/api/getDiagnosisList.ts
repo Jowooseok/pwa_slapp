@@ -25,7 +25,7 @@ async function refreshToken(refreshTokenValue: string) {
 }
 
 // 진단 목록 가져오기
-async function getDiagnosisList(retryCount = 0) {
+async function getDiagnosisList(retryCount = 0): Promise<any> {
     let accessToken = localStorage.getItem('accessToken');
     const refreshTokenValue = localStorage.getItem('refreshToken');
 

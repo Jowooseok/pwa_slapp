@@ -27,7 +27,7 @@ async function refreshToken(refreshTokenValue: string) {
 
 
 // 반려동물 목록 가져오기 함수
-async function getPetList() {
+async function getPetList(): Promise<any> {
     let accessToken = localStorage.getItem('accessToken');
     const refreshTokenValue = localStorage.getItem('refreshToken');
 
