@@ -319,7 +319,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         throw new Error('No refresh token available');
       }
 
-      const response = await api.post('/auth/refresh', { refreshToken });
+      const response = await api.post('/auth/auth/refresh', { refreshToken });
       console.log('Step: refreshToken 응답:', response.data);
 
       if (response.data.code === 'OK') {

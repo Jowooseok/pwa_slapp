@@ -13,7 +13,20 @@ import SlotMachine from "@/pages/SlotMachine";
 import SignUpPage from "@/pages/SignUp";
 import MainPage from "@/pages/MainPage";
 import Home from "@/pages/Home";
+// added pages
 import AIDentalExamination from "@/pages/AIDentalExamination";
+import AIXrayAnalysis from "@/pages/AIXrayAnalysis";
+import Login from "@/pages/Login";
+import PetRegister from "@/pages/PetRegister";
+import SelectPet from "@/pages/SelectPet";
+import EditPet from "@/pages/EditPet";
+import DiagnosisRecords from "@/pages/DiagnosisList";
+import DiagnosisDetail from "@/pages/DiagnosisDetail";
+import SignupEmail from "@/pages/Email";
+import SignupPassword from "@/pages/Password";
+import FindPassword from "@/pages/FindPassword";
+import MyPoint from "@/pages/MyPoint";
+
 
 const App: React.FC = () => {
   React.useEffect(() => {
@@ -34,9 +47,10 @@ const App: React.FC = () => {
         {/* <InstallPrompt /> */}
         <Routes>
           <Route path="/home" element={
-               <DiceEventLayout><Home /></DiceEventLayout>
+               <DiceEventLayout hidden={true}>
+                <Home />
+                </DiceEventLayout>
             } />
-          <Route path="/ai-dental-examination" element={<DiceEventLayout hidden={true}><AIDentalExamination /></DiceEventLayout>} />
           <Route
             path="/dice-event"
             element={
@@ -142,6 +156,103 @@ const App: React.FC = () => {
             element={
               <DiceEventLayout>
                 <SlotMachine />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <DiceEventLayout hidden={true}>
+                <Login />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/regist-pet"
+            element={
+              <DiceEventLayout hidden={true}>
+                <PetRegister />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/select-pet"
+            element={
+              <DiceEventLayout hidden={true}>
+                <SelectPet />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/edit-pet"
+            element={
+              <DiceEventLayout hidden={true}>
+                <EditPet />
+              </DiceEventLayout>
+            }
+          />
+          
+          <Route
+            path="/diagnosis-list/:id"
+            element={
+              <DiceEventLayout hidden={true}>
+                <DiagnosisRecords />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/diagnosis-detail/:id"
+            element={
+              <DiceEventLayout hidden={true}>
+                <DiagnosisDetail />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/signup-email"
+            element={
+              <DiceEventLayout hidden={true}>
+                <SignupEmail />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/signup-password"
+            element={
+              <DiceEventLayout hidden={true}>
+                <SignupPassword />
+              </DiceEventLayout>
+            }
+          />
+          <Route
+            path="/find-password"
+            element={
+              <DiceEventLayout hidden={true}>
+                <FindPassword />
+              </DiceEventLayout>
+            }
+          />
+          <Route 
+            path="/ai-dental-examination/:id" 
+            element={
+              <DiceEventLayout hidden={true}>
+              <AIDentalExamination />
+              </DiceEventLayout>
+            } 
+          />
+          <Route 
+            path="/ai-xray-analysis/:id" 
+            element={
+              <DiceEventLayout hidden={true}>
+              <AIXrayAnalysis />
+              </DiceEventLayout>
+            } 
+          />
+          <Route
+            path="/my-point"
+            element={
+              <DiceEventLayout hidden={true}>
+                <MyPoint />
               </DiceEventLayout>
             }
           />

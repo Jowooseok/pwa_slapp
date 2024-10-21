@@ -84,6 +84,10 @@ import RPSImage from './RPSImage.png';
 import HomeReport from './home-report.png';
 import HomeXray from "./home-xray.png";
 import HomeTooth from "./home-tooth.png";
+//added image
+import uploader from "./uploader.png";
+import goback from "./back-icon.png";
+import pointStar from "./star.png";
 
 const Images = {
   HorizontalLogo,
@@ -172,6 +176,9 @@ const Images = {
   HomeReport,
   HomeXray,
   HomeTooth,
+  uploader,
+  goback,
+  pointStar,
 };
 
 export default Images;
