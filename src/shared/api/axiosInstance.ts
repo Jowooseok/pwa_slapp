@@ -5,7 +5,7 @@ import { useUserStore } from '@/entities/User/model/userModel';
 
 // Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://0bf5-61-81-223-147.ngrok-free.app', // Vite 환경 변수 사용
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://d2d2-61-81-223-147.ngrok-free.app', // Vite 환경 변수 사용
   headers: {
     'Content-Type': 'application/json',
   },
