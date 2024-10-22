@@ -40,7 +40,9 @@ async function getPetList(): Promise<any> {
 
         // 응답이 JSON인지 확인
         if (typeof response.data !== 'object') {
+            console.log("뭐라고 오누 : ", response);
             console.log("뭐라고 오니 : ", response.data);
+            console.log("뭐라고 오냐 : ", response.status);
             throw new Error('Unexpected response format');
         }
 
