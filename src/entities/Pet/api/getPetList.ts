@@ -38,6 +38,11 @@ async function getPetList(): Promise<any> {
             },
         });
 
+        // 응답이 JSON인지 확인
+        if (typeof response.data !== 'object') {
+            throw new Error('Unexpected response format');
+        }
+
         if (response.data.code === 'OK') {
             console.log("정상 작동~! ", response.data);
             return response.data.data; // 서버로부터 반려동물 데이터
@@ -64,5 +69,6 @@ async function getPetList(): Promise<any> {
         }
     }
 }
+
 
 export default getPetList;
