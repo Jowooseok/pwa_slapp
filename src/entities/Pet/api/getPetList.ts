@@ -35,6 +35,7 @@ async function getPetList(): Promise<any> {
         const response = await api.get('/mypets', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
+                'ngrok-skip-browser-warning': '69420',
             },
         });
 
