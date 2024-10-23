@@ -5,7 +5,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import storeResult from '@/entities/AI/api/stroeResult';
 
 const AIDentalExamination: React.FC = () => {
-  const URL = "../../shared/ai_model/dental_examination/"; // Teachable Machine 모델 경로
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -29,8 +28,8 @@ const AIDentalExamination: React.FC = () => {
 
   useEffect(() => {
     const loadModelAndSetupWebcam = async () => {
-      const modelURL = URL + "model.json";
-      const metadataURL = URL + "metadata.json";
+      const modelURL = "/ai_model/dental/model.json";
+      const metadataURL = "/ai_model/dental/metadata.json";
 
       try {
         // 모델 로드
