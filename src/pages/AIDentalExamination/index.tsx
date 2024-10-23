@@ -43,7 +43,7 @@ const AIDentalExamination: React.FC = () => {
 
       try {
         // 웹캠 설정
-        const flip = true; // 웹캠 좌우 반전 여부
+        const flip = false; // 웹캠 좌우 반전 여부
         const width = 240; // 너비 설정
         const height = 240; // 높이 설정
         const facingMode = "environment"; 
@@ -56,7 +56,7 @@ const AIDentalExamination: React.FC = () => {
         // 비디오 요소에 속성 추가
         if (newWebcam.webcam) {
           newWebcam.webcam.setAttribute('playsinline', 'true');
-          newWebcam.webcam.setAttribute('muted', 'true'); // iOS에서 자동 재생을 위해 필요
+          newWebcam.webcam.setAttribute('muted', 'true');
         }
         await newWebcam.play();
         setWebcam(newWebcam);
@@ -102,7 +102,7 @@ const AIDentalExamination: React.FC = () => {
       );
 
       if (highestPrediction.probability > 0.8) {
-        // stopWebcam(highestPrediction.className);
+        stopWebcam(highestPrediction.className);
       } else {
         setLabel("Normal");
       }
