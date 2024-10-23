@@ -17,36 +17,31 @@ async function refreshToken(refreshTokenValue: string) {
             console.warn('Token refresh failed:', response.data.message);
             throw new Error(response.data.message || 'Token refresh failed');
         }
-
     } catch (error) {
         console.error('Error refreshing token:', error);
-        // 로그아웃 처리 등 추가적인 오류 처리 로직 필요
         throw error;
     }
 }
 
-
-// 반려동물 목록 가져오기 함수
-async function getPetList(): Promise<any> {
+async function getRecords(): Promise<any>{
     let accessToken = localStorage.getItem('accessToken');
     const refreshTokenValue = localStorage.getItem('refreshToken');
-
-    try {
-        const response = await api.get('/mypets', {
+    
+    try{
+        const response = await api.get('diagnosis/record',{
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'ngrok-skip-browser-warning': '69420',
             },
-        });
+        })
 
-        if (response.data.code === 'OK') {
-            console.log("정상 작동~! ", response.data);
-            return response.data.data; // 서버로부터 반려동물 데이터
-        } else {
+        if(response.data.code === 'OK'){
+            console.log("필터 목록 정상 작동~! ", response.data);
+            return response.data.data;
+        }else{
             console.error("Unexpected response: ", response);
-            throw new Error(response.data.message || 'Failed to fetch pet information');
         }
-    } catch (error: any) {
+    }catch (error: any) {
         console.error("Error occurred while fetching pet information:", error.message);
 
         // 상태 코드 확인 및 재시도 로직
@@ -54,7 +49,7 @@ async function getPetList(): Promise<any> {
             console.log("Access token expired, attempting to refresh token...");
             try {
                 accessToken = await refreshToken(refreshTokenValue);
-                return await getPetList(); // 갱신된 토큰으로 재시도
+                return await getRecords(); // 갱신된 토큰으로 재시도
             } catch (refreshError) {
                 console.error("Failed to refresh token:", refreshError);
                 throw refreshError;
@@ -66,5 +61,4 @@ async function getPetList(): Promise<any> {
     }
 }
 
-
-export default getPetList;
+export default getRecords;

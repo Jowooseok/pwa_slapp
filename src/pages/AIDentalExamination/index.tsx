@@ -1,19 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as tmImage from '@teachablemachine/image';
 import Images from "@/shared/assets/images";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import storeResult from '@/entities/AI/api/stroeResult';
 
 const AIDentalExamination: React.FC = () => {
   const URL = "../../shared/ai_model/dental_examination/"; // Teachable Machine 모델 경로
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [model, setModel] = useState<tmImage.CustomMobileNet | null>(null);
   const [label, setLabel] = useState("Normal");
   const [webcam, setWebcam] = useState<tmImage.Webcam | null>(null);
   const webcamRef = useRef<HTMLDivElement>(null);
+
   const [showFullText, setShowFullText] = useState(false);
   const [isDetectionStopped, setIsDetectionStopped] = useState(false);
-  const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const [capturedImage, setCapturedImage] = useState<File | null>(null); // 캡처된 이미지 저장
+
+  const petData = location.state as { id: string };
+  const [id] = useState<string>(petData?.id || '');
 
   const symptomsInfo: Record<string, string> = {
     "Gingivitis & Plaque": "Symptoms of gingivitis and plaque have been detected in your dog. It is important to visit the vet as soon as possible to address this condition. Maintaining good oral hygiene is crucial for your pet's health.",
@@ -54,9 +60,8 @@ const AIDentalExamination: React.FC = () => {
     loadModelAndSetupWebcam();
 
     return () => {
-      // 컴포넌트가 언마운트될 때 웹캠을 정지하여 리소스 해제
       if (webcam) {
-        // stopWebcam();
+        webcam.stop();
       }
     };
   }, []); // 빈 의존성 배열로 한 번만 실행되도록 설정
@@ -72,7 +77,7 @@ const AIDentalExamination: React.FC = () => {
       };
       loop();
     }
-  }, [model, webcam, isDetectionStopped]); // model, webcam, isDetectionStopped 상태가 변경될 때 실행되도록 설정
+  }, [model, webcam, isDetectionStopped]);
 
   // 모델 예측 함수
   const predict = async () => {
@@ -82,52 +87,36 @@ const AIDentalExamination: React.FC = () => {
         prev.probability > current.probability ? prev : current
       );
 
-      if (highestPrediction.probability > 0.8 && highestPrediction.className !== "Normal") {
-        // 웹캠을 멈추고 최종 레이블을 업데이트합니다.
-        // stopWebcam(highestPrediction.className);
+      if (highestPrediction.probability > 0.8) {
+        stopWebcam(highestPrediction.className);
       } else {
         setLabel("Normal");
       }
     }
   };
 
-  // 웹캠 정지 함수
+  // 웹캠 정지 및 이미지 캡처 함수
   const stopWebcam = (detectedLabel: string = "Normal") => {
     if (webcam && webcam.webcam) {
       const stream = webcam.webcam.srcObject as MediaStream | null;
 
-      // 스트림이 존재하는지 안전하게 확인 후 트랙 정지
       if (stream) {
         stream.getTracks().forEach((track) => {
           if (track.readyState === 'live') {
-            track.stop(); // 모든 트랙 정지
+            track.stop();
           }
         });
       }
 
-      // 웹캠의 stop 메서드를 호출하기 전에 상태를 안전하게 확인
       if (webcam.webcam && webcam.webcam.srcObject) {
-        webcam.stop(); // Teachable Machine 웹캠 멈추기
+        webcam.stop();
         setIsDetectionStopped(true);
-
-        // 현재 날짜 가져오기
-        const currentDate = new Date().toLocaleString();
-        
-        // 진단 결과 라벨을 최신으로 설정
         setLabel(detectedLabel);
 
-        // 이미지 캡처: Blob 형태로 변환 후 File 객체 생성
         webcam.canvas.toBlob((blob) => {
           if (blob) {
-            const capturedImage = new File([blob], 'dental_capture.png', { type: 'image/png' });
-
-            // 콘솔 로그로 이미지, 날짜, 라벨 출력
-            console.log("Captured Image:", capturedImage);
-            console.log("Detected Label:", detectedLabel);
-            console.log("Date:", currentDate);
-
-            // 서버에 저장 요청
-            storeResult(capturedImage, currentDate, detectedLabel, "dental");
+            const capturedFile = new File([blob], 'dental_capture.png', { type: 'image/png' });
+            setCapturedImage(capturedFile); // 캡처된 이미지를 상태로 저장
           }
         }, 'image/png');
       }
@@ -136,15 +125,22 @@ const AIDentalExamination: React.FC = () => {
 
   // 서버에 저장하는 함수
   const saveResult = async () => {
-    if (webcam && isDetectionStopped) {
-      const currentDate = new Date().toLocaleString();
-      webcam.canvas.toBlob((blob) => {
-        if (blob) {
-          const capturedImage = new File([blob], 'dental_capture.png', { type: 'image/png' });
-          storeResult(capturedImage, currentDate, label, "dental");
+    if (capturedImage && isDetectionStopped) {
+      try {
+        const formData = new FormData();
+        formData.append('json', new Blob([JSON.stringify({ petId: id, result: label })], { type: 'application/json' }));
+        formData.append('file', capturedImage);
+
+        const response = await storeResult(formData, "dental");
+        if (response) {
+          navigate('/diagnosis-list');
           console.log("Result saved successfully.");
+        } else {
+          console.log("Failed to save result. Please try again.");
         }
-      }, 'image/png');
+      } catch (error: any) {
+        console.error("Error saving result:", error);
+      }
     } else {
       alert("Please complete the detection before saving.");
     }
@@ -155,10 +151,10 @@ const AIDentalExamination: React.FC = () => {
       <div className="flex items-center w-full mt-4 relative">
         {/* 뒤로가기 버튼 추가 */}
         <img
-          src={Images.goback} // 뒤로가기 이미지 경로
+          src={Images.goback}
           alt="Go Back"
           className="w-8 h-8 cursor-pointer absolute left-0"
-          onClick={() => navigate(-1)} // 뒤로가기 기능
+          onClick={() => navigate(-1)}
         />
         <h1 className="text-2xl mx-auto">AI Dental Examination</h1>
       </div>
@@ -202,20 +198,20 @@ const AIDentalExamination: React.FC = () => {
       </div>
 
       {/* Retest 및 Save 버튼을 수평으로 배치 */}
-          <div className="flex w-full max-w-sm justify-between mt-10 mb-16">
-            <button
-              className="w-[48%] h-14 text-white text-base py-2 px-4 rounded-full border-2"
-              style={{ backgroundColor: "#252932", borderColor: "#35383F" }}
-              onClick={() => window.location.reload()}>
-              Retest
-            </button>
-            <button
-              className="w-[48%] h-14 text-white text-base py-2 px-4 rounded-full"
-              style={{ backgroundColor: "#0147E5" }}
-              onClick={saveResult}>
-              Save
-            </button>
-          </div>
+      <div className="flex w-full max-w-sm justify-between mt-10 mb-16">
+        <button
+          className="w-[48%] h-14 text-white text-base py-2 px-4 rounded-full border-2"
+          style={{ backgroundColor: "#252932", borderColor: "#35383F" }}
+          onClick={() => window.location.reload()}>
+          Retest
+        </button>
+        <button
+          className="w-[48%] h-14 text-white text-base py-2 px-4 rounded-full"
+          style={{ backgroundColor: "#0147E5" }}
+          onClick={saveResult}>
+          Save
+        </button>
+      </div>
     </div>
   );
 };

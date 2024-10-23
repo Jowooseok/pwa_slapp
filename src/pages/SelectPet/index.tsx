@@ -38,11 +38,11 @@ const SelectPet: React.FC = () => {
     // 반려동물 선택 시 페이지 이동 함수
     const handlePetSelect = (petId: number) => {
         if (selectedMenu === 'x-ray') {
-            navigate(`/ai-xray-analysis/${petId}`);
+            navigate(`/ai-xray-analysis`, {state: {id: petId}});
         } else if (selectedMenu === 'ai-analysis') {
-            navigate(`/ai-dental-examination/${petId}`);
+            navigate(`/ai-dental-examination`, {state: {id: petId}});
         } else if (selectedMenu === 'records') {
-            navigate(`/diagnosis-list/${petId}`);
+            navigate(`/diagnosis-list`, {state: {id: petId}});
         }
     };
 

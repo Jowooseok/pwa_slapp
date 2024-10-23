@@ -193,7 +193,7 @@ const App: React.FC = () => {
           />
           
           <Route
-            path="/diagnosis-list/:id"
+            path="/diagnosis-list"
             element={
               <DiceEventLayout hidden={true}>
                 <DiagnosisRecords />
@@ -201,7 +201,7 @@ const App: React.FC = () => {
             }
           />
           <Route
-            path="/diagnosis-detail/:id"
+            path="/diagnosis-detail"
             element={
               <DiceEventLayout hidden={true}>
                 <DiagnosisDetail />
@@ -233,7 +233,7 @@ const App: React.FC = () => {
             }
           />
           <Route 
-            path="/ai-dental-examination/:id" 
+            path="/ai-dental-examination" 
             element={
               <DiceEventLayout hidden={true}>
               <AIDentalExamination />
@@ -241,7 +241,7 @@ const App: React.FC = () => {
             } 
           />
           <Route 
-            path="/ai-xray-analysis/:id" 
+            path="/ai-xray-analysis" 
             element={
               <DiceEventLayout hidden={true}>
               <AIXrayAnalysis />

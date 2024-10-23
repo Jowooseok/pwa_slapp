@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as tmImage from '@teachablemachine/image';
 import Images from "@/shared/assets/images";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import storeResult from '@/entities/AI/api/stroeResult';
 
 const AIXrayAnalysis: React.FC = () => {
@@ -14,7 +14,9 @@ const AIXrayAnalysis: React.FC = () => {
   const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const petData = location.state as { id: string };
+  const [id] = useState<string>(petData?.id || '');
 
   // 진단 가능한 항목에 대한 설명
   const symptomsInfo: Record<string, string> = {
@@ -73,17 +75,6 @@ const AIXrayAnalysis: React.FC = () => {
         setLabel(highestPrediction.className);
         setLoading(false);
         setIsAnalyzed(true);
-
-        // 현재 날짜 가져오기
-        const currentDate = new Date().toLocaleString();
-
-        // 콘솔 로그로 이미지, 날짜, 라벨 출력
-        console.log("Captured Image (file):", selectedImage);
-        console.log("Detected Label:", highestPrediction.className);
-        console.log("Date:", currentDate);
-
-        // 서버에 저장 요청
-        await storeResult(selectedImage, currentDate, highestPrediction.className, "xray");
       };
     } else {
       setLoading(false);
@@ -93,9 +84,23 @@ const AIXrayAnalysis: React.FC = () => {
   // 서버에 저장하는 함수
   const saveResult = async () => {
     if (selectedImage && isAnalyzed) {
-      const currentDate = new Date().toLocaleString();
-      await storeResult(selectedImage, currentDate, label, "xray");
-      console.log("Result saved successfully.");
+      try{
+        const formData = new FormData();
+        formData.append('json', new Blob([JSON.stringify({ petId: id, result: label })], { type: 'application/json' }));
+        formData.append('file', selectedImage);
+
+        const response = await storeResult(formData, "xray");
+        
+        if (response) {
+          navigate('/diagnosis-list');
+          console.log("Result saved successfully.");
+        } else {
+          console.log("Failed to save result. Please try again.");
+        }
+
+      }catch(error: any){
+        console.error("Error saving result:", error);
+      }
     } else {
       alert("Please analyze the image before saving.");
     }
