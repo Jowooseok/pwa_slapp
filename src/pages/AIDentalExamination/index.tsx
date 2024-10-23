@@ -46,9 +46,12 @@ const AIDentalExamination: React.FC = () => {
         const flip = true; // 웹캠 좌우 반전 여부
         const width = 240; // 너비 설정
         const height = 240; // 높이 설정
+        const facingMode = "environment"; 
 
         const newWebcam = new tmImage.Webcam(width, height, flip);
-        await newWebcam.setup(); // 웹캠 접근 요청
+
+        // `setup` 메서드에 `facingMode` 설정 추가
+        await newWebcam.setup({ facingMode: { exact: "environment" } });
 
         // 비디오 요소에 속성 추가
         if (newWebcam.webcam) {
