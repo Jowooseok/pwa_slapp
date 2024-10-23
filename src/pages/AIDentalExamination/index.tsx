@@ -49,6 +49,12 @@ const AIDentalExamination: React.FC = () => {
 
         const newWebcam = new tmImage.Webcam(width, height, flip);
         await newWebcam.setup(); // 웹캠 접근 요청
+
+        // 비디오 요소에 속성 추가
+        if (newWebcam.webcam) {
+          newWebcam.webcam.setAttribute('playsinline', 'true');
+          newWebcam.webcam.setAttribute('muted', 'true'); // iOS에서 자동 재생을 위해 필요
+        }
         await newWebcam.play();
         setWebcam(newWebcam);
 
@@ -93,7 +99,7 @@ const AIDentalExamination: React.FC = () => {
       );
 
       if (highestPrediction.probability > 0.8) {
-        stopWebcam(highestPrediction.className);
+        // stopWebcam(highestPrediction.className);
       } else {
         setLabel("Normal");
       }
