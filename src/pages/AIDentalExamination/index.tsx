@@ -35,7 +35,13 @@ const AIDentalExamination: React.FC = () => {
         // 모델 로드
         const loadedModel = await tmImage.load(modelURL, metadataURL);
         setModel(loadedModel);
+      } catch (error) {
+        console.error("Error loading model:", error);
+        alert("Failed to load the AI model. Please check your network connection or contact support.");
+        return;
+      }
 
+      try {
         // 웹캠 설정
         const flip = true; // 웹캠 좌우 반전 여부
         const width = 240; // 너비 설정
@@ -51,8 +57,8 @@ const AIDentalExamination: React.FC = () => {
           webcamRef.current.appendChild(newWebcam.canvas);
         }
       } catch (error) {
-        console.error("Error loading model or accessing webcam:", error);
-        alert("Failed to load the AI model or access the camera. Please check browser settings or try again.");
+        console.error("Error accessing webcam:", error);
+        alert("Failed to access the camera. Please check your browser settings and allow camera access.");
       }
     };
 
