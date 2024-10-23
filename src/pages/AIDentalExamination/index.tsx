@@ -93,7 +93,7 @@ const AIDentalExamination: React.FC = () => {
       );
 
       if (highestPrediction.probability > 0.8) {
-        stopWebcam(highestPrediction.className);
+        // stopWebcam(highestPrediction.className);/
       } else {
         setLabel("Normal");
       }
