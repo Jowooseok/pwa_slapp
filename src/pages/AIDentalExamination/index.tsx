@@ -26,42 +26,42 @@ const AIDentalExamination: React.FC = () => {
     "Normal": "No issues were detected in your dog's teeth. Keep maintaining good dental hygiene to ensure their continued health."
   };
 
+  // 모델 및 웹캠 설정 함수
+  const loadModelAndSetupWebcam = async () => {
+    const modelURL = "/ai_model/dental/model.json";
+    const metadataURL = "/ai_model/dental/metadata.json";
+  
+    try {
+      // 모델 로드
+      const loadedModel = await tmImage.load(modelURL, metadataURL);
+      setModel(loadedModel);
+  
+      // 웹캠 설정
+      const newWebcam = new tmImage.Webcam(240, 240, false); // 기본 설정으로 웹캠 생성
+  
+      // 웹캠 설정 시 constraints 적용
+      await newWebcam.setup({ facingMode: { ideal: 'environment' } }); // 후면 카메라 접근을 명시
+      await newWebcam.play();
+      setWebcam(newWebcam);
+  
+      if (webcamRef.current) {
+        webcamRef.current.innerHTML = ""; // 기존 웹캠 캔버스를 지워 중복 방지
+        webcamRef.current.appendChild(newWebcam.canvas);
+      }
+    } catch (error: any) {
+      console.error("Error loading model or accessing webcam:", error);
+      if (error.name === 'NotAllowedError') {
+        alert("Camera access was denied. Please enable camera access in your browser settings.");
+      } else if (error.name === 'NotFoundError') {
+        alert("No camera found. Please connect a camera and try again.");
+      } else {
+        alert("Failed to load the AI model or access the camera. Please check your browser settings or try again.");
+      }
+    }
+  };
+  
+
   useEffect(() => {
-    const loadModelAndSetupWebcam = async () => {
-      const modelURL = "/ai_model/dental/model.json";
-      const metadataURL = "/ai_model/dental/metadata.json";
-
-      try {
-        // 모델 로드
-        const loadedModel = await tmImage.load(modelURL, metadataURL);
-        setModel(loadedModel);
-      } catch (error) {
-        console.error("Error loading model:", error);
-        alert("Failed to load the AI model. Please check your network connection or contact support.");
-        return;
-      }
-
-      try {
-        // 웹캠 설정
-        const flip = true; // 웹캠 좌우 반전 여부
-        const width = 240; // 너비 설정
-        const height = 240; // 높이 설정
-
-        const newWebcam = new tmImage.Webcam(width, height, flip);
-        await newWebcam.setup(); // 웹캠 접근 요청
-        await newWebcam.play();
-        setWebcam(newWebcam);
-
-        if (webcamRef.current) {
-          webcamRef.current.innerHTML = ""; // 기존 웹캠 캔버스를 지워 중복 방지
-          webcamRef.current.appendChild(newWebcam.canvas);
-        }
-      } catch (error) {
-        console.error("Error accessing webcam:", error);
-        alert("Failed to access the camera. Please check your browser settings and allow camera access.");
-      }
-    };
-
     loadModelAndSetupWebcam();
 
     return () => {
@@ -151,6 +151,28 @@ const AIDentalExamination: React.FC = () => {
     }
   };
 
+  // Retest 클릭 핸들러
+  const handleRetest = () => {
+    if (webcam) {
+      const stream = webcam.webcam.srcObject as MediaStream | null;
+
+      if (stream) {
+        stream.getTracks().forEach((track) => {
+          if (track.readyState === 'live') {
+            track.stop();
+          }
+        });
+      }
+
+      webcam.stop(); // 기존 웹캠 중지
+      setWebcam(null);
+    }
+
+    setIsDetectionStopped(false);
+    setLabel("Normal");
+    loadModelAndSetupWebcam(); // 웹캠과 모델 재설정
+  };
+
   return (
     <div className="flex flex-col items-center text-white mx-6 md:mx-28">
       <div className="flex items-center w-full mt-4 relative">
@@ -207,7 +229,7 @@ const AIDentalExamination: React.FC = () => {
         <button
           className="w-[48%] h-14 text-white text-base py-2 px-4 rounded-full border-2"
           style={{ backgroundColor: "#252932", borderColor: "#35383F" }}
-          onClick={() => window.location.reload()}>
+          onClick={handleRetest}>
           Retest
         </button>
         <button
