@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as tmImage from '@teachablemachine/image';
-import Images from "@/shared/assets/images";
 import { useNavigate, useLocation } from 'react-router-dom';
 import storeResult from '@/entities/AI/api/stroeResult';
+import { FaChevronLeft } from "react-icons/fa";
 
 const AIDentalExamination: React.FC = () => {
   const location = useLocation();
@@ -46,12 +46,15 @@ const AIDentalExamination: React.FC = () => {
         const flip = false; // 웹캠 좌우 반전 여부
         const width = 240; // 너비 설정
         const height = 240; // 높이 설정
-        const facingMode = "environment"; 
+
+        // 장치 유형 감지: 모바일이면 후면 카메라, 노트북이면 기본 웹캠
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const facingMode = isMobile ? "environment" : "user";
 
         const newWebcam = new tmImage.Webcam(width, height, flip);
 
         // `setup` 메서드에 `facingMode` 설정 추가
-        await newWebcam.setup({ facingMode: { exact: "environment" } });
+        await newWebcam.setup({ facingMode: { ideal: facingMode } });
 
         // 비디오 요소에 속성 추가
         if (newWebcam.webcam) {
@@ -101,7 +104,7 @@ const AIDentalExamination: React.FC = () => {
         prev.probability > current.probability ? prev : current
       );
 
-      if (highestPrediction.probability > 0.8) {
+      if (highestPrediction.probability > 0.95) {
         stopWebcam(highestPrediction.className);
       } else {
         setLabel("Normal");
@@ -147,7 +150,7 @@ const AIDentalExamination: React.FC = () => {
 
         const response = await storeResult(formData, "dental");
         if (response) {
-          navigate('/diagnosis-list');
+          navigate('/diagnosis-list', { state: { id: id } });
           console.log("Result saved successfully.");
         } else {
           console.log("Failed to save result. Please try again.");
@@ -163,15 +166,14 @@ const AIDentalExamination: React.FC = () => {
   return (
     <div className="flex flex-col items-center text-white mx-6 md:mx-28">
       <div className="flex items-center w-full mt-4 relative">
-        {/* 뒤로가기 버튼 추가 */}
-        <img
-          src={Images.goback}
-          alt="Go Back"
-          className="w-8 h-8 cursor-pointer absolute left-0"
-          onClick={() => navigate(-1)}
-        />
-        <h1 className="text-2xl mx-auto">AI Dental Examination</h1>
+          {/* 뒤로가기 버튼 */}
+          <FaChevronLeft
+              className="text-2xl cursor-pointer absolute left-0"
+              onClick={() => navigate(-1)}
+          />
+          <h1 className="text-2xl mx-auto font-semibold">AI X-ray Analysis</h1>
       </div>
+
       <div
         ref={webcamRef}
         className="mt-6 w-60 h-60 flex justify-center items-center mx-auto rounded-md overflow-hidden border border-gray-300"

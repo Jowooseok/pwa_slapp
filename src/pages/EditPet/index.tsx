@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { FaPen, FaPaw } from "react-icons/fa";
 import updatePetInfo from '@/entities/Pet/api/updatePetInfo'; // 반려동물 정보 업데이트 API 함수
 import deletePet from '@/entities/Pet/api/deletePetInfo';
+import { FaChevronLeft } from "react-icons/fa";
 
 const EditPet: React.FC = () => {
     const location = useLocation();
@@ -70,7 +71,12 @@ const EditPet: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center text-white mx-6 md:mx-28 max-w-screen-xl relative min-h-screen pb-20">
-            <div className="flex items-center w-full mt-[45px] relative">
+            <div className="flex items-center w-full mt-4 relative">
+                {/* 뒤로가기 버튼 */}
+                <FaChevronLeft
+                    className="text-2xl cursor-pointer absolute left-0"
+                    onClick={() => navigate(-1)}
+                />
                 <h1 className="text-2xl mx-auto font-semibold">Edit Pet</h1>
             </div>
       
@@ -116,14 +122,14 @@ const EditPet: React.FC = () => {
                     className="w-1/2 py-4 rounded-full text-lg font-semibold text-[#DD2726] border-4"
                     style={{ backgroundColor: "#0D1226", borderColor:"#DD2726" }}
                     onClick={deleteBtn}
-                >
+                    >
                     Delete
                 </button>
                 <button
                     className="w-1/2 py-4 rounded-full text-lg font-semibold"
                     style={{ backgroundColor: "#0147E5" }}
                     onClick={editBtn}
-                >
+                    >
                     Done
                 </button>
             </div>

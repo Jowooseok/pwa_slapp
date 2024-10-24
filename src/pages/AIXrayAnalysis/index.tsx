@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import * as tmImage from '@teachablemachine/image';
+import { FaChevronLeft } from "react-icons/fa";
 import Images from "@/shared/assets/images";
 import { useNavigate, useLocation } from 'react-router-dom';
 import storeResult from '@/entities/AI/api/stroeResult';
@@ -91,7 +92,7 @@ const AIXrayAnalysis: React.FC = () => {
         const response = await storeResult(formData, "xray");
         
         if (response) {
-          navigate('/diagnosis-list');
+          navigate('/diagnosis-list', { state: { id: id } });
           console.log("Result saved successfully.");
         } else {
           console.log("Failed to save result. Please try again.");
@@ -108,15 +109,14 @@ const AIXrayAnalysis: React.FC = () => {
   return (
     <div className="flex flex-col items-center text-white mx-6 md:mx-28">
       <div className="flex items-center w-full mt-4 relative">
-        {/* 뒤로가기 버튼 추가 */}
-        <img
-          src={Images.goback} // 뒤로가기 이미지 경로
-          alt="Go Back"
-          className="w-8 h-8 cursor-pointer absolute left-0"
-          onClick={() => navigate(-1)} // 뒤로가기 기능
-        />
-        <h1 className="text-2xl mx-auto">AI X-ray Analysis</h1>
+          {/* 뒤로가기 버튼 */}
+          <FaChevronLeft
+              className="text-2xl cursor-pointer absolute left-0"
+              onClick={() => navigate(-1)}
+          />
+          <h1 className="text-2xl mx-auto font-semibold">AI X-ray Analysis</h1>
       </div>
+
       <div className="mt-6 w-full max-w-sm mx-auto rounded-md overflow-hidden p-2 flex flex-col items-center">
         {/* 숨겨진 파일 업로드 인풋 */}
         <input

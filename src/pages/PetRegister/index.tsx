@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FaPen, FaPaw } from "react-icons/fa";
+import { FaPen, FaPaw, FaChevronLeft } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import Images from "@/shared/assets/images";
 import registerPet from '@/entities/Pet/api/registPet';
 
 const PetRegister: React.FC = () => {
@@ -32,7 +33,7 @@ const PetRegister: React.FC = () => {
     const registerBtn = async () => {
         if (!petName || !petImage) {
             alert('Please provide both pet name and image.');
-            return;
+            return; 
         }
 
         try {
@@ -47,8 +48,12 @@ const PetRegister: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center text-white mx-6 md:mx-28 max-w-screen-xl relative min-h-screen pb-20">
-            {/* Header Section */}
-            <div className="flex items-center w-full mt-8">
+            <div className="flex items-center w-full mt-4 relative">
+                {/* 뒤로가기 버튼 */}
+                <FaChevronLeft
+                    className="text-2xl cursor-pointer absolute left-0"
+                    onClick={() => navigate(-1)}
+                />
                 <h1 className="text-2xl mx-auto font-semibold">Register Pet</h1>
             </div>
 

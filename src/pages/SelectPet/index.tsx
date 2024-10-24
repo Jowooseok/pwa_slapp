@@ -57,42 +57,49 @@ const SelectPet: React.FC = () => {
                 <h1 className="text-2xl mx-auto font-semibold">Select Pet</h1>
             </div>
 
-            {/* 반려동물 목록 */}
-            <div className="grid grid-cols-2 gap-6 mt-11 w-full max-w-md justify-items-center">
+           {/* 반려동물 목록 */}
+            <div className="grid grid-cols-2 mt-11 w-full max-w-md">
                 {pets.map((pet) => (
-                    <div key={pet.petId} className="relative w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[180px] lg:h-[180px] mt-5">
-                        <div className="w-full h-full rounded-lg bg-gray-800 flex items-center justify-center overflow-hidden">
-                        <img
-                            src={pet.imageUrl}
-                            alt={pet.name}
-                            className="w-full h-full object-cover rounded-lg"
-                            onClick={() => handlePetSelect(pet.petId)}
-                        />
-                        </div>
-                        <button
-                            className="absolute bottom-2 right-2 bg-blue-500 p-1 rounded-full cursor-pointer"
-                            onClick={() => navigate(`/edit-pet`, { state: { id: pet.petId, name: pet.name, imageUrl: pet.imageUrl } })}
-                            >
+                    <div key={pet.petId} className="w-full max-w-[180px] flex flex-col items-center">
+                        <div className="relative w-full h-full rounded-lg bg-[#0D1226] flex items-center justify-center overflow-hidden">
+                            <img
+                                src={pet.imageUrl}
+                                alt={pet.name}
+                                className="w-[130px] h-[130px] md:w-[150px] md:h-[150px] lg:w-[180px] lg:h-[180px] object-cover rounded-2xl"
+                                onClick={() => handlePetSelect(pet.petId)}
+                                />
+                            <button
+                                className="absolute bottom-2 right-8 bg-blue-500 p-1 rounded-full cursor-pointer"
+                                onClick={() =>
+                                    navigate(`/edit-pet`, {
+                                    state: { id: pet.petId, name: pet.name, imageUrl: pet.imageUrl },
+                                    })
+                                }
+                                >
                             <FaPen className="text-white" />
-                        </button>
-                        <div className="mt-2 text-center font-semibold text-lg">{pet.name}</div>
+                            </button>
+                        </div>
+                        <div className="mt-2 mb-6 text-center font-semibold text-lg w-full">
+                            {pet.name}
+                        </div>
                     </div>
                 ))}
 
                 {/* 반려동물 추가 버튼 */}
-                <div key="add-pet" className="flex flex-col items-center mt-5">
-                    <div className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[180px] lg:h-[180px] rounded-lg bg-gray-800 flex items-center justify-center cursor-pointer">
+                <div key="add-pet" className="flex flex-col items-center">
+                    <div className="w-[130px] h-[130px] md:w-[150px] md:h-[150px] lg:w-[180px] lg:h-[180px] rounded-lg bg-gray-800 flex items-center justify-center cursor-pointer">
                         <button
                             className="text-white text-5xl"
                             onClick={() => navigate('/regist-pet')}
-                        >
+                            >
                             +
                         </button>
                     </div>
                     <div className="mt-2 text-center font-semibold text-lg">Add Profile</div>
                 </div>
             </div>
-            
+
+
             
             {/* 모달창 */}
             {showModal && (

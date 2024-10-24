@@ -1,31 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Images from "@/shared/assets/images";
-// import getDiagnosisInfo from '@/entities/Pet/api/getDiagnosis';
 
 const DiagnosisDetail: React.FC = () => {
+    const location = useLocation();
     const navigate = useNavigate();
-    const [label, setLabel] = useState<string>(''); // 진단명
-    const [imageUrl, setImageUrl] = useState<string>(''); // 진단 이미지
+    const resultData = location.state as { img: string, result: string };
+    const [label] = useState<string>(resultData?.result || ''); // 진단명
+    const [imageUrl] = useState<string>(resultData?.img || ''); // 진단 이미지
     const [showFullText, setShowFullText] = useState(false);
-    const { id } = useParams<{ id: string }>();
 
-    // // 페이지 로드 시 진단 정보 가져오기
-    // useEffect(() => {
-    //     const fetchDiagnosisInfo = async () => {
-    //         if (id) {
-    //             try {
-    //                 const diagnosisData = await getDiagnosisInfo(id);
-    //                 setLabel(diagnosisData.label);
-    //                 setImageUrl(diagnosisData.imageUrl);
-    //             } catch (error) {
-    //                 console.error('Failed to fetch diagnosis info:', error);
-    //                 alert('Failed to load diagnosis information. Please try again.');
-    //             }
-    //         }
-    //     };
-    //     fetchDiagnosisInfo();
-    // }, [id]);
 
     // 진단 가능한 항목에 대한 설명
     const symptomsInfo: Record<string, string> = {

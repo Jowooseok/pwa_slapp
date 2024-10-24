@@ -7,11 +7,11 @@ import getDiagnosisList from '@/entities/Pet/api/getDiagnosisList';
 const DiagnosisRecords: React.FC = () => {
     const [selectedFilter, setSelectedFilter] = useState<string>('All');
     const [filterOptions, setFilterOptions] = useState<string[]>(['All']);
-    const [records, setRecords] = useState<{ diagnosisAt: string, result: string, diagnosisImgUrl: string, petName: string, petImgUrl: string }[]>([]);
+    const [records, setRecords] = useState<{ diagnosisAt: string, result: string, diagnosisImgUrl: string, petName: string, petImgUrl: string, type: string }[]>([]);
 
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     const petData = location.state as { id: string };
     const [id] = useState<string>(petData?.id || '');
 
@@ -35,7 +35,9 @@ const DiagnosisRecords: React.FC = () => {
             try {
                 const filters = await getRecords();
                 if (filters && Array.isArray(filters)) {
-                    setFilterOptions(['All', ...filters]);
+                    // 필터 데이터에서 `record` 속성만을 추출하여 문자열 배열로 변환하고, 중복 제거
+                    const filterLabels = [...new Set(filters.map((filter) => filter.record))];
+                    setFilterOptions(['All', ...filterLabels]);
                 } else {
                     console.warn("Received unexpected filter options format:", filters);
                     setFilterOptions(['All']); // 기본 옵션으로 설정
@@ -72,27 +74,35 @@ const DiagnosisRecords: React.FC = () => {
         fetchFilteredRecords();
     }, [selectedFilter, id]);
 
+    // 글자수를 17글자로 제한하고 넘으면 "..." 붙이기
+    const truncateText = (text: string, maxLength: number) => {
+        return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    };
+
     return (
         <div className="flex flex-col items-center text-white mx-6 md:mx-28">
             <div className="flex items-center w-full mt-4 relative">
                 {/* 뒤로가기 버튼 */}
-                <FaChevronLeft className="text-2xl cursor-pointer absolute left-0" onClick={() => navigate(-1)} />
+                <FaChevronLeft
+                    className="text-2xl cursor-pointer absolute left-0"
+                    onClick={() => navigate(-1)}
+                />
                 <h1 className="text-2xl mx-auto font-semibold">Records</h1>
             </div>
 
             {/* 필터링 버튼 */}
             <div className="flex justify-start w-full mt-8 h-11 relative">
-                <div className="relative w-auto max-w-xs">
+                <div className="relative w-1/2 max-w-xs"> {/* 너비를 절반으로 조정 */}
                     <select
                         className="text-black p-2 rounded-full bg-white pr-6 pl-6 appearance-none w-full"
                         value={selectedFilter}
                         onChange={(e) => setSelectedFilter(e.target.value)}
                     >
-                        {/* {filterOptions.map((option) => (
-                            <option key={option} value={option}>
-                                {option}
+                        {filterOptions.map((option, index) => (
+                            <option key={index} value={option}>
+                                {truncateText(option, 17)} {/* 옵션 글자수 제한 */}
                             </option>
-                        ))} */}
+                        ))}
                     </select>
                     <FaChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black pointer-events-none" />
                 </div>
@@ -101,11 +111,12 @@ const DiagnosisRecords: React.FC = () => {
             {/* 진단 기록 리스트 */}
             <div className="w-full max-w-2xl mt-8">
                 {records.map((record, index) => (
-                    <div key={index} className="bg-gray-800 p-4 rounded-lg mb-4 flex justify-between items-center">
+                    <div 
+                        key={index} className="bg-gray-800 p-4 rounded-lg mb-4 flex justify-between items-center"
+                        onClick={() => navigate('/diagnosis-detail', { state: { img: record.diagnosisImgUrl, result: record.result } })}>
                         <div>
-                            <p className="font-semibold">{`${record.diagnosisAt} ${record.result}`}</p>
-                            <img src={record.diagnosisImgUrl} alt={record.result} className="w-20 h-20 mt-2 rounded-md" />
-                            <p className="text-sm text-gray-400">{record.petName}</p>
+                            <p className="font-semibold">{`${record.diagnosisAt}  ${record.type}`}</p>
+                            <p className="text-sm text-gray-400">{record.result}</p>
                         </div>
                         <FaChevronLeft className="text-lg cursor-pointer transform rotate-180" />
                     </div>
