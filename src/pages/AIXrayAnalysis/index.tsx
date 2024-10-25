@@ -89,7 +89,7 @@ const AIXrayAnalysis: React.FC = () => {
         formData.append('json', new Blob([JSON.stringify({ petId: id, result: label })], { type: 'application/json' }));
         formData.append('file', selectedImage);
 
-        const response = await storeResult(formData, "xray");
+        const response = await storeResult(formData, "xray", navigate);
         
         if (response) {
           navigate('/diagnosis-list', { state: { id: id } });

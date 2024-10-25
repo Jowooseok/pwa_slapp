@@ -16,7 +16,7 @@ const SelectPet: React.FC = () => {
     useEffect(() => {
         const fetchPets = async () => {
             try {
-                const petList = await getPetList();
+                const petList = await getPetList(navigate);
                 
                 // 새로운 반려동물 정보가 있으면 추가
                 if (location.state) {
@@ -33,7 +33,7 @@ const SelectPet: React.FC = () => {
         };
 
         fetchPets();
-    }, [location.state]);
+    }, [location.state, navigate]);
 
     // 반려동물 선택 시 페이지 이동 함수
     const handlePetSelect = (petId: number) => {

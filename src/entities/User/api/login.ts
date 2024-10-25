@@ -1,39 +1,30 @@
 import api from '@/shared/api/axiosInstance';
 
-interface LoginResponse {
-  code: string;
-  data?: {
-    accessToken: string;
-    refreshToken: string;
-  };
-  message?: string;
-}
-
 // 이메일 로그인 요청
 async function emailLogin(email: string, password: string): Promise<boolean> {
-    const data = { 
-        userId: email, 
-        userPw: password 
-    };
+  const data = { 
+    userId: email, 
+    userPw: password 
+  };
 
   try {
-    const response = await api.post<LoginResponse>('/auth/login', data, {
+    const response = await api.post('/auth/login', data, {
       headers: {
         'Content-Type': 'application/json',
       },
+      withCredentials: true // 쿠키를 사용하기 때문에 반드시 추가
     });
 
-    if (response.data.code === 'OK' && response.data.data) {
-      const { accessToken, refreshToken } = response.data.data;
-      // 로그인 성공 시, 로컬 스토리지에 토큰 저장
+    if (response.data.code === 'OK' && response.headers['authorization']) {
+      // Bearer 접두사를 제거
+      const accessToken = response.headers['authorization'].replace('Bearer ', '');
+      // 로그인 성공 시, 로컬 스토리지에 Access Token 저장
       localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
       return true;
     } else if (response.data.code !== 'OK') {
       console.warn('Step: login 응답 코드가 OK가 아님:', response.data.message);
       throw new Error(response.data.message || 'Login failed');
     }
-
   } catch (error: any) {
     console.error('Step: login 실패:', error);
     let errorMessage = 'Login failed. Please try again.';
@@ -47,7 +38,6 @@ async function emailLogin(email: string, password: string): Promise<boolean> {
     throw new Error(errorMessage);
   }
 
-  // 모든 경로에서 값을 반환하도록 기본 반환값 추가
   return false;
 }
 

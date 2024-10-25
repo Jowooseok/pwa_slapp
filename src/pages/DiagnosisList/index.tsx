@@ -19,7 +19,7 @@ const DiagnosisRecords: React.FC = () => {
     useEffect(() => {
         const fetchAllRecords = async () => {
             try {
-                const allRecords = await getDiagnosisList(null, null, id);
+                const allRecords = await getDiagnosisList(null, null, id, navigate);
                 if (allRecords && Array.isArray(allRecords)) {
                     setRecords(allRecords);
                 } else {
@@ -33,7 +33,7 @@ const DiagnosisRecords: React.FC = () => {
 
         const fetchFilterOptions = async () => {
             try {
-                const filters = await getRecords();
+                const filters = await getRecords(navigate);
                 if (filters && Array.isArray(filters)) {
                     // 필터 데이터에서 `record` 속성만을 추출하여 문자열 배열로 변환하고, 중복 제거
                     const filterLabels = [...new Set(filters.map((filter) => filter.record))];
@@ -58,7 +58,7 @@ const DiagnosisRecords: React.FC = () => {
             if (id) {
                 try {
                     const type = selectedFilter === 'All' ? null : selectedFilter;
-                    const filteredRecords = await getDiagnosisList(type, null, id);
+                    const filteredRecords = await getDiagnosisList(type, null, id, navigate);
                     if (filteredRecords && Array.isArray(filteredRecords)) {
                         setRecords(filteredRecords);
                     } else {

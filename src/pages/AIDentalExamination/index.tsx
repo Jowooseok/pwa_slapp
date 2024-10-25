@@ -148,7 +148,7 @@ const AIDentalExamination: React.FC = () => {
         formData.append('json', new Blob([JSON.stringify({ petId: id, result: label })], { type: 'application/json' }));
         formData.append('file', capturedImage);
 
-        const response = await storeResult(formData, "dental");
+        const response = await storeResult(formData, "dental", navigate);
         if (response) {
           navigate('/diagnosis-list', { state: { id: id } });
           console.log("Result saved successfully.");

@@ -1,12 +1,14 @@
 import api from '@/shared/api/axiosInstance';
+import { NavigateFunction } from 'react-router-dom';
 
 // 토큰 갱신 함수
-async function refreshToken(refreshTokenValue: string) {
+async function refreshToken() {
     try {
-        const response = await api.post('/auth/refresh', { refreshToken: refreshTokenValue }, {
+        const response = await api.post('/auth/refresh', {}, {
             headers: {
                 'Content-Type': 'application/json',
-            }
+            },
+            withCredentials: true
         });
 
         if (response.data.code === 'OK') {
@@ -17,17 +19,14 @@ async function refreshToken(refreshTokenValue: string) {
             console.warn('Token refresh failed:', response.data.message);
             throw new Error(response.data.message || 'Token refresh failed');
         }
-
     } catch (error) {
         console.error('Error refreshing token:', error);
-        // 로그아웃 처리 등 추가적인 오류 처리 로직 필요
         throw error;
     }
 }
 
-async function deletePet(petinfo: any): Promise<any> {
+async function deletePet(petinfo: any, navigate: any): Promise<any> {
     let accessToken = localStorage.getItem('accessToken');
-    const refreshTokenValue = localStorage.getItem('refreshToken');
     const id = petinfo;
     const url = `pet/${id}`;
 
@@ -36,6 +35,7 @@ async function deletePet(petinfo: any): Promise<any> {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
+            withCredentials: true
         });
 
         if(response.data.code === 'OK'){
@@ -46,17 +46,20 @@ async function deletePet(petinfo: any): Promise<any> {
 
     }catch(error: any){
          // 토큰 만료 시 재시도
-         if (error.response && error.response.status === 401 && refreshTokenValue) {
-            console.log("Access token expired, attempting to refresh token...");
+         if (error.response && error.response.status === 401) {
+            console.log('Access token expired, attempting to refresh token...');
             try {
-                accessToken = await refreshToken(refreshTokenValue);
-                return await deletePet(petinfo); // 갱신된 토큰으로 재시도
+                accessToken = await refreshToken(); // 토큰 갱신
+                return await deletePet(petinfo, navigate); // 갱신된 토큰으로 재시도
             } catch (refreshError) {
-                console.error("Failed to refresh token:", refreshError);
-                throw refreshError;
+                console.error('Failed to refresh token:', refreshError);
+                // 로그아웃 및 로그인 페이지로 이동 처리
+                localStorage.removeItem('accessToken');
+                navigate('/login', { replace: true });
+                throw new Error('No access or refresh token found. Please log in.');
             }
         } else {
-            console.error("Error deleting pet:", error);
+            console.error('Error fetching records:', error);
             throw error;
         }
     }

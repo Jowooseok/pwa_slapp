@@ -1,9 +1,9 @@
 import api from '@/shared/api/axiosInstance';
 
 // 토큰 갱신 함수
-async function refreshToken(refreshTokenValue: string) {
+async function refreshToken() {
     try {
-        const response = await api.post('/auth/refresh', { refreshToken: refreshTokenValue }, {
+        const response = await api.post('/auth/refresh', {
             headers: {
                 'Content-Type': 'application/json',
             }
@@ -51,10 +51,10 @@ async function registerPet(petInfo: { name: string, image: File }): Promise<any>
         }
     } catch (error: any) {
         // 토큰 만료 시 재시도
-        if (error.response && error.response.status === 401 && refreshTokenValue) {
+        if (error.response && error.response.status === 401) {
             console.log("Access token expired, attempting to refresh token...");
             try {
-                accessToken = await refreshToken(refreshTokenValue);
+                accessToken = await refreshToken();
                 return await registerPet(petInfo); // 갱신된 토큰으로 재시도
             } catch (refreshError) {
                 console.error("Failed to refresh token:", refreshError);

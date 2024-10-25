@@ -12,12 +12,11 @@ const Login: React.FC = () => {
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
         
-        if (accessToken || refreshToken) {
+        if (accessToken) {
             navigate('/home');
         }
-    }, []);
+    }, [navigate]);
 
     const loginBtn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); // 폼 제출 시 새로고침 방지
