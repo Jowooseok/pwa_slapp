@@ -58,7 +58,7 @@ const EditPet: React.FC = () => {
         if (id) {
             if (window.confirm("정말로 반려동물을 삭제하시겠습니까?")) {
                 try {
-                    await deletePet(id);
+                    await deletePet(id, navigate);
                     alert("반려동물이 삭제되었습니다.");
                     navigate('/select-pet');
                 } catch (error) {
