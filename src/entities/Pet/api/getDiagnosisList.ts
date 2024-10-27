@@ -7,6 +7,7 @@ async function tryRefreshToken() {
         const response = await api.post('/auth/refresh', {
             headers: {
                 'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': '69420',
             },
             withCredentials: true
         });

@@ -4,9 +4,10 @@ import { NavigateFunction } from 'react-router-dom';
 // 토큰 갱신 함수
 async function refreshToken() {
     try {
-        const response = await api.post('/auth/refresh', {}, {
+        const response = await api.post('/auth/refresh', {
             headers: {
                 'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': '69420',
             },
             withCredentials: true
         });

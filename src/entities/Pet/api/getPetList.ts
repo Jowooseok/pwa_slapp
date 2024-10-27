@@ -1,5 +1,4 @@
 import api from '@/shared/api/axiosInstance';
-import { useNavigate } from 'react-router-dom';
 
 // 토큰 갱신 함수
 async function tryRefreshToken(): Promise<string> {
@@ -17,7 +16,7 @@ async function tryRefreshToken(): Promise<string> {
             localStorage.setItem('accessToken', newAccessToken);
             return newAccessToken;
         } else {
-            // console.warn('Token refresh failed:', response.data.message);
+            console.warn('Token refresh failed:', response.data.message);
             throw new Error(response.data.message || 'Token refresh failed');
         }
     } catch (error) {

@@ -11,6 +11,7 @@ async function emailLogin(email: string, password: string): Promise<boolean> {
     const response = await api.post('/auth/login', data, {
       headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': '69420',
       },
       withCredentials: true // 쿠키를 사용하기 때문에 반드시 추가
     });

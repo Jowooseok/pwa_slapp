@@ -35,6 +35,7 @@ async function updatePetInfo(formData: FormData): Promise<any> {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${accessToken}`,
+                'ngrok-skip-browser-warning': '69420',
             },
         });
 

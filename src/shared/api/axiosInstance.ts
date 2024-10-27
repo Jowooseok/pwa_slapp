@@ -5,10 +5,12 @@ import { useUserStore } from '@/entities/User/model/userModel';
 
 // Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://d2d2-61-81-223-147.ngrok-free.app', // Vite 환경 변수 사용
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://bfde-61-81-223-147.ngrok-free.app', // Vite 환경 변수 사용
   headers: {
     'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': '69420',
   },
+  withCredentials: true,
 });
 
 // 환경 변수 값 확인을 위한 콘솔 로그 추가
