@@ -38,7 +38,7 @@ const PetRegister: React.FC = () => {
 
         try {
             const petInfo = { name: petName, image: petImage };
-            await registerPet(petInfo);
+            await registerPet(petInfo, navigate);
             // alert('Pet registered successfully!');
             navigate('/select-pet'); // 등록 후 반려동물 선택 페이지로 이동
         } catch (error) {

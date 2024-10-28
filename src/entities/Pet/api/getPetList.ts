@@ -11,16 +11,19 @@ async function tryRefreshToken(): Promise<string> {
             withCredentials: true
         });
 
-        if (response.data.code === 'OK') {
-            const newAccessToken = response.data.data;
-            localStorage.setItem('accessToken', newAccessToken);
+        // Authorization 헤더에서 새로운 액세스 토큰을 추출
+        const newAccessToken = response.headers['authorization'];
+
+        if (newAccessToken) {
+            // 새로운 액세스 토큰을 로컬 스토리지에 저장
+            localStorage.setItem('accessToken', newAccessToken.replace('Bearer ', ''));
             return newAccessToken;
         } else {
-            console.warn('Token refresh failed:', response.data.message);
-            throw new Error(response.data.message || 'Token refresh failed');
+            console.warn('Token refresh failed: Authorization header is missing');
+            throw new Error('Token refresh failed: Authorization header is missing');
         }
     } catch (error) {
-        // console.error('Error refreshing token:', error);
+        console.error('Error refreshing token:', error);
         throw error;
     }
 }
@@ -42,37 +45,31 @@ async function getPetList(navigate: any): Promise<any> {
         if (response.data.code === 'OK') {
             return response.data.data;
         } else {
-            console.error('무슨일이야: ', response);
+            console.error('Unexpected response: ', response);
             throw new Error(response.data.message || 'Failed to fetch pet information');
         }
     } catch (error: any) {
-        console.error('에러 petList:', error.message);
+        console.error('에러 발생 시점:', error.message);
 
-        if(error.message === "Request failed with status code 404"){
-            console.log("리프레시 토큰으로 토큰 재발급 시도");
-            accessToken = await tryRefreshToken();
-            
-        }
         // 상태 코드 확인 및 재시도 로직
-        // if (error.response && error.response.status === 401) {
-        //     console.log('Access token expired, attempting to refresh token...');
-        //     try {
-        //         accessToken = await refreshToken(); // 토큰 갱신
-        //         return await getPetList(navigate); // 갱신된 토큰으로 재시도
-        //     } catch (refreshError) {
-        //         console.error('Failed to refresh token:', refreshError);
-        //         // 리프레시 토큰이 만료되었거나 실패한 경우 리다이렉션 처리
-        //         localStorage.removeItem('accessToken');
-        //         navigate('/login', { replace: true });
-        //         throw refreshError;
-        //     }
-        // } else if (error.response && error.response.status === 404) {
-        //     console.error('Resource not found:', error);
-        //     throw new Error('Resource not found. Please check the endpoint.');
-        // } else {
-        //     console.error('Error fetching records:', error);
-        //     throw error;
-        // }
+        if (error.response && error.response.status === 404) {
+            console.log("리프레시 토큰으로 토큰 재발급 시도 중...");
+            try {
+                accessToken = await tryRefreshToken();
+                return await getPetList(navigate); // 갱신된 토큰으로 재시도
+            } catch (refreshError) {
+                console.error('리프레시 토큰 갱신 실패:', refreshError);
+                localStorage.removeItem('accessToken');
+                navigate('/login', { replace: true });
+                throw refreshError;
+            }
+        } else if (error.response && error.response.status === 404) {
+            console.error('Resource not found:', error);
+            throw new Error('Resource not found. Please check the endpoint.');
+        } else {
+            console.error('Error fetching pet list:', error);
+            throw error;
+        }
     }
 }
 

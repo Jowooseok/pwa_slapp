@@ -45,7 +45,7 @@ const EditPet: React.FC = () => {
                 formData.append('file', emptyFile);
             }
 
-            await updatePetInfo(formData);
+            await updatePetInfo(formData, navigate);
             alert('Pet updated successfully!');
             navigate('/select-pet');
         } catch (error) {
