@@ -16,7 +16,7 @@ const AIDentalExamination: React.FC = () => {
   const [showFullText, setShowFullText] = useState(false);
   const [isDetectionStopped, setIsDetectionStopped] = useState(false);
   const [capturedImage, setCapturedImage] = useState<File | null>(null);
-  const [canStop, setCanStop] = useState(false); // 5초 뒤에 멈출 수 있도록 하는 상태
+  const [canStop, setCanStop] = useState(false); // 5초 후에 멈출 수 있도록 하는 상태
 
   const petData = location.state as { id: string };
   const [id] = useState<string>(petData?.id || '');
@@ -33,7 +33,6 @@ const AIDentalExamination: React.FC = () => {
       const metadataURL = "/ai_model/dental/metadata.json";
 
       try {
-        // 모델 로드
         const loadedModel = await tmImage.load(modelURL, metadataURL);
         setModel(loadedModel);
       } catch (error) {
@@ -43,11 +42,9 @@ const AIDentalExamination: React.FC = () => {
       }
 
       try {
-        // 웹캠 설정
-        const flip = false; // 웹캠 좌우 반전 여부
+        const flip = false;
         const width = 240;
         const height = 240;
-
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const facingMode = isMobile ? "environment" : "user";
 
@@ -61,7 +58,7 @@ const AIDentalExamination: React.FC = () => {
           webcamRef.current.appendChild(newWebcam.canvas);
         }
 
-        // 5초 후부터 멈출 수 있도록 설정
+        // 5초 후에 canStop을 true로 설정
         setTimeout(() => {
           setCanStop(true);
         }, 5000);
@@ -78,14 +75,14 @@ const AIDentalExamination: React.FC = () => {
         webcam.stop();
       }
     };
-  }, []); 
+  }, []);
 
   useEffect(() => {
     if (model && webcam) {
       const loop = async () => {
         if (webcam && model && !isDetectionStopped) {
-          webcam.update(); 
-          await predict(); 
+          webcam.update();
+          await predict();
           window.requestAnimationFrame(loop);
         }
       };
@@ -101,7 +98,7 @@ const AIDentalExamination: React.FC = () => {
         prev.probability > current.probability ? prev : current
       );
 
-      // 5초 후부터 확률이 95% 이상인 경우 멈춤
+      // 5초 후에 canStop이 true인 상태에서 확률이 95% 이상일 때만 멈춤
       if (highestPrediction.probability > 0.95 && canStop) {
         stopWebcam(highestPrediction.className);
       } else {
