@@ -15,8 +15,8 @@ const AIDentalExamination: React.FC = () => {
 
   const [showFullText, setShowFullText] = useState(false);
   const [isDetectionStopped, setIsDetectionStopped] = useState(false);
-  const [capturedImage, setCapturedImage] = useState<File | null>(null); // 캡처된 이미지 저장
-  const [isAllowedToStop, setIsAllowedToStop] = useState(false); // 최소 5초 뒤에 멈추도록 하는 상태
+  const [capturedImage, setCapturedImage] = useState<File | null>(null);
+  const [canStop, setCanStop] = useState(false); // 5초 뒤에 멈출 수 있도록 하는 상태
 
   const petData = location.state as { id: string };
   const [id] = useState<string>(petData?.id || '');
@@ -45,36 +45,26 @@ const AIDentalExamination: React.FC = () => {
       try {
         // 웹캠 설정
         const flip = false; // 웹캠 좌우 반전 여부
-        const width = 240; // 너비 설정
-        const height = 240; // 높이 설정
+        const width = 240;
+        const height = 240;
 
-        // 장치 유형 감지: 모바일이면 후면 카메라, 노트북이면 기본 웹캠
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const facingMode = isMobile ? "environment" : "user";
 
         const newWebcam = new tmImage.Webcam(width, height, flip);
-
-        // `setup` 메서드에 `facingMode` 설정 추가
         await newWebcam.setup({ facingMode: { ideal: facingMode } });
-
-        // 비디오 요소에 속성 추가
-        if (newWebcam.webcam) {
-          newWebcam.webcam.setAttribute('playsinline', 'true');
-          newWebcam.webcam.setAttribute('muted', 'true');
-        }
         await newWebcam.play();
         setWebcam(newWebcam);
 
         if (webcamRef.current) {
-          webcamRef.current.innerHTML = ""; // 기존 웹캠 캔버스를 지워 중복 방지
+          webcamRef.current.innerHTML = "";
           webcamRef.current.appendChild(newWebcam.canvas);
         }
 
-        // 5초 후에 멈출 수 있도록 설정
+        // 5초 후부터 멈출 수 있도록 설정
         setTimeout(() => {
-          setIsAllowedToStop(true);
+          setCanStop(true);
         }, 5000);
-
       } catch (error) {
         console.error("Error accessing webcam:", error);
         alert("Failed to access the camera. Please check your browser settings and allow camera access.");
@@ -88,14 +78,14 @@ const AIDentalExamination: React.FC = () => {
         webcam.stop();
       }
     };
-  }, []); // 빈 의존성 배열로 한 번만 실행되도록 설정
+  }, []); 
 
   useEffect(() => {
     if (model && webcam) {
       const loop = async () => {
         if (webcam && model && !isDetectionStopped) {
-          webcam.update(); // 웹캠 프레임 업데이트
-          await predict(); // 예측 수행
+          webcam.update(); 
+          await predict(); 
           window.requestAnimationFrame(loop);
         }
       };
@@ -111,7 +101,8 @@ const AIDentalExamination: React.FC = () => {
         prev.probability > current.probability ? prev : current
       );
 
-      if (highestPrediction.probability > 0.95 && isAllowedToStop) { // 최소 5초 후에 멈출 수 있음
+      // 5초 후부터 확률이 95% 이상인 경우 멈춤
+      if (highestPrediction.probability > 0.95 && canStop) {
         stopWebcam(highestPrediction.className);
       } else {
         setLabel("Normal");
@@ -140,7 +131,7 @@ const AIDentalExamination: React.FC = () => {
         webcam.canvas.toBlob((blob) => {
           if (blob) {
             const capturedFile = new File([blob], 'dental_capture.png', { type: 'image/png' });
-            setCapturedImage(capturedFile); // 캡처된 이미지를 상태로 저장
+            setCapturedImage(capturedFile);
           }
         }, 'image/png');
       }
