@@ -97,20 +97,24 @@ const AIDentalExamination: React.FC = () => {
   useEffect(() => {
     if (model && webcam) {
       const loop = async () => {
-        if (webcam && model && !isDetectionStopped) {
-          webcam.update();
-          console.log("Loop running, calling predict");
-          await predict();
-          window.requestAnimationFrame(loop);
+        if (isDetectionStopped) return;  // 탐지가 멈추면 종료
+
+        webcam.update();
+        console.log("Loop running, calling predict");
+        await predict();
+
+        if (!isDetectionStopped) {
+          window.requestAnimationFrame(loop);  // 계속 탐지 중인 경우에만 재귀 호출
         }
       };
-      loop();
+      window.requestAnimationFrame(loop);  // 최초 호출
     }
   }, [model, webcam, isDetectionStopped]);
 
+
   // 모델 예측 함수
   const predict = async () => {
-    if (model && webcam) {
+    if (model && webcam && !isDetectionStopped) {
       const prediction = await model.predict(webcam.canvas);
       const highestPrediction = prediction.reduce((prev, current) =>
         prev.probability > current.probability ? prev : current
@@ -118,7 +122,7 @@ const AIDentalExamination: React.FC = () => {
 
       console.log("Prediction result:", highestPrediction.className, "Probability:", highestPrediction.probability);
 
-      if (highestPrediction.probability > 0.95  && canStop && !isDetectionStopped) {
+      if (highestPrediction.probability > 0.95 && canStop) {
         stopWebcam(highestPrediction.className);
       } else {
         setLabel("Normal");
@@ -147,7 +151,7 @@ const AIDentalExamination: React.FC = () => {
         webcam.canvas.toBlob((blob) => {
           if (blob) {
             const capturedFile = new File([blob], 'dental_capture.png', { type: 'image/png' });
-            setCapturedImage(capturedFile); // 캡처된 이미지를 상태로 저장
+            setCapturedImage(capturedFile);
           }
         }, 'image/png');
       }
