@@ -64,18 +64,15 @@ const Login: React.FC = () => {
     };
 
     const handleAppleSignIn = () => {
-        const appleClientId = import.meta.env.APPLE_CLIENT_ID;
-        const appleRedirectUri = import.meta.env.APPLE_REDIRECT_URI;
-
         if (!appleScriptLoaded) {
             console.error('Apple Sign-In script is not loaded yet.');
             return;
         }
 
         window.AppleID.auth.init({
-            clientId: appleClientId, // 애플 개발자 페이지에서 발급받은 clientId
+            clientId:  import.meta.env.APPLE_CLIENT_ID, // 애플 개발자 페이지에서 발급받은 clientId
             scope: 'email',
-            redirectURI: appleRedirectUri, // 리디렉션할 URI
+            redirectURI: import.meta.env.APPLE_REDIRECT_URI, // 리디렉션할 URI
             usePopup: true,
         });
 
