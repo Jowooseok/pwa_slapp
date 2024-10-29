@@ -34,9 +34,9 @@ const AIDentalExamination: React.FC = () => {
       const metadataURL = "/ai_model/dental/metadata.json";
 
       try {
-        // 모델 로드
         const loadedModel = await tmImage.load(modelURL, metadataURL);
         setModel(loadedModel);
+        console.log("Model loaded successfully");
       } catch (error) {
         console.error("Error loading model:", error);
         alert("Failed to load the AI model. Please check your network connection or contact support.");
@@ -44,36 +44,26 @@ const AIDentalExamination: React.FC = () => {
       }
 
       try {
-        // 웹캠 설정
-        const flip = false; // 웹캠 좌우 반전 여부
-        const width = 240; // 너비 설정
-        const height = 240; // 높이 설정
-
-        // 장치 유형 감지: 모바일이면 후면 카메라, 노트북이면 기본 웹캠
+        const flip = false;
+        const width = 240;
+        const height = 240;
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const facingMode = isMobile ? "environment" : "user";
 
         const newWebcam = new tmImage.Webcam(width, height, flip);
-
-        // `setup` 메서드에 `facingMode` 설정 추가
         await newWebcam.setup({ facingMode: { ideal: facingMode } });
-
-        // 비디오 요소에 속성 추가
-        if (newWebcam.webcam) {
-          newWebcam.webcam.setAttribute('playsinline', 'true');
-          newWebcam.webcam.setAttribute('muted', 'true');
-        }
         await newWebcam.play();
         setWebcam(newWebcam);
 
         if (webcamRef.current) {
-          webcamRef.current.innerHTML = ""; // 기존 웹캠 캔버스를 지워 중복 방지
+          webcamRef.current.innerHTML = "";
           webcamRef.current.appendChild(newWebcam.canvas);
         }
 
         // 5초 후에 canStop을 true로 설정
         setTimeout(() => {
           setCanStop(true);
+          console.log("5 seconds passed, canStop set to true");
         }, 5000);
 
       } catch (error) {
@@ -89,14 +79,15 @@ const AIDentalExamination: React.FC = () => {
         webcam.stop();
       }
     };
-  }, []); // 빈 의존성 배열로 한 번만 실행되도록 설정
+  }, []);
 
   useEffect(() => {
     if (model && webcam) {
       const loop = async () => {
         if (webcam && model && !isDetectionStopped) {
-          webcam.update(); // 웹캠 프레임 업데이트
-          await predict(); // 예측 수행
+          webcam.update();
+          console.log("Loop running, calling predict");
+          await predict();
           window.requestAnimationFrame(loop);
         }
       };
@@ -112,7 +103,9 @@ const AIDentalExamination: React.FC = () => {
         prev.probability > current.probability ? prev : current
       );
 
-      if (highestPrediction.probability > 0.95  && canStop) {
+      console.log("Prediction result:", highestPrediction.className, "Probability:", highestPrediction.probability);
+
+      if (highestPrediction.probability > 0.95 && canStop) {
         stopWebcam(highestPrediction.className);
       } else {
         setLabel("Normal");
