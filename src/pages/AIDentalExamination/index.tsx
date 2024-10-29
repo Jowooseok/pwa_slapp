@@ -34,9 +34,9 @@ const AIDentalExamination: React.FC = () => {
       const metadataURL = "/ai_model/dental/metadata.json";
 
       try {
+        // 모델 로드
         const loadedModel = await tmImage.load(modelURL, metadataURL);
         setModel(loadedModel);
-        console.log("Model loaded successfully");
       } catch (error) {
         console.error("Error loading model:", error);
         alert("Failed to load the AI model. Please check your network connection or contact support.");
@@ -44,14 +44,25 @@ const AIDentalExamination: React.FC = () => {
       }
 
       try {
-        const flip = false;
-        const width = 240;
-        const height = 240;
+        // 웹캠 설정
+        const flip = false; // 웹캠 좌우 반전 여부
+        const width = 240; // 너비 설정
+        const height = 240; // 높이 설정
+
+        // 장치 유형 감지: 모바일이면 후면 카메라, 노트북이면 기본 웹캠
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const facingMode = isMobile ? "environment" : "user";
 
         const newWebcam = new tmImage.Webcam(width, height, flip);
+
+        // `setup` 메서드에 `facingMode` 설정 추가
         await newWebcam.setup({ facingMode: { ideal: facingMode } });
+
+        // 비디오 요소에 속성 추가
+        if (newWebcam.webcam) {
+          newWebcam.webcam.setAttribute('playsinline', 'true');
+          newWebcam.webcam.setAttribute('muted', 'true');
+        }
         await newWebcam.play();
         setWebcam(newWebcam);
 
@@ -65,6 +76,7 @@ const AIDentalExamination: React.FC = () => {
           setCanStop(true);
           console.log("5 seconds passed, canStop set to true");
         }, 5000);
+
 
       } catch (error) {
         console.error("Error accessing webcam:", error);
@@ -105,7 +117,7 @@ const AIDentalExamination: React.FC = () => {
 
       console.log("Prediction result:", highestPrediction.className, "Probability:", highestPrediction.probability);
 
-      if (highestPrediction.probability > 0.95 && canStop) {
+      if (highestPrediction.probability > 0.95  && canStop) {
         stopWebcam(highestPrediction.className);
       } else {
         setLabel("Normal");
