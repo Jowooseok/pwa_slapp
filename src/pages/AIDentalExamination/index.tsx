@@ -15,17 +15,20 @@ const AIDentalExamination: React.FC = () => {
 
   const [showFullText, setShowFullText] = useState(false);
   const [isDetectionStopped, setIsDetectionStopped] = useState(false);
-  const [capturedImage, setCapturedImage] = useState<File | null>(null); // 캡처된 이미지 저장
-  const [canStop, setCanStop] = useState(false); 
-
+  const [capturedImage, setCapturedImage] = useState<File | null>(null);
+  
+  const [highestPrediction, setHighestPrediction] = useState<{ label: string; probability: number }>({
+    label: "Normal",
+    probability: 0,
+  });
 
   const petData = location.state as { id: string };
   const [id] = useState<string>(petData?.id || '');
 
   const symptomsInfo: Record<string, string> = {
-    "Gingivitis & Plaque": "Symptoms of gingivitis and plaque have been detected in your dog. It is important to visit the vet as soon as possible to address this condition. Maintaining good oral hygiene is crucial for your pet's health.",
-    "Periodontitis": "Symptoms of periodontitis have been detected in your dog. This condition can cause discomfort and pain. We recommend seeing a veterinarian promptly for proper diagnosis and treatment.",
-    "Normal": "No issues were detected in your dog's teeth. Keep maintaining good dental hygiene to ensure their continued health."
+    "Gingivitis & Plaque": "Symptoms of gingivitis and plaque have been detected in your dog...",
+    "Periodontitis": "Symptoms of periodontitis have been detected in your dog...",
+    "Normal": "No issues were detected in your dog's teeth...",
   };
 
   useEffect(() => {
@@ -34,7 +37,6 @@ const AIDentalExamination: React.FC = () => {
       const metadataURL = "/ai_model/dental/metadata.json";
 
       try {
-        // 모델 로드
         const loadedModel = await tmImage.load(modelURL, metadataURL);
         setModel(loadedModel);
         console.log("Model loaded successfully");
@@ -45,25 +47,14 @@ const AIDentalExamination: React.FC = () => {
       }
 
       try {
-        // 웹캠 설정
-        const flip = false; // 웹캠 좌우 반전 여부
-        const width = 240; // 너비 설정
-        const height = 240; // 높이 설정
-
-        // 장치 유형 감지: 모바일이면 후면 카메라, 노트북이면 기본 웹캠
+        const flip = false;
+        const width = 240;
+        const height = 240;
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const facingMode = isMobile ? "environment" : "user";
 
         const newWebcam = new tmImage.Webcam(width, height, flip);
-
-        // `setup` 메서드에 `facingMode` 설정 추가
         await newWebcam.setup({ facingMode: { ideal: facingMode } });
-
-        // 비디오 요소에 속성 추가
-        if (newWebcam.webcam) {
-          newWebcam.webcam.setAttribute('playsinline', 'true');
-          newWebcam.webcam.setAttribute('muted', 'true');
-        }
         await newWebcam.play();
         setWebcam(newWebcam);
 
@@ -72,12 +63,10 @@ const AIDentalExamination: React.FC = () => {
           webcamRef.current.appendChild(newWebcam.canvas);
         }
 
-        // 5초 후에 canStop을 true로 설정
+        // 5초 후에 stopWebcam을 호출
         setTimeout(() => {
-          setCanStop(true);
-          console.log("5 seconds passed, canStop set to true");
+          stopWebcam(highestPrediction.label);
         }, 5000);
-
 
       } catch (error) {
         console.error("Error accessing webcam:", error);
@@ -95,43 +84,39 @@ const AIDentalExamination: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (model && webcam) {
+    if (model && webcam && !isDetectionStopped) {
       const loop = async () => {
-        if (isDetectionStopped) return;  // 탐지가 멈추면 종료
-
-        webcam.update();
-        console.log("Loop running, calling predict");
-        await predict();
-
-        if (!isDetectionStopped) {
-          window.requestAnimationFrame(loop);  // 계속 탐지 중인 경우에만 재귀 호출
+        if (webcam && model) {
+          webcam.update();
+          await predict();
+          window.requestAnimationFrame(loop);
         }
       };
-      window.requestAnimationFrame(loop);  // 최초 호출
+      loop();
     }
   }, [model, webcam, isDetectionStopped]);
 
-
   // 모델 예측 함수
   const predict = async () => {
-    if (model && webcam && !isDetectionStopped) {
+    if (model && webcam) {
       const prediction = await model.predict(webcam.canvas);
-      const highestPrediction = prediction.reduce((prev, current) =>
+      const highestPredictionInFrame = prediction.reduce((prev, current) =>
         prev.probability > current.probability ? prev : current
       );
 
-      console.log("Prediction result:", highestPrediction.className, "Probability:", highestPrediction.probability);
-
-      if (highestPrediction.probability > 0.95 && canStop) {
-        stopWebcam(highestPrediction.className);
-      } else {
-        setLabel("Normal");
+      if (highestPredictionInFrame.probability > highestPrediction.probability) {
+        setHighestPrediction({
+          label: highestPredictionInFrame.className,
+          probability: highestPredictionInFrame.probability,
+        });
       }
+
+      console.log("Current prediction:", highestPredictionInFrame.className, "Probability:", highestPredictionInFrame.probability);
     }
   };
 
   // 웹캠 정지 및 이미지 캡처 함수
-  const stopWebcam = (detectedLabel: string = "Normal") => {
+  const stopWebcam = (detectedLabel: string) => {
     if (webcam && webcam.webcam) {
       const stream = webcam.webcam.srcObject as MediaStream | null;
 
