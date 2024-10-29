@@ -73,9 +73,9 @@ const Login: React.FC = () => {
         }
 
         window.AppleID.auth.init({
-            clientId: appleClientId, // 애플 개발자 페이지에서 발급받은 clientId
+            clientId: 'pwa-slapp.vercel.app', // 애플 개발자 페이지에서 발급받은 clientId
             scope: 'email',
-            redirectURI: appleRedirectUri, // 리디렉션할 URI
+            redirectURI: 'https://pwa-slapp-13cs-ozj64xyh6-jowooseoks-projects.vercel.app/auth/callback', // 리디렉션할 URI
             usePopup: true,
         });
 
