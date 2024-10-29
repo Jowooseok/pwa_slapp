@@ -15,33 +15,27 @@ const AIDentalExamination: React.FC = () => {
 
   const [showFullText, setShowFullText] = useState(false);
   const [isDetectionStopped, setIsDetectionStopped] = useState(false);
-  const [capturedImage, setCapturedImage] = useState<File | null>(null);
-
-  const [highestPrediction, setHighestPrediction] = useState<{ label: string; probability: number }>({
-    label: "Normal",
-    probability: 0,
-  });
+  const [capturedImage, setCapturedImage] = useState<File | null>(null); // 캡처된 이미지 저장
+  const [timerStarted, setTimerStarted] = useState(false); // 타이머 시작 여부 상태
 
   const petData = location.state as { id: string };
   const [id] = useState<string>(petData?.id || '');
 
   const symptomsInfo: Record<string, string> = {
-    "Gingivitis & Plaque": "Symptoms of gingivitis and plaque have been detected...",
-    "Periodontitis": "Symptoms of periodontitis have been detected...",
-    "Normal": "No issues were detected in your dog's teeth...",
+    "Gingivitis & Plaque": "Symptoms of gingivitis and plaque have been detected in your dog. It is important to visit the vet as soon as possible to address this condition. Maintaining good oral hygiene is crucial for your pet's health.",
+    "Periodontitis": "Symptoms of periodontitis have been detected in your dog. This condition can cause discomfort and pain. We recommend seeing a veterinarian promptly for proper diagnosis and treatment.",
+    "Normal": "No issues were detected in your dog's teeth. Keep maintaining good dental hygiene to ensure their continued health."
   };
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
     const loadModelAndSetupWebcam = async () => {
       const modelURL = "/ai_model/dental/model.json";
       const metadataURL = "/ai_model/dental/metadata.json";
 
       try {
+        // 모델 로드
         const loadedModel = await tmImage.load(modelURL, metadataURL);
         setModel(loadedModel);
-        console.log("Model loaded successfully");
       } catch (error) {
         console.error("Error loading model:", error);
         alert("Failed to load the AI model. Please check your network connection or contact support.");
@@ -49,27 +43,32 @@ const AIDentalExamination: React.FC = () => {
       }
 
       try {
-        const flip = false;
-        const width = 240;
-        const height = 240;
+        // 웹캠 설정
+        const flip = false; // 웹캠 좌우 반전 여부
+        const width = 240; // 너비 설정
+        const height = 240; // 높이 설정
+
+        // 장치 유형 감지: 모바일이면 후면 카메라, 노트북이면 기본 웹캠
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         const facingMode = isMobile ? "environment" : "user";
 
         const newWebcam = new tmImage.Webcam(width, height, flip);
+
+        // `setup` 메서드에 `facingMode` 설정 추가
         await newWebcam.setup({ facingMode: { ideal: facingMode } });
+
+        // 비디오 요소에 속성 추가
+        if (newWebcam.webcam) {
+          newWebcam.webcam.setAttribute('playsinline', 'true');
+          newWebcam.webcam.setAttribute('muted', 'true');
+        }
         await newWebcam.play();
         setWebcam(newWebcam);
 
         if (webcamRef.current) {
-          webcamRef.current.innerHTML = "";
+          webcamRef.current.innerHTML = ""; // 기존 웹캠 캔버스를 지워 중복 방지
           webcamRef.current.appendChild(newWebcam.canvas);
         }
-
-        // 5초 후에 stopWebcam을 호출
-        timeoutId = setTimeout(() => {
-          stopWebcam(highestPrediction.label);
-        }, 5000);
-
       } catch (error) {
         console.error("Error accessing webcam:", error);
         alert("Failed to access the camera. Please check your browser settings and allow camera access.");
@@ -82,16 +81,15 @@ const AIDentalExamination: React.FC = () => {
       if (webcam) {
         webcam.stop();
       }
-      clearTimeout(timeoutId); // 컴포넌트 언마운트 시 타이머 정리
     };
   }, []); // 빈 의존성 배열로 한 번만 실행되도록 설정
 
   useEffect(() => {
-    if (model && webcam && !isDetectionStopped) {
+    if (model && webcam) {
       const loop = async () => {
-        if (webcam && model) {
-          webcam.update();
-          await predict();
+        if (webcam && model && !isDetectionStopped) {
+          webcam.update(); // 웹캠 프레임 업데이트
+          await predict(); // 예측 수행
           window.requestAnimationFrame(loop);
         }
       };
@@ -99,28 +97,33 @@ const AIDentalExamination: React.FC = () => {
     }
   }, [model, webcam, isDetectionStopped]);
 
+  // 모델 예측 함수
   const predict = async () => {
     if (model && webcam) {
       const prediction = await model.predict(webcam.canvas);
-      const highestPredictionInFrame = prediction.reduce((prev, current) =>
+      const highestPrediction = prediction.reduce((prev, current) =>
         prev.probability > current.probability ? prev : current
       );
 
-      if (highestPredictionInFrame.probability > highestPrediction.probability) {
-        setHighestPrediction({
-          label: highestPredictionInFrame.className,
-          probability: highestPredictionInFrame.probability,
-        });
+      if (!timerStarted) {
+        setTimerStarted(true);
+        setTimeout(() => {
+          if (highestPrediction.probability > 0.95) {
+            stopWebcam(highestPrediction.className);
+          }
+        }, 5000);
       }
 
-      console.log("Current prediction:", highestPredictionInFrame.className, "Probability:", highestPredictionInFrame.probability);
+      console.log("Current prediction:", highestPrediction.className, "Probability:", highestPrediction.probability);
+
+      if (highestPrediction.probability <= 0.95) {
+        setLabel("Normal");
+      }
     }
   };
 
+  // 웹캠 정지 및 이미지 캡처 함수
   const stopWebcam = (detectedLabel: string = "Normal") => {
-    if (isDetectionStopped) return; // 이미 멈춘 경우 추가 실행 방지
-
-    console.log("Stopping webcam with label:", detectedLabel);
     if (webcam && webcam.webcam) {
       const stream = webcam.webcam.srcObject as MediaStream | null;
 
@@ -140,7 +143,7 @@ const AIDentalExamination: React.FC = () => {
         webcam.canvas.toBlob((blob) => {
           if (blob) {
             const capturedFile = new File([blob], 'dental_capture.png', { type: 'image/png' });
-            setCapturedImage(capturedFile);
+            setCapturedImage(capturedFile); // 캡처된 이미지를 상태로 저장
           }
         }, 'image/png');
       }
