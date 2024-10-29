@@ -64,15 +64,18 @@ const Login: React.FC = () => {
     };
 
     const handleAppleSignIn = () => {
+        const appleClientId = import.meta.env.APPLE_CLIENT_ID;
+        const appleRedirectUri = import.meta.env.APPLE_REDIRECT_URI;
+
         if (!appleScriptLoaded) {
             console.error('Apple Sign-In script is not loaded yet.');
             return;
         }
 
         window.AppleID.auth.init({
-            clientId: 'com.pwa-slapp.com', // 애플 개발자 페이지에서 발급받은 clientId
+            clientId: appleClientId, // 애플 개발자 페이지에서 발급받은 clientId
             scope: 'email',
-            redirectURI: 'https://pwa-slapp.vercel.app/login', // 리디렉션할 URI
+            redirectURI: appleRedirectUri, // 리디렉션할 URI
             usePopup: true,
         });
 
