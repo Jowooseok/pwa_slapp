@@ -16,6 +16,7 @@ const AIDentalExamination: React.FC = () => {
   const [showFullText, setShowFullText] = useState(false);
   const [isDetectionStopped, setIsDetectionStopped] = useState(false);
   const [capturedImage, setCapturedImage] = useState<File | null>(null); // 캡처된 이미지 저장
+  const [isAllowedToStop, setIsAllowedToStop] = useState(false); // 최소 5초 뒤에 멈추도록 하는 상태
 
   const petData = location.state as { id: string };
   const [id] = useState<string>(petData?.id || '');
@@ -68,6 +69,12 @@ const AIDentalExamination: React.FC = () => {
           webcamRef.current.innerHTML = ""; // 기존 웹캠 캔버스를 지워 중복 방지
           webcamRef.current.appendChild(newWebcam.canvas);
         }
+
+        // 5초 후에 멈출 수 있도록 설정
+        setTimeout(() => {
+          setIsAllowedToStop(true);
+        }, 5000);
+
       } catch (error) {
         console.error("Error accessing webcam:", error);
         alert("Failed to access the camera. Please check your browser settings and allow camera access.");
@@ -104,7 +111,7 @@ const AIDentalExamination: React.FC = () => {
         prev.probability > current.probability ? prev : current
       );
 
-      if (highestPrediction.probability > 0.95) {
+      if (highestPrediction.probability > 0.95 && isAllowedToStop) { // 최소 5초 후에 멈출 수 있음
         stopWebcam(highestPrediction.className);
       } else {
         setLabel("Normal");
