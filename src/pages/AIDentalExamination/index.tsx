@@ -37,6 +37,7 @@ const AIDentalExamination: React.FC = () => {
         // 모델 로드
         const loadedModel = await tmImage.load(modelURL, metadataURL);
         setModel(loadedModel);
+        console.log("Model loaded successfully");
       } catch (error) {
         console.error("Error loading model:", error);
         alert("Failed to load the AI model. Please check your network connection or contact support.");
@@ -117,7 +118,7 @@ const AIDentalExamination: React.FC = () => {
 
       console.log("Prediction result:", highestPrediction.className, "Probability:", highestPrediction.probability);
 
-      if (highestPrediction.probability > 0.95  && canStop) {
+      if (highestPrediction.probability > 0.95  && canStop && !isDetectionStopped) {
         stopWebcam(highestPrediction.className);
       } else {
         setLabel("Normal");
