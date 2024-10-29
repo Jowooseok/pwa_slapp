@@ -15,6 +15,10 @@ const EditPet: React.FC = () => {
     const [petName, setPetName] = useState<string>(petData?.name || '');
     const [id] = useState<string>(petData?.id || '');
 
+    
+    const [modalMessage, setModalMessage] = useState('');
+    const [showModal, setShowModal] = useState(false);
+
     // 이미지 수정
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
@@ -27,7 +31,8 @@ const EditPet: React.FC = () => {
     // 완료 버튼 클릭 (반려동물 정보 수정)
     const editBtn = async () => {        
         if (!petName) {
-            alert('Please provide the pet name.');
+            setShowModal(true);
+            setModalMessage('Please provide the pet name.');
             return;
         }
 
@@ -46,10 +51,12 @@ const EditPet: React.FC = () => {
             }
 
             await updatePetInfo(formData, navigate);
-            alert('Pet updated successfully!');
+            setShowModal(true);
+            setModalMessage('Pet updated successfully!');
             navigate('/select-pet');
         } catch (error) {
-            alert('Failed to update pet. Please try again.');
+            setShowModal(true);
+            setModalMessage('Failed to update pet. Please try again.');
         }
     };
 
@@ -59,7 +66,8 @@ const EditPet: React.FC = () => {
             if (window.confirm("정말로 반려동물을 삭제하시겠습니까?")) {
                 try {
                     await deletePet(id, navigate);
-                    alert("반려동물이 삭제되었습니다.");
+                    setShowModal(true);
+                    setModalMessage('Pet deleted successfully!');
                     navigate('/select-pet');
                 } catch (error) {
                     console.error("Failed to delete pet:", error);
@@ -133,6 +141,21 @@ const EditPet: React.FC = () => {
                     Done
                 </button>
             </div>
+
+            {/* 모달창 */}
+            {showModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white text-black p-6 rounded-lg text-center">
+                        <p>{modalMessage}</p>
+                        <button
+                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
+                            onClick={() => setShowModal(false)}
+                            >
+                            OK
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

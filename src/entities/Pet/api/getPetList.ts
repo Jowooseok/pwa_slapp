@@ -31,7 +31,6 @@ async function tryRefreshToken(): Promise<string> {
 // 반려동물 목록 가져오기 함수
 async function getPetList(navigate: any): Promise<any> {
     let accessToken = localStorage.getItem('accessToken');
-    console.log("액세스 토큰: ", accessToken);
 
     try {
         const response = await api.get('/mypets', {
@@ -63,7 +62,7 @@ async function getPetList(navigate: any): Promise<any> {
                 navigate('/login', { replace: true });
                 throw refreshError;
             }
-        } else if (error.response && error.response.status === 404) {
+        } else if (error.response && error.response.status === 401) {
             console.error('Resource not found:', error);
             throw new Error('Resource not found. Please check the endpoint.');
         } else {

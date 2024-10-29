@@ -31,6 +31,7 @@ async function tryRefreshToken(): Promise<string> {
 async function deletePet(petinfo: any, navigate: any): Promise<any> {
     let accessToken = localStorage.getItem('accessToken');
     const id = petinfo;
+    console.log("id는: ", id);
     const url = `pet/${id}`;
 
     try{

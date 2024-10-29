@@ -5,6 +5,7 @@ import getRecords from '@/entities/AI/api/getRecord';
 import getDiagnosisList from '@/entities/Pet/api/getDiagnosisList';
 
 const DiagnosisRecords: React.FC = () => {
+    const [loading, setLoading] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState<string>('All');
     const [filterOptions, setFilterOptions] = useState<string[]>(['All']);
     const [records, setRecords] = useState<{ diagnosisAt: string, result: string, diagnosisImgUrl: string, petName: string, petImgUrl: string, type: string }[]>([]);
@@ -18,6 +19,7 @@ const DiagnosisRecords: React.FC = () => {
     // 페이지 최초 로드시 모든 기록 조회
     useEffect(() => {
         const fetchAllRecords = async () => {
+            setLoading(true);
             try {
                 const allRecords = await getDiagnosisList(null, null, id, navigate);
                 if (allRecords && Array.isArray(allRecords)) {
@@ -28,6 +30,8 @@ const DiagnosisRecords: React.FC = () => {
             } catch (error) {
                 console.error('Failed to fetch records:', error);
                 alert('Failed to load records. Please try again later.');
+            } finally {
+                setLoading(false); // 로딩 상태 비활성화
             }
         };
 
@@ -55,10 +59,11 @@ const DiagnosisRecords: React.FC = () => {
     // 필터 변경 시 기록 조회
     useEffect(() => {
         const fetchFilteredRecords = async () => {
+            setLoading(true);
             if (id) {
                 try {
-                    const type = selectedFilter === 'All' ? null : selectedFilter;
-                    const filteredRecords = await getDiagnosisList(type, null, id, navigate);
+                    const record = selectedFilter === 'All' ? null : selectedFilter;
+                    const filteredRecords = await getDiagnosisList(null, record, id, navigate);
                     if (filteredRecords && Array.isArray(filteredRecords)) {
                         setRecords(filteredRecords);
                     } else {
@@ -67,6 +72,8 @@ const DiagnosisRecords: React.FC = () => {
                 } catch (error) {
                     console.error('Failed to fetch filtered records:', error);
                     alert('Failed to load records. Please try again later.');
+                } finally {
+                    setLoading(false); // 로딩 상태 비활성화
                 }
             }
         };
@@ -85,7 +92,7 @@ const DiagnosisRecords: React.FC = () => {
                 {/* 뒤로가기 버튼 */}
                 <FaChevronLeft
                     className="text-2xl cursor-pointer absolute left-0"
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate('/select-pet')}
                 />
                 <h1 className="text-2xl mx-auto font-semibold">Records</h1>
             </div>
@@ -107,21 +114,26 @@ const DiagnosisRecords: React.FC = () => {
                     <FaChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black pointer-events-none" />
                 </div>
             </div>
-
-            {/* 진단 기록 리스트 */}
-            <div className="w-full max-w-2xl mt-8">
-                {records.map((record, index) => (
-                    <div 
-                        key={index} className="bg-gray-800 p-4 rounded-lg mb-4 flex justify-between items-center"
-                        onClick={() => navigate('/diagnosis-detail', { state: { img: record.diagnosisImgUrl, result: record.result } })}>
-                        <div>
-                            <p className="font-semibold">{`${record.diagnosisAt}  ${record.type}`}</p>
-                            <p className="text-sm text-gray-400">{record.result}</p>
+            
+            {loading ? (
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+                </div>
+            ) : (
+                <div className="w-full max-w-2xl mt-8">
+                    {records.map((record, index) => (
+                        <div 
+                            key={index} className="bg-gray-800 p-4 rounded-lg mb-4 flex justify-between items-center"
+                            onClick={() => navigate('/diagnosis-detail', { state: { img: record.diagnosisImgUrl, result: record.result } })}>
+                            <div>
+                                <p className="font-semibold">{`${record.diagnosisAt}  ${record.type}`}</p>
+                                <p className="text-sm text-gray-400">{record.result}</p>
+                            </div>
+                            <FaChevronLeft className="text-lg cursor-pointer transform rotate-180" />
                         </div>
-                        <FaChevronLeft className="text-lg cursor-pointer transform rotate-180" />
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

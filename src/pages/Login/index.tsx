@@ -8,6 +8,8 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState('');
     const [modalMessage, setModalMessage] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [appleScriptLoaded, setAppleScriptLoaded] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -17,6 +19,19 @@ const Login: React.FC = () => {
             navigate('/home');
         }
     }, [navigate]);
+
+    useEffect(() => {
+        // 스크립트 로드 상태를 확인하는 로직
+        const checkAppleScript = () => {
+            if (window.AppleID && window.AppleID.auth) {
+                setAppleScriptLoaded(true);
+            } else {
+                setTimeout(checkAppleScript, 100); // 0.1초 후에 다시 체크
+            }
+        };
+        
+        checkAppleScript();
+    }, []);
 
     const loginBtn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); // 폼 제출 시 새로고침 방지
@@ -29,6 +44,7 @@ const Login: React.FC = () => {
         }
 
         try {
+            setLoading(true);
             const result = await emailLogin(email, password);
             if (result) {
                 setShowModal(true);
@@ -36,6 +52,8 @@ const Login: React.FC = () => {
             }
         } catch (error: any) {
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -43,6 +61,62 @@ const Login: React.FC = () => {
     const validateEmail = (email: string) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
+    };
+
+    const handleAppleSignIn = () => {
+        if (!appleScriptLoaded) {
+            console.error('Apple Sign-In script is not loaded yet.');
+            return;
+        }
+
+        window.AppleID.auth.init({
+            clientId: 'com.pwa-slapp.com', // 애플 개발자 페이지에서 발급받은 clientId
+            scope: 'email',
+            redirectURI: 'https://pwa-slapp.vercel.app/login', // 리디렉션할 URI
+            usePopup: true,
+        });
+
+        window.AppleID.auth.signIn().then((response: any) => {
+            const { authorization } = response;
+            console.log('Apple Authorization:', authorization);
+            const code = authorization.code; // 서버로 전송할 authorization code
+            const id_token = authorization.id_token; // 서버에서 ID 토큰을 사용할 수 있습니다.
+            
+            // 서버로 code와 id_token 전송하여 사용자 인증 처리
+            handleAppleLogin(code, id_token);
+        }).catch((error: any) => {
+            console.error('Apple Sign-In error:', error);
+            setModalMessage('Apple 로그인에 실패했습니다. 다시 시도해주세요.');
+            setShowModal(true);
+        });
+    };
+
+    const handleAppleLogin = async (code: string, id_token: string) => {
+        try {
+            setLoading(true);
+            // 서버에 code와 id_token을 보내서 Apple 로그인 처리
+            const response = await fetch('/api/auth/apple', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code, id_token }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                localStorage.setItem('accessToken', data.accessToken);
+                navigate('/home');
+            } else {
+                setModalMessage(data.message || 'Apple 로그인에 실패했습니다.');
+                setShowModal(true);
+            }
+        } catch (error) {
+            console.error('Apple 로그인 오류:', error);
+            setModalMessage('로그인에 실패했습니다. 다시 시도해주세요.');
+            setShowModal(true);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -84,9 +158,9 @@ const Login: React.FC = () => {
                             cursor: email && password ? 'pointer' : 'not-allowed',
                             opacity: email && password ? 1 : 0.5,
                         }}
-                        disabled={!email || !password}
-                        >
-                        Login
+                        disabled={!email || !password || loading} // 로딩 중에는 버튼 비활성화
+                    >
+                        {loading ? 'Loading...' : 'Login'} {/* 로딩 중에는 로딩 메시지 표시 */}
                     </button>
                 </div>
             </form>
@@ -98,7 +172,9 @@ const Login: React.FC = () => {
                     <button className="p-3 bg-white rounded-full">
                         <FaGoogle className="text-black text-2xl" />
                     </button>
-                    <button className="p-3 bg-white rounded-full">
+                    <button 
+                        className="p-3 bg-white rounded-full"
+                        onClick={handleAppleSignIn}>
                         <FaApple className="text-black text-2xl" />
                     </button>
                 </div>
