@@ -275,7 +275,6 @@ export const useUserStore = create<UserState>((set, get) => ({
   logout: () => {
     console.log('Step: logout 실행. 토큰 및 userId 제거 및 상태 초기화.');
     localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
     set({
       userId: null,
       position: 0,
@@ -312,39 +311,24 @@ export const useUserStore = create<UserState>((set, get) => ({
   refreshToken: async (): Promise<boolean> => {
     console.log('Step: refreshToken 시작');
     try {
-      const refreshToken = localStorage.getItem('refreshToken');
-      console.log('Step: 현재 refreshToken:', refreshToken);
-      if (!refreshToken) {
-        console.warn('Step: refreshToken이 없습니다.');
-        throw new Error('No refresh token available');
-      }
-
-      const response = await api.post('/auth/auth/refresh', { refreshToken });
-      console.log('Step: refreshToken 응답:', response.data);
-
-      if (response.data.code === 'OK') {
-        const { accessToken } = response.data.data;
-        console.log('Step: 새로운 accessToken:', accessToken);
-        localStorage.setItem('accessToken', accessToken);
+      const response = await api.get('/auth/refresh');
+      console.log('Step: refreshToken 응답:', response);
+  
+      const newAccessToken = response.headers['authorization'];
+      if (newAccessToken) {
+        localStorage.setItem('accessToken', newAccessToken.replace('Bearer ', ''));
+        console.log('Step: 새로운 accessToken 저장 완료');
         return true;
       } else {
-        console.warn('Step: refreshToken 응답 코드가 OK가 아님:', response.data.message);
-        throw new Error(response.data.message || 'Token refresh failed');
+        console.warn('Step: Authorization 헤더가 없습니다.');
+        throw new Error('Token refresh failed: Authorization header is missing');
       }
     } catch (error: any) {
       console.error('Step: refreshToken 실패:', error);
       // Refresh 실패 시 로그아웃 처리
       get().logout();
-      let errorMessage = 'Token refresh failed. Please log in again.';
-      if (error.response) {
-        errorMessage = error.response.data.message || errorMessage;
-      } else if (error.request) {
-        errorMessage = 'No response from server. Please try again later.';
-      } else {
-        errorMessage = error.message;
-      }
-      set({ error: errorMessage });
+      set({ error: 'Token refresh failed. Please log in again.' });
       return false;
     }
-  },
+  },  
 }));

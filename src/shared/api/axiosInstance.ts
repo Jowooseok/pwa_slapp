@@ -3,7 +3,7 @@ import { useUserStore } from '@/entities/User/model/userModel';
 
 // Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://bfde-61-81-223-147.ngrok-free.app', // Vite 환경 변수 사용
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://bfde-61-81-223-147.ngrok-free.app',
   headers: {
     'Content-Type': 'application/json',
     'ngrok-skip-browser-warning': '69420',
@@ -19,18 +19,32 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
 
-    // 리프레시 토큰 요청인지 확인
-    if (!config.url?.includes('/auth/refresh') && token) {
-      // 리프레시 토큰 요청이 아닌 경우에만 Authorization 헤더 추가
+    // Authorization 헤더를 제외할 엔드포인트 목록
+    const excludeAuthEndpoints = [
+      '/auth/login',
+      '/auth/signup',
+      '/auth/send-email-verification',
+      '/auth/check-email-verification',
+      '/auth/refresh',
+    ];
+
+    // 현재 요청의 경로(pathname)를 추출
+    const url = new URL(config.url || '', config.baseURL);
+    const pathname = url.pathname;
+
+    // 제외할 엔드포인트에 포함되는지 확인
+    const isExcluded = excludeAuthEndpoints.includes(pathname);
+
+    // 제외할 엔드포인트가 아닌 경우에만 Authorization 헤더 추가
+    if (!isExcluded && token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
+
 
 // 응답 인터셉터 설정
 api.interceptors.response.use(
@@ -38,25 +52,32 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // 401 에러 처리 및 리프레시 토큰 재시도 로직
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    // 토큰 갱신 로직
+    if (error.response && error.response.status === 404 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      // 리프레시 토큰을 통해 액세스 토큰 재발급 시도
-      const refreshSuccessful = await useUserStore.getState().refreshToken();
+      try {
+        const refreshSuccessful = await useUserStore.getState().refreshToken();
 
-      if (refreshSuccessful) {
-        const newAccessToken = localStorage.getItem('accessToken');
-        if (newAccessToken) {
-          // 갱신된 액세스 토큰을 요청 헤더에 추가하여 원래 요청을 재시도
-          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-          return api(originalRequest);
+        if (refreshSuccessful) {
+          const newAccessToken = localStorage.getItem('accessToken');
+          if (newAccessToken) {
+            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+            return api(originalRequest);
+          }
+        } else {
+          useUserStore.getState().logout();
+          return Promise.reject(error);
         }
+      } catch (refreshError) {
+        useUserStore.getState().logout();
+        return Promise.reject(refreshError);
       }
     }
 
     return Promise.reject(error);
   }
 );
+
 
 export default api;

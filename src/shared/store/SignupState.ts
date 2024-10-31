@@ -8,7 +8,7 @@ interface SignupState {
 }
 
 const useSignupStore = create<SignupState>((set) => ({
-  email: 'qopqop55@naver.com',
+  email: '',
   password: '',
   setEmail: (email) => set({ email }),
   setPassword: (password) => set({ password }),

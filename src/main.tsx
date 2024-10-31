@@ -5,6 +5,9 @@ import './index.scss';
 import { registerSW } from 'virtual:pwa-register';
 import WebApp from '@twa-dev/sdk';
 import 'pretendard/dist/web/static/pretendard.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const updateSW = registerSW({
   onNeedRefresh() {},
@@ -13,6 +16,8 @@ const updateSW = registerSW({
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </React.StrictMode>,
 );

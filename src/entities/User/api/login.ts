@@ -8,13 +8,7 @@ async function emailLogin(email: string, password: string): Promise<boolean> {
   };
 
   try {
-    const response = await api.post('/auth/login', data, {
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': '69420',
-      },
-      withCredentials: true // 쿠키를 사용하기 때문에 반드시 추가
-    });
+    const response = await api.post('/auth/login', data);
 
     if (response.data.code === 'OK' && response.headers['authorization']) {
       // Bearer 접두사를 제거

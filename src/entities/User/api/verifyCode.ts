@@ -1,28 +1,22 @@
 import api from '@/shared/api/axiosInstance';
 
-interface VerifyCodeResponse {
-  code: string;
-  message?: string;
-}
-
 // 이메일 인증 코드 검증
-async function verifyEmailCode(email: string, verificationCode: string): Promise<boolean> {
+async function verifyEmailCode({
+  email,
+  verificationCode,
+}: {
+  email: string;
+  verificationCode: string;
+}): Promise<void> {
   const data = {
-    email,
-    verificationCode,
+    userId: email,
+    code: verificationCode,
   };
 
   try {
-    const response = await api.post<VerifyCodeResponse>('/verify-email-code', data, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await api.post('/auth/check-email-verification', data);
 
-    if (response.data.code === 'OK') {
-      console.log('Verification code verified successfully');
-      return true;
-    } else {
+    if (response.data.code !== 'OK') {
       console.warn('Step: verification code 응답 코드가 OK가 아님:', response.data.message);
       throw new Error(response.data.message || 'Verification code is incorrect');
     }

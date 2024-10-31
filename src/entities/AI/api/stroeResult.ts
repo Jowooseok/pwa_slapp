@@ -1,38 +1,6 @@
 import api from '@/shared/api/axiosInstance';
 
-// 토큰 갱신 함수
-async function tryRefreshToken(): Promise<string> {
-  try {
-    const response = await api.get('/auth/refresh', {
-      headers: {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': '69420',
-      },
-      withCredentials: true
-    });
-
-    // Authorization 헤더에서 새로운 액세스 토큰을 추출
-    const newAccessToken = response.headers['authorization'];
-
-    if (newAccessToken) {
-      // 새로운 액세스 토큰을 로컬 스토리지에 저장
-      const token = newAccessToken.replace('Bearer ', '');
-      localStorage.setItem('accessToken', token);
-      return token;
-    } else {
-      console.warn('Token refresh failed: Authorization header is missing');
-      throw new Error('Token refresh failed: Authorization header is missing');
-    }
-  } catch (error) {
-    console.error('Error refreshing token:', error);
-    throw error;
-  }
-}
-
-// 결과 저장 함수
-async function storeResult(formData: FormData, type: string, navigate: any): Promise<any> {
-  let accessToken = localStorage.getItem('accessToken');
-
+async function storeResult(formData: FormData, type: string): Promise<boolean> {
   // 엔드포인트 설정
   const endpointMap: { [key: string]: string } = {
     dental: '/diagnosis/dental/real',
@@ -42,17 +10,14 @@ async function storeResult(formData: FormData, type: string, navigate: any): Pro
 
   if (!endpoint) {
     console.error(`Invalid type: ${type}`);
-    return;
+    throw new Error(`Invalid type: ${type}`);
   }
 
   try {
     const response = await api.post(endpoint, formData, {
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'multipart/form-data',
-        'ngrok-skip-browser-warning': '69420',
       },
-      withCredentials: true
     });
 
     if (response.data.code === 'OK') {
@@ -60,30 +25,11 @@ async function storeResult(formData: FormData, type: string, navigate: any): Pro
       return true;
     } else {
       console.warn(`Unexpected response code: ${response.data.code}`);
-      throw new Error(`Unexpected response code: ${response.data.code}`);
+      throw new Error(response.data.message || `Unexpected response code: ${response.data.code}`);
     }
   } catch (error: any) {
-    console.error('에러 발생 시점:', error.message);
-
-    // 토큰 만료 또는 인증 실패시 재시도 로직
-    if (error.response && error.response.status === 404) {
-      console.log("리프레시 토큰으로 토큰 재발급 시도 중...");
-      try {
-        accessToken = await tryRefreshToken(); // 새 액세스 토큰을 가져옴
-        return await storeResult(formData, type, navigate); // 갱신된 토큰으로 재시도
-      } catch (refreshError) {
-        console.error('리프레시 토큰 갱신 실패:', refreshError);
-        localStorage.removeItem('accessToken');
-        navigate('/login', { replace: true });
-        throw refreshError;
-      }
-    } else if (error.response && error.response.status === 404) {
-      console.error('Resource not found:', error);
-      throw new Error('Resource not found. Please check the endpoint.');
-    } else {
-      console.error('Unexpected error:', error);
-      throw error;
-    }
+    console.error('Error storing result:', error);
+    throw error;
   }
 }
 

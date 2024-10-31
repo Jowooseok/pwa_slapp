@@ -64,15 +64,20 @@ const Login: React.FC = () => {
     };
 
     const handleAppleSignIn = () => {
+        const appleClientId = import.meta.env.VITE_APPLE_CLIENT_ID;
+        const appleRedirectUri = import.meta.env.VITE_APPLE_REDIRECT_URI;
+
+        console.log("apple client id: ", appleClientId);
+
         if (!appleScriptLoaded) {
             console.error('Apple Sign-In script is not loaded yet.');
             return;
         }
 
         window.AppleID.auth.init({
-            clientId:  import.meta.env.APPLE_CLIENT_ID, // 애플 개발자 페이지에서 발급받은 clientId
+            clientId: 'pwa-slapp.vercel.app', // 애플 개발자 페이지에서 발급받은 clientId
             scope: 'email',
-            redirectURI: import.meta.env.APPLE_REDIRECT_URI, // 리디렉션할 URI
+            redirectURI: 'https://pwa-slapp-13cs-ozj64xyh6-jowooseoks-projects.vercel.app/auth/callback', // 리디렉션할 URI
             usePopup: true,
         });
 

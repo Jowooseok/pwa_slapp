@@ -108,7 +108,7 @@ const AIDentalExamination: React.FC = () => {
       if (!timerStarted) {
         setTimerStarted(true);
         setTimeout(() => {
-          if (highestPrediction.probability > 0.95) {
+          if (highestPrediction.probability > 0.95 && !isDetectionStopped) {
             stopWebcam(highestPrediction.className);
           }
         }, 5000);
@@ -158,7 +158,7 @@ const AIDentalExamination: React.FC = () => {
         formData.append('json', new Blob([JSON.stringify({ petId: id, result: label })], { type: 'application/json' }));
         formData.append('file', capturedImage);
 
-        const response = await storeResult(formData, "dental", navigate);
+        const response = await storeResult(formData, "dental");
         if (response) {
           navigate('/diagnosis-list', { state: { id: id } });
           console.log("Result saved successfully.");
