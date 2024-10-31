@@ -36,37 +36,37 @@ const FindPassword: React.FC = () => {
     };
 
     // 인증 코드 확인 함수
-    const handleVerifyCode = async () => {
-        if (verificationCode === '') {
-            setShowModal({
-                message: '코드를 확인해 주세요.',
-                onConfirm: () => setShowModal(null),
-            });
-            return;
-        }
+    // const handleVerifyCode = async () => {
+    //     if (verificationCode === '') {
+    //         setShowModal({
+    //             message: '코드를 확인해 주세요.',
+    //             onConfirm: () => setShowModal(null),
+    //         });
+    //         return;
+    //     }
 
-        try {
-            const result = await verifyEmailCode(email, verificationCode);
-            if (result) {
-                // 인증 성공 시 모달창 표시
-                setShowModal({
-                    message: '인증에 성공했습니다.',
-                    onConfirm: () => setShowModal(null),
-                });
-            } else {
-                // 인증 실패 시 모달창 표시
-                setShowModal({
-                    message: '코드를 확인해 주세요.',
-                    onConfirm: () => setShowModal(null),
-                });
-            }
-        } catch (error) {
-            setShowModal({
-                message: '코드를 확인해 주세요.',
-                onConfirm: () => setShowModal(null),
-            });
-        }
-    };
+    //     try {
+    //         const result = await verifyEmailCode(email, verificationCode);
+    //         if (result) {
+    //             // 인증 성공 시 모달창 표시
+    //             setShowModal({
+    //                 message: '인증에 성공했습니다.',
+    //                 onConfirm: () => setShowModal(null),
+    //             });
+    //         } else {
+    //             // 인증 실패 시 모달창 표시
+    //             setShowModal({
+    //                 message: '코드를 확인해 주세요.',
+    //                 onConfirm: () => setShowModal(null),
+    //             });
+    //         }
+    //     } catch (error) {
+    //         setShowModal({
+    //             message: '코드를 확인해 주세요.',
+    //             onConfirm: () => setShowModal(null),
+    //         });
+    //     }
+    // };
 
     // 비밀번호 변경 클릭 핸들러
     const handleChangePw = async () => {
@@ -167,7 +167,6 @@ const FindPassword: React.FC = () => {
                 <button
                     className="w-full h-14 text-white text-lg py-2 px-4 rounded-full"
                     style={{ backgroundColor: '#0147E5' }}
-                    onClick={handleVerifyCode}
                     >
                     Confirm
                 </button>
