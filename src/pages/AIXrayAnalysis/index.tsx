@@ -28,12 +28,10 @@ const AIXrayAnalysis: React.FC = () => {
     FormData
   >({
     mutationFn: (formData) => {
-      if (selectedMenu === 'ai-analysis') {
-        return storeResult(formData, "dental");
-      } else if(selectedMenu === 'x-ray'){
-        return storeResult(formData, "xray");
-      }
-      else {
+      if (selectedMenu) {
+        
+        return storeResult(formData, selectedMenu);
+      } else {
         return Promise.reject(new Error('Selected menu is not set.'));
       }
     },
@@ -59,6 +57,8 @@ const AIXrayAnalysis: React.FC = () => {
     "Healthy": "No issues were detected in your dog's teeth. Your dog's dental health appears to be good. Keep maintaining regular oral hygiene to ensure their continued health."
   };
 
+
+  
   // Teachable Machine 모델 로드 함수
   const loadModel = async () => {
     if (!model) {
@@ -100,33 +100,41 @@ const AIXrayAnalysis: React.FC = () => {
     }
   };
 
-  // 이미지 분석 함수
-  const analyzeImage = async () => {
-    if (!selectedImage) {
-      setShowModal(true); // 이미지를 업로드하지 않았을 때 모달 표시
-      return;
-    }
+// 이미지 분석 함수
+const analyzeImage = async () => {
+  if (!selectedImage) {
+    setShowModal(true); // 이미지를 업로드하지 않았을 때 모달 표시
+    return;
+  }
 
-    setLoading(true);
-    const loadedModel = await loadModel(); // 모델을 로드하고 가져옴
+  setLoading(true);
+  const loadedModel = await loadModel(); // 모델을 로드하고 가져옴
 
-    if (loadedModel && selectedImage) {
-      const imageElement = document.createElement('img');
-      imageElement.src = window.URL.createObjectURL(selectedImage); // 파일에서 생성된 URL 사용
-      imageElement.onload = async () => {
-        const prediction = await loadedModel.predict(imageElement);
-        const highestPrediction = prediction.reduce((prev, current) =>
-          prev.probability > current.probability ? prev : current
-        );
+  if (loadedModel && selectedImage) {
+    const imageElement = document.createElement('img');
+    imageElement.src = window.URL.createObjectURL(selectedImage); // 파일에서 생성된 URL 사용
+    imageElement.onload = async () => {
+      const prediction = await loadedModel.predict(imageElement);
+      const highestPrediction = prediction.reduce((prev, current) =>
+        prev.probability > current.probability ? prev : current
+      );
 
+      console.log("Current prediction:", highestPrediction.className, "Probability:", highestPrediction.probability);
+
+      if (highestPrediction.probability > 0.95) {
         setLabel(highestPrediction.className);
-        setLoading(false);
-        setIsAnalyzed(true);
-      };
-    } else {
+      } else {
+        setLabel("Normal"); // 확률이 낮을 때 기본 라벨로 설정
+      }
+
       setLoading(false);
-    }
-  };
+      setIsAnalyzed(true);
+    };
+  } else {
+    setLoading(false);
+  }
+};
+
 
   // 서버에 저장하는 함수
   const saveResult = () => {
@@ -147,6 +155,12 @@ const AIXrayAnalysis: React.FC = () => {
       alert('Please analyze the image before saving.');
     }
   };
+
+  const clickReset = () => {
+    setLabel('');
+    setSelectedImage(null);
+    setIsAnalyzed(false);
+  }
   
   // 제목 설정
   const getTitle = () => {
@@ -257,7 +271,7 @@ const AIXrayAnalysis: React.FC = () => {
             <button
               className="w-[48%] h-14 text-white text-base py-2 px-4 rounded-full border-2"
               style={{ backgroundColor: '#252932', borderColor: '#35383F' }}
-              onClick={() => window.location.reload()}
+              onClick={clickReset}
             >
               Retest
             </button>

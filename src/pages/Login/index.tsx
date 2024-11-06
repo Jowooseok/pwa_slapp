@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaGoogle, FaApple } from 'react-icons/fa';
+import { FaApple } from 'react-icons/fa';
 import emailLogin from '@/entities/User/api/login';
+import { CredentialResponse, GoogleLogin, googleLogout } from '@react-oauth/google';
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -63,11 +64,55 @@ const Login: React.FC = () => {
         return re.test(email);
     };
 
+    const handleGoogleLoginSuccess = (credentialResponse: CredentialResponse) => {
+        if (credentialResponse.credential) {
+            console.log('Google Login Success:', credentialResponse.credential);
+            handleGoogleSignIn(credentialResponse.credential);
+        } else {
+            console.error('Google Credential is missing.');
+            setModalMessage('Google 로그인에 실패했습니다. 다시 시도해주세요.');
+            setShowModal(true);
+        }
+    };
+
+    const handleGoogleLoginFailure = () => {
+        console.error('Google Login Error');
+        setModalMessage('Google 로그인에 실패했습니다. 다시 시도해주세요.');
+        setShowModal(true);
+    };
+
+    const handleGoogleSignIn = async (credential: string) => {
+        try {
+            setLoading(true);
+            const response = await fetch('/api/auth/google', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: credential }),
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                localStorage.setItem('accessToken', data.accessToken);
+                navigate('/home');
+            } else {
+                setModalMessage(data.message || 'Google 로그인에 실패했습니다.');
+                setShowModal(true);
+            }
+        } catch (error) {
+            console.error('Google 로그인 오류:', error);
+            setModalMessage('로그인에 실패했습니다. 다시 시도해주세요.');
+            setShowModal(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     const handleAppleSignIn = () => {
         const appleClientId = import.meta.env.VITE_APPLE_CLIENT_ID;
         const appleRedirectUri = import.meta.env.VITE_APPLE_REDIRECT_URI;
-
-        console.log("apple client id: ", appleClientId);
 
         if (!appleScriptLoaded) {
             console.error('Apple Sign-In script is not loaded yet.');
@@ -75,15 +120,14 @@ const Login: React.FC = () => {
         }
 
         window.AppleID.auth.init({
-            clientId: 'pwa-slapp.vercel.app', // 애플 개발자 페이지에서 발급받은 clientId
+            clientId: appleClientId,
             scope: 'email',
-            redirectURI: 'https://pwa-slapp-13cs-ozj64xyh6-jowooseoks-projects.vercel.app/auth/callback', // 리디렉션할 URI
+            redirectURI: appleRedirectUri,
             usePopup: true,
         });
 
         window.AppleID.auth.signIn().then((response: any) => {
             const { authorization } = response;
-            console.log('Apple Authorization:', authorization);
             const code = authorization.code; // 서버로 전송할 authorization code
             const id_token = authorization.id_token; // 서버에서 ID 토큰을 사용할 수 있습니다.
             
@@ -96,10 +140,11 @@ const Login: React.FC = () => {
         });
     };
 
+    
+
     const handleAppleLogin = async (code: string, id_token: string) => {
         try {
             setLoading(true);
-            // 서버에 code와 id_token을 보내서 Apple 로그인 처리
             const response = await fetch('/api/auth/apple', {
                 method: 'POST',
                 headers: {
@@ -138,18 +183,18 @@ const Login: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full p-4 rounded-2xl mb-4 bg-gray-900 text-white text-base border border-[#35383F] focus:outline-none"
-                    />
+                />
                 <input
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full p-4 rounded-2xl bg-gray-900 text-white text-base border border-[#35383F] focus:outline-none"
-                    />
+                />
                 <div
                     className="text-right mt-2 text-sm text-[#D4D4D4] cursor-pointer"
                     onClick={() => navigate('/find-password')}
-                    >
+                >
                     Forgot Password?
                 </div>
 
@@ -170,20 +215,6 @@ const Login: React.FC = () => {
                 </div>
             </form>
 
-            {/* SNS 로그인 옵션 */}
-            <div className="mt-8 w-full max-w-md text-center">
-                <p className="text-sm text-[#A3A3A3] mb-4">Or</p>
-                <div className="flex justify-center gap-20">
-                    <button className="p-3 bg-white rounded-full">
-                        <FaGoogle className="text-black text-2xl" />
-                    </button>
-                    <button 
-                        className="p-3 bg-white rounded-full"
-                        onClick={handleAppleSignIn}>
-                        <FaApple className="text-black text-2xl" />
-                    </button>
-                </div>
-            </div>
 
             {/* 회원가입 링크 */}
             <div className="mt-16 w-full max-w-md text-center">
@@ -192,7 +223,7 @@ const Login: React.FC = () => {
                     <span
                         className="text-[#0147E5] cursor-pointer underline"
                         onClick={() => navigate('/signup-email')}
-                        >
+                    >
                         Sign Up
                     </span>
                 </p>
@@ -206,7 +237,7 @@ const Login: React.FC = () => {
                         <button
                             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
                             onClick={() => setShowModal(false)}
-                            >
+                        >
                             OK
                         </button>
                     </div>

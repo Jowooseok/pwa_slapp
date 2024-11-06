@@ -6,8 +6,11 @@ import { registerSW } from 'virtual:pwa-register';
 import WebApp from '@twa-dev/sdk';
 import 'pretendard/dist/web/static/pretendard.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const queryClient = new QueryClient();
+
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const updateSW = registerSW({
   onNeedRefresh() {},
@@ -16,8 +19,10 @@ const updateSW = registerSW({
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>,
 );
