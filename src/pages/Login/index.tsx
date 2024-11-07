@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaApple } from 'react-icons/fa';
+import Images from '@/shared/assets/images';
 import emailLogin from '@/entities/User/api/login';
-import { CredentialResponse, GoogleLogin, googleLogout } from '@react-oauth/google';
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -10,7 +9,6 @@ const Login: React.FC = () => {
     const [modalMessage, setModalMessage] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [appleScriptLoaded, setAppleScriptLoaded] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,19 +18,6 @@ const Login: React.FC = () => {
             navigate('/home');
         }
     }, [navigate]);
-
-    useEffect(() => {
-        // 스크립트 로드 상태를 확인하는 로직
-        const checkAppleScript = () => {
-            if (window.AppleID && window.AppleID.auth) {
-                setAppleScriptLoaded(true);
-            } else {
-                setTimeout(checkAppleScript, 100); // 0.1초 후에 다시 체크
-            }
-        };
-        
-        checkAppleScript();
-    }, []);
 
     const loginBtn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); // 폼 제출 시 새로고침 방지
@@ -64,110 +49,10 @@ const Login: React.FC = () => {
         return re.test(email);
     };
 
-    const handleGoogleLoginSuccess = (credentialResponse: CredentialResponse) => {
-        if (credentialResponse.credential) {
-            console.log('Google Login Success:', credentialResponse.credential);
-            handleGoogleSignIn(credentialResponse.credential);
-        } else {
-            console.error('Google Credential is missing.');
-            setModalMessage('Google 로그인에 실패했습니다. 다시 시도해주세요.');
-            setShowModal(true);
-        }
-    };
-
-    const handleGoogleLoginFailure = () => {
-        console.error('Google Login Error');
-        setModalMessage('Google 로그인에 실패했습니다. 다시 시도해주세요.');
-        setShowModal(true);
-    };
-
-    const handleGoogleSignIn = async (credential: string) => {
-        try {
-            setLoading(true);
-            const response = await fetch('/api/auth/google', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token: credential }),
-            });
-            const data = await response.json();
-
-            if (data.success) {
-                localStorage.setItem('accessToken', data.accessToken);
-                navigate('/home');
-            } else {
-                setModalMessage(data.message || 'Google 로그인에 실패했습니다.');
-                setShowModal(true);
-            }
-        } catch (error) {
-            console.error('Google 로그인 오류:', error);
-            setModalMessage('로그인에 실패했습니다. 다시 시도해주세요.');
-            setShowModal(true);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-
-    const handleAppleSignIn = () => {
-        const appleClientId = import.meta.env.VITE_APPLE_CLIENT_ID;
-        const appleRedirectUri = import.meta.env.VITE_APPLE_REDIRECT_URI;
-
-        if (!appleScriptLoaded) {
-            console.error('Apple Sign-In script is not loaded yet.');
-            return;
-        }
-
-        window.AppleID.auth.init({
-            clientId: appleClientId,
-            scope: 'email',
-            redirectURI: appleRedirectUri,
-            usePopup: true,
-        });
-
-        window.AppleID.auth.signIn().then((response: any) => {
-            const { authorization } = response;
-            const code = authorization.code; // 서버로 전송할 authorization code
-            const id_token = authorization.id_token; // 서버에서 ID 토큰을 사용할 수 있습니다.
-            
-            // 서버로 code와 id_token 전송하여 사용자 인증 처리
-            handleAppleLogin(code, id_token);
-        }).catch((error: any) => {
-            console.error('Apple Sign-In error:', error);
-            setModalMessage('Apple 로그인에 실패했습니다. 다시 시도해주세요.');
-            setShowModal(true);
-        });
-    };
-
-    
-
-    const handleAppleLogin = async (code: string, id_token: string) => {
-        try {
-            setLoading(true);
-            const response = await fetch('/api/auth/apple', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ code, id_token }),
-            });
-            const data = await response.json();
-            if (data.success) {
-                localStorage.setItem('accessToken', data.accessToken);
-                navigate('/home');
-            } else {
-                setModalMessage(data.message || 'Apple 로그인에 실패했습니다.');
-                setShowModal(true);
-            }
-        } catch (error) {
-            console.error('Apple 로그인 오류:', error);
-            setModalMessage('로그인에 실패했습니다. 다시 시도해주세요.');
-            setShowModal(true);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const handleLineLogin = () => {
+        // 라인 로그인 구현
+        console.log("라인 로그인 버튼");
+    }
 
     return (
         <div className="flex flex-col items-center text-white mx-6 md:mx-28">
@@ -214,6 +99,17 @@ const Login: React.FC = () => {
                     </button>
                 </div>
             </form>
+
+            <div className='mt-10 items-center'>
+                <p className="text-lg text-[#A3A3A3] text-center">Or</p>
+                <img
+                    src={Images.line}
+                    onClick={handleLineLogin}
+                    className='mt-10 w-11 h-11'>
+                </img>
+            </div>
+
+            
 
 
             {/* 회원가입 링크 */}

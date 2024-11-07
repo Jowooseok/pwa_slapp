@@ -14,22 +14,28 @@ const AIXrayAnalysis: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
   const [isAnalyzed, setIsAnalyzed] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(true);
   const { selectedMenu } = useMainPageStore();
   const navigate = useNavigate();
   const location = useLocation();
   const petData = location.state as { id: string };
   const [id] = useState<string>(petData?.id || '');
 
+  // 최초 안내 문구 표시
+  let Alert = '';
+
+  if(selectedMenu === 'ai-analysis'){
+    Alert = "Please upload an actual photo of your pet's teeth.\nPerformance may be suboptimal as this is in beta test mode.";
+  } else if(selectedMenu === 'x-ray'){
+    Alert = "Please upload an X-ray image of your pet's teeth.\nPerformance may be suboptimal as this is in beta test mode.";
+  }
+
+  const [caution, setCaution] = useState(Alert);
+
   // useMutation 훅 사용
-  const { mutate: saveResultMutate, isPending: isSaving } = useMutation<
-    boolean,
-    Error,
-    FormData
-  >({
+  const { mutate: saveResultMutate, isPending: isSaving } = useMutation<boolean, Error, FormData>({
     mutationFn: (formData) => {
       if (selectedMenu) {
-        
         return storeResult(formData, selectedMenu);
       } else {
         return Promise.reject(new Error('Selected menu is not set.'));
@@ -57,8 +63,6 @@ const AIXrayAnalysis: React.FC = () => {
     "Healthy": "No issues were detected in your dog's teeth. Your dog's dental health appears to be good. Keep maintaining regular oral hygiene to ensure their continued health."
   };
 
-
-  
   // Teachable Machine 모델 로드 함수
   const loadModel = async () => {
     if (!model) {
@@ -100,40 +104,41 @@ const AIXrayAnalysis: React.FC = () => {
     }
   };
 
-// 이미지 분석 함수
-const analyzeImage = async () => {
-  if (!selectedImage) {
-    setShowModal(true); // 이미지를 업로드하지 않았을 때 모달 표시
-    return;
-  }
+  // 이미지 분석 함수
+  const analyzeImage = async () => {
+    if (!selectedImage) {
+      setShowModal(true); // 이미지를 업로드하지 않았을 때 모달 표시
+      setCaution('Please upload an image before analysis.');
+      return;
+    }
 
-  setLoading(true);
-  const loadedModel = await loadModel(); // 모델을 로드하고 가져옴
+    setLoading(true);
+    const loadedModel = await loadModel(); // 모델을 로드하고 가져옴
 
-  if (loadedModel && selectedImage) {
-    const imageElement = document.createElement('img');
-    imageElement.src = window.URL.createObjectURL(selectedImage); // 파일에서 생성된 URL 사용
-    imageElement.onload = async () => {
-      const prediction = await loadedModel.predict(imageElement);
-      const highestPrediction = prediction.reduce((prev, current) =>
-        prev.probability > current.probability ? prev : current
-      );
+    if (loadedModel && selectedImage) {
+      const imageElement = document.createElement('img');
+      imageElement.src = window.URL.createObjectURL(selectedImage); // 파일에서 생성된 URL 사용
+      imageElement.onload = async () => {
+        const prediction = await loadedModel.predict(imageElement);
+        const highestPrediction = prediction.reduce((prev, current) =>
+          prev.probability > current.probability ? prev : current
+        );
 
-      console.log("Current prediction:", highestPrediction.className, "Probability:", highestPrediction.probability);
+        console.log("Current prediction:", highestPrediction.className, "Probability:", highestPrediction.probability);
 
-      if (highestPrediction.probability > 0.95) {
-        setLabel(highestPrediction.className);
-      } else {
-        setLabel("Normal"); // 확률이 낮을 때 기본 라벨로 설정
-      }
+        if (highestPrediction.probability > 0.95) {
+          setLabel(highestPrediction.className);
+        } else {
+          setLabel("Normal"); // 확률이 낮을 때 기본 라벨로 설정
+        }
 
+        setLoading(false);
+        setIsAnalyzed(true);
+      };
+    } else {
       setLoading(false);
-      setIsAnalyzed(true);
-    };
-  } else {
-    setLoading(false);
-  }
-};
+    }
+  };
 
 
   // 서버에 저장하는 함수
@@ -156,6 +161,7 @@ const analyzeImage = async () => {
     }
   };
 
+  // 분석 재실행 버튼
   const clickReset = () => {
     setLabel('');
     setSelectedImage(null);
@@ -292,10 +298,17 @@ const analyzeImage = async () => {
       {/* 이미지 업로드 요청 모달 */}
       {showModal && (
         <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg text-black text-center">
-            <p>Please upload an image before analysis.</p>
+          <div className="bg-white p-6 rounded-lg text-black text-center w-4/5">
+            <p>
+              {Alert.split('\n').map((line, index) => (
+                <React.Fragment key={index}>
+                  {line}
+                  <br />
+                </React.Fragment>
+              ))}
+            </p>
             <button
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg w-1/2"
               onClick={() => setShowModal(false)}
             >
               OK

@@ -88,6 +88,7 @@ import HomeTooth from "./home-tooth.png";
 import uploader from "./uploader.png";
 import goback from "./back-icon.png";
 import pointStar from "./star.png";
+import line from "./line_btn.png";
 
 const Images = {
   HorizontalLogo,
@@ -179,6 +180,7 @@ const Images = {
   uploader,
   goback,
   pointStar,
+  line,
 };
 
 export default Images;
