@@ -1,6 +1,6 @@
 // src/app/App.tsx
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import InstallPrompt from "./components/InstallPrompt";
 import DiceEvent from "@/pages/DiceEvent";
@@ -27,11 +27,26 @@ import SignupEmail from "@/pages/Email";
 import SignupPassword from "@/pages/Password";
 import FindPassword from "@/pages/FindPassword";
 import MyPoint from "@/pages/MyPoint";
+import SplashScreen from './components/SplashScreen';
 
 
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
+  const [showSplash, setShowSplash] = useState(true);
+  
+  useEffect(() => {
+    // 스플래시 화면을 일정 시간 후에 숨김
+    const splashTimeout = setTimeout(() => {
+      setShowSplash(false);
+    }, 3000); // 3초 후에 스플래시 화면 숨김
+
+    return () => {
+      clearTimeout(splashTimeout);
+    };
+  }, []);
+
+
   React.useEffect(() => {
     const preventContextMenu = (e: { preventDefault: () => void }) => {
       e.preventDefault();
@@ -43,6 +58,10 @@ const App: React.FC = () => {
       document.removeEventListener("contextmenu", preventContextMenu);
     };
   }, []);
+
+  if (showSplash) {
+    return <SplashScreen />;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
