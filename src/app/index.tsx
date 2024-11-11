@@ -70,9 +70,9 @@ const App: React.FC = () => {
           {/* <InstallPrompt /> */}
           <Routes>
             <Route path="/home" element={
-                <DiceEventLayout>
+                // <DiceEventLayout>
                   <Home />
-                  </DiceEventLayout>
+                  // </DiceEventLayout>
               } />
             <Route
               path="/dice-event"
