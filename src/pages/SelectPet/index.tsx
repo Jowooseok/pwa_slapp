@@ -56,7 +56,7 @@ const SelectPet: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-center text-white mx-6 md:mx-28">
+    <div className="flex flex-col items-center text-white">
       <div className="flex items-center w-full mt-4 relative">
         {/* 뒤로가기 버튼 */}
         <FaChevronLeft
@@ -66,7 +66,7 @@ const SelectPet: React.FC = () => {
         <h1 className="text-2xl mx-auto font-semibold">Select Pet</h1>
       </div>
 
-      <div className="grid grid-cols-2 mt-11 w-full max-w-md">
+      <div className="grid grid-cols-2 gap-6 mt-11 w-full max-w-md">
         {/* 반려동물 목록 */}
         {pets.map((pet) => (
           <div key={pet.petId} className="w-full max-w-[180px] flex flex-col items-center">

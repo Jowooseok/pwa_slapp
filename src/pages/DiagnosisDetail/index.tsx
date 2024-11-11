@@ -22,7 +22,7 @@ const DiagnosisDetail: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center text-white mx-6 md:mx-28">
+        <div className="flex flex-col items-center text-white mx-6 md:mx-28  min-h-screen">
             <div className="flex items-center w-full mt-4 relative">
                 <img
                     src={Images.goback}
@@ -85,6 +85,16 @@ const DiagnosisDetail: React.FC = () => {
                         )}
                     </div>
                 </div>
+            </div>
+            
+            <div className="w-11/12 max-w-md absolute bottom-16 left-1/2 transform -translate-x-1/2">
+                <button
+                    className="w-full py-4 rounded-full text-lg font-semibold"
+                    style={{backgroundColor: '#0147E5'}}
+                    onClick={() => navigate('/home')}
+                    >
+                    Home
+                </button>
             </div>
         </div>
     );
