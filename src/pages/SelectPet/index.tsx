@@ -56,7 +56,7 @@ const SelectPet: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-center text-white">
+    <div className="flex flex-col items-center text-white  min-h-screen">
       <div className="flex items-center w-full mt-4 relative">
         {/* 뒤로가기 버튼 */}
         <FaChevronLeft
