@@ -49,7 +49,7 @@ const DailyMissionCard: React.FC<DailyMissionProps> = ({
   alt,
 }) => {
   return (
-    <div className="basic-mission-card h-36 rounded-3xl flex flex-row items-center pl-8 pr-5 justify-between mb-3">
+    <div className="basic-mission-card h-36 rounded-3xl flex flex-row items-center pl-8 pr-5 justify-between mb-3 ">
       <div className=" space-y-3">
         <p className="text-xl font-semibold">{title}</p>
         <p className=" text-sm">
@@ -64,7 +64,7 @@ const DailyMissionCard: React.FC<DailyMissionProps> = ({
 
 const MissionPage: React.FC = () => {
   return (
-    <div className="flex flex-col text-white mx-6 md:mx-28">
+    <div className="flex flex-col text-white mx-6  ">
       <TopTitle title="Mission" />
       <h1 className=" font-semibold text-lg ml-[2px] mb-4">
         One - Time Mission{' '}

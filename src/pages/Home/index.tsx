@@ -30,7 +30,7 @@ const HomeMenu: React.FC<HomeMenuProps> = ({
       >
       <img src={image} alt={alt} className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 object-contain" />
       <div className="flex flex-col items-center justify-center">
-        <p className="text-sm md:text-xl lg:text-2xl font-semibold text-center">{title}</p>
+        <p className="text-sm md:text-lg  font-semibold text-center">{title}</p>
       </div>
     </div>
   );
@@ -83,7 +83,7 @@ const Home: React.FC = () => {
   
 
   return (
-    <div className="flex flex-col text-white mx-6 md:mx-28">
+    <div className="flex flex-col text-white mx-6 md:mx-28 h-screen">
       {/* <TopTitle title="Pet Health Management" /> */}
       <div 
         className="flex items-center w-full mt-8 relative"

@@ -38,6 +38,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
     endGame,
     closeDialog,
   } = useRPSGameStore();
+
   const handleSpin = (choice: string) => {
     if (isSpinning) return; // 이미 스핀 중이라면 다시 클릭 불가
 
@@ -86,7 +87,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
 
   return (
     <div
-      className="flex flex-col z-50 h-screen bg-white w-full drop-shadow"
+      className="flex flex-col z-50 bg-white h-screen drop-shadow md:min-w-[600px] w-full"
       style={{
         backgroundImage: `url(${Images.BGRPSGame})`,
         backgroundSize: "cover",
@@ -100,7 +101,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
           onCancel={onCancel} // 취소 기능 추가
         />
       ) : (
-        <div className="flex flex-col items-center justify-center mt-20">
+        <div className="flex flex-col items-center justify-center mt-20 h-full w-full">
           <div className="flex flex-row items-center justify-center h-[86px] w-[264px] border-2 border-[#21212f] rounded-3xl bg-white gap-3">
             <div className="flex flex-row items-center gap-1">
               <img src={Images.Star} alt="star" className="w-9 h-9" />
@@ -116,7 +117,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
             <img
               src={Images.RPSGame}
               alt="RPSGame"
-              className="w-[353px] h-[481px]"
+              className="w-[353px] [481px]"
             />
             {[
               { id: "First-RPS", left: "32px" },
@@ -128,7 +129,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
                 style={{
                   left: slot.left,
                   position: "absolute",
-                  bottom: "211px",
+                  bottom: "204px",
                 }}
                 className="gap-2 flex flex-row items-center justify-center pl-1 w-[87px] overflow-y-hidden h-[80px] transform"
               >
@@ -181,7 +182,15 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
                 </motion.div>
               </div>
             ))}
-            <div className="absolute bottom-20 left-5 gap-2 flex flex-row items-center justify-around w-[230px] px-8 transform">
+            {/* 하단 버튼을 절대 위치로 설정하여 동일한 위치에 표시 */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: "80px", // 필요한 경우 조정
+                left: "54px",   // 필요한 경우 조정
+              }}
+              className="flex flex-row gap-2 items-center"
+            >
               <img
                 src={Images.RockButton}
                 alt="rock"

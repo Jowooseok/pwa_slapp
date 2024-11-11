@@ -15,7 +15,7 @@ const MyRankingWidget: React.FC = () => {
 
   return (
     <div
-      className=" flex flex-col items-center justify-center text-white cursor-pointer lg:mx-[480px]"
+      className=" flex flex-col items-center justify-center text-white cursor-pointer "
       onClick={handleRankingClick}
     >
       <h1 className="font-jalnan text-3xl">Ranking</h1>

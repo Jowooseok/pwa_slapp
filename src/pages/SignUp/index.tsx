@@ -65,7 +65,7 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative ">
       {step === 'selectCharacter' && (
         <SelectCharacter selectedPet={selectedPet} setSelectedPet={setSelectedPet} />
       )}

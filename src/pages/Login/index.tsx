@@ -55,7 +55,7 @@ const Login: React.FC = () => {
     }
 
     return (
-        <div className="flex flex-col items-center text-white mx-6 md:mx-28">
+        <div className="flex flex-col items-center h-screen text-white mx-6 md:mx-28">
             <div className="flex items-center w-full mt-[100px] relative">
                 <h1 className="text-2xl mx-auto font-semibold">Login</h1>
             </div>

@@ -43,18 +43,19 @@ const RPSGameStart: React.FC<RPSGameStartProps> = ({
   };
 
   return (
-    <div>
-      <h1 className="text-[#E20100] font-jalnan text-center text-[36px] mt-4 ">
+    <div className=" h-screen md:min-w-[600px] flex flex-col items-center justify-center">
+      <h1 className="text-[#E20100] font-jalnan text-center text-[36px] mt-4  ">
         Let's play,
         <br />
         Rock Paper Scissors!
+       
       </h1>
 
       <div className="flex flex-col items-center justify-center mt-4">
         <img
           src={Images.RPSGameExample}
           alt="RPSGameExample"
-          className="w-[280px]"
+          className="w-[240px]"
         />
 
         <div className="flex flex-row gap-3 mt-4">

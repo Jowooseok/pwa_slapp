@@ -127,7 +127,7 @@ const WalletPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col text-white mb-32  mx-6 md:mx-28">
+    <div className="flex flex-col text-white mb-32  mx-6 md:min-w-[600px] h-screen ">
       <TopTitle title="Wallet" />
       {/* *월렛이 선택되어있지 않은 경우 */}
       {/* <div className="flex flex-col gap-3">
@@ -313,7 +313,7 @@ const WalletPage: React.FC = () => {
       </AlertDialog> */}
 
       {/* *기본 월렛이 설정이 되어 있는 경우 */}
-      <div className=" mx-6">
+      <div className=" mx-6 ">
         <h2 className=" text-lg font-semibold">Wallet Selection</h2>
         <p className="text-[#a3a3a3] text-sm">
           Please select a defualt wallet or add a new wallet.

@@ -110,7 +110,7 @@ const SignupEmail: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center text-white mx-6 md:mx-28">
+    <div className="flex flex-col items-center h-screen text-white mx-6 ">
       <div className="flex items-center w-full mt-4 relative">
         {/* 뒤로가기 버튼 */}
         <FaChevronLeft
