@@ -89,6 +89,8 @@ import uploader from "./uploader.png";
 import goback from "./back-icon.png";
 import pointStar from "./star.png";
 import line from "./line_btn.png";
+import BottomBarAI from "./bottomBarAI.png";
+import SeletedBottomBarAI from "./seletedBottomBarAI.png" 
 
 const Images = {
   HorizontalLogo,
@@ -181,6 +183,8 @@ const Images = {
   goback,
   pointStar,
   line,
+  BottomBarAI,
+  SeletedBottomBarAI
 };
 
 export default Images;

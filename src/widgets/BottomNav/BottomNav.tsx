@@ -6,6 +6,7 @@ import { TbTargetArrow } from "react-icons/tb";
 import { BiWallet } from "react-icons/bi";
 import { useNavigationStore } from "@/shared/store/navigationStore";
 import { IoGameControllerOutline } from "react-icons/io5";
+import Images from "@/shared/assets/images";
 
 interface BottomNavigationProps {
   hidden?: boolean;
@@ -44,7 +45,8 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({hidden}) => {
             }}
             transition={{ duration: 0.3 }}
           >
-            <AiOutlineHome className="w-6 h-6" />
+            {  selected === "/home" ? <img src={Images.SeletedBottomBarAI} className="w-6 h-6" /> :  <img src={Images.BottomBarAI} className="w-6 h-6" /> }
+         
           </motion.div>
           {selected === "/home" && (
             <motion.p
@@ -53,6 +55,40 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({hidden}) => {
               transition={{ duration: 0.3 }}
             >
               Home
+            </motion.p>
+          )}
+        </motion.div>
+      </Link>
+   
+      <Link to="/rank" onClick={() => handleNavigation("/rank")}>
+        <motion.div
+          className={`flex flex-col items-center justify-center rounded-lg w-12 h-12 ${
+            selected === "/rank"
+              ? "text-[#0147e5] bg-[#e0f2fe]"
+              : "text-[#A3A3A3]"
+          }`}
+          animate={{
+            backgroundColor: selected === "/rank" ? "#e0f2fe" : "#ffffff",
+            color: selected === "/rank" ? "#0147e5" : "#A3A3A3",
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          <motion.div
+            className="flex items-center justify-center"
+            animate={{
+              scale: selected === "/rank" ? 0.9 : 1,
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <AiOutlineTrophy className="w-6 h-6" />
+          </motion.div>
+          {selected === "/rank" && (
+            <motion.p
+              animate={{ opacity: 1 }}
+              initial={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              Rank
             </motion.p>
           )}
         </motion.div>
@@ -86,39 +122,6 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({hidden}) => {
               transition={{ duration: 0.3 }}
             >
               Game
-            </motion.p>
-          )}
-        </motion.div>
-      </Link>
-      <Link to="/rank" onClick={() => handleNavigation("/rank")}>
-        <motion.div
-          className={`flex flex-col items-center justify-center rounded-lg w-12 h-12 ${
-            selected === "/rank"
-              ? "text-[#0147e5] bg-[#e0f2fe]"
-              : "text-[#A3A3A3]"
-          }`}
-          animate={{
-            backgroundColor: selected === "/rank" ? "#e0f2fe" : "#ffffff",
-            color: selected === "/rank" ? "#0147e5" : "#A3A3A3",
-          }}
-          transition={{ duration: 0.3 }}
-        >
-          <motion.div
-            className="flex items-center justify-center"
-            animate={{
-              scale: selected === "/rank" ? 0.9 : 1,
-            }}
-            transition={{ duration: 0.3 }}
-          >
-            <AiOutlineTrophy className="w-6 h-6" />
-          </motion.div>
-          {selected === "/rank" && (
-            <motion.p
-              animate={{ opacity: 1 }}
-              initial={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              Rank
             </motion.p>
           )}
         </motion.div>

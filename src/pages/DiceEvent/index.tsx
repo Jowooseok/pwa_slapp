@@ -103,7 +103,7 @@ const DiceEventPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-center relative">
+    <div className="flex flex-col items-center relative w-full h-full overflow-x-hidden">
       {game.isRPSGameActive ? (
         <RPSGame
           onGameEnd={game.handleRPSGameEnd}

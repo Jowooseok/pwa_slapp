@@ -39,7 +39,7 @@ const App: React.FC = () => {
     // 스플래시 화면을 일정 시간 후에 숨김
     const splashTimeout = setTimeout(() => {
       setShowSplash(false);
-    }, 3000); // 3초 후에 스플래시 화면 숨김
+    }, 1500); // 3초 후에 스플래시 화면 숨김
 
     return () => {
       clearTimeout(splashTimeout);

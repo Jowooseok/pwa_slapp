@@ -78,6 +78,16 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
   };
 
   useEffect(() => {
+    // 수평 스크롤 막기
+    document.body.style.overflowX = 'hidden';
+  
+    // 컴포넌트 언마운트 시 원래대로 복구
+    return () => {
+      document.body.style.overflowX = 'auto';
+    };
+  }, []);
+
+  useEffect(() => {
     if (consecutiveWins > 3) {
       setTimeout(() => {
         handleQuit();
@@ -87,7 +97,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
 
   return (
     <div
-      className="flex flex-col z-50 bg-white h-screen drop-shadow md:min-w-[600px] w-full"
+      className="flex flex-col z-50 bg-white h-screen justify-items-center drop-shadow overflow-x-hidden"
       style={{
         backgroundImage: `url(${Images.BGRPSGame})`,
         backgroundSize: "cover",
@@ -101,7 +111,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
           onCancel={onCancel} // 취소 기능 추가
         />
       ) : (
-        <div className="flex flex-col items-center justify-center mt-20 h-full w-full">
+        <div className="flex flex-col items-center justify-center h-full w-[600px] overflow-hidden mx-auto">
           <div className="flex flex-row items-center justify-center h-[86px] w-[264px] border-2 border-[#21212f] rounded-3xl bg-white gap-3">
             <div className="flex flex-row items-center gap-1">
               <img src={Images.Star} alt="star" className="w-9 h-9" />
@@ -117,7 +127,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
             <img
               src={Images.RPSGame}
               alt="RPSGame"
-              className="w-[353px] [481px]"
+              className="w-[352px] mx-auto"
             />
             {[
               { id: "First-RPS", left: "32px" },
@@ -186,8 +196,8 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
             <div
               style={{
                 position: "absolute",
-                bottom: "80px", // 필요한 경우 조정
-                left: "54px",   // 필요한 경우 조정
+                bottom: "80px",
+                left: "54px",
               }}
               className="flex flex-row gap-2 items-center"
             >
