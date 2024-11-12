@@ -3,6 +3,7 @@
 import create from 'zustand';
 import { fetchHomeData } from '@/entities/User/api/userApi';
 import api from '@/shared/api/axiosInstance';
+import { rollDiceAPI } from '@/features/DiceEvent/api/rollDiceApi';
 
 // 월간 보상 정보 인터페이스
 interface MonthlyPrize {
@@ -37,20 +38,17 @@ interface UserState {
   userId: string | null;
   setUserId: (userId: string | null) => void;
 
-  position: number;
-  setPosition: (position: number) => void;
+  starPoints: number;
+  setStarPoints: (value: number | ((prev: number) => number)) => void;
 
   diceCount: number;
-  setDiceCount: (diceCount: number) => void;
-  incrementDiceCount: (amount: number) => void;
-
-  starPoints: number;
-  setStarPoints: (starPoints: number) => void;
-  incrementStarPoints: (amount: number) => void;
+  setDiceCount: (value: number | ((prev: number) => number)) => void;
 
   lotteryCount: number;
-  setLotteryCount: (lotteryCount: number) => void;
-  incrementLotteryCount: (amount: number) => void;
+  setLotteryCount: (value: number | ((prev: number) => number)) => void;
+
+  position: number;
+  setPosition: (value: number | ((prev: number) => number)) => void;
 
   userLv: number;
   setUserLv: (userLv: number) => void;
@@ -90,6 +88,10 @@ interface UserState {
 
   // 사용자 데이터 가져오기
   fetchUserData: () => Promise<void>;
+
+  diceResult: number;
+  rollDice: (gauge: number) => Promise<void>;
+
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
@@ -98,19 +100,28 @@ export const useUserStore = create<UserState>((set, get) => ({
   setUserId: (userId) => set({ userId }),
 
   position: 0,
-  setPosition: (position) => set({ position }),
+  setPosition: (value: number | ((prev: number) => number)) =>
+    set((state) => ({
+      position: typeof value === 'function' ? value(state.position) : value,
+    })),
+    
+  starPoints: 0,
+  setStarPoints: (value: number | ((prev: number) => number)) =>
+    set((state) => ({
+      starPoints: typeof value === 'function' ? value(state.starPoints) : value,
+    })),
 
   diceCount: 0,
-  setDiceCount: (diceCount) => set({ diceCount }),
-  incrementDiceCount: (amount) => set({ diceCount: get().diceCount + amount }),
-
-  starPoints: 0,
-  setStarPoints: (starPoints) => set({ starPoints }),
-  incrementStarPoints: (amount) => set({ starPoints: get().starPoints + amount }),
+  setDiceCount: (value: number | ((prev: number) => number)) =>
+    set((state) => ({
+      diceCount: typeof value === 'function' ? value(state.diceCount) : value,
+    })),
 
   lotteryCount: 0,
-  setLotteryCount: (lotteryCount) => set({ lotteryCount }),
-  incrementLotteryCount: (amount) => set({ lotteryCount: get().lotteryCount + amount }),
+  setLotteryCount: (value: number | ((prev: number) => number)) =>
+    set((state) => ({
+      lotteryCount: typeof value === 'function' ? value(state.lotteryCount) : value,
+    })),
 
   userLv: 1,
   setUserLv: (userLv) => set({ userLv }),
@@ -154,6 +165,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   error: null,
   setError: (error) => set({ error }),
+
 
   // 사용자 데이터 설정 함수
   fetchUserData: async () => {
@@ -331,4 +343,28 @@ export const useUserStore = create<UserState>((set, get) => ({
       return false;
     }
   },  
+
+  diceResult: 0,
+   rollDice: async (gauge: number) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const data = await rollDiceAPI(gauge);
+
+      set({
+        rank: data.rank,
+        starPoints: data.star,
+        lotteryCount: data.ticket,
+        diceCount: data.dice,
+        slToken: data.slToken,
+        diceResult: data.diceResult,
+        position: data.tileSequence,
+        isLoading: false,
+        error: null,
+      });
+    } catch (error: any) {
+      set({ isLoading: false, error: error.message || 'Roll dice failed' });
+      throw error;
+    }
+  },
 }));

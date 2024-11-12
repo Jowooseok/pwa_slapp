@@ -94,7 +94,7 @@ const MiniGame: React.FC = () => {
           </AnimatePresence>
           <div className="bg-[#FACC15] rounded-full w-[110px] h-[110px] object-center absolute left-[5px] top-[5px] md:left-2 md:top-2 md:w-40 md:h-40"></div>
           <div className="flex flex-col w-full h-full items-center justify-center dice-container">
-            <Dice ref={diceRef} onRollComplete={handleRollComplete} />
+            {/* <Dice ref={diceRef} onRollComplete={handleRollComplete} /> */}
           </div>
           <p className="absolute text-white text-sm font-semibold drop-shadow bottom-6 right-5 z-20 md:bottom-11 md:right-9">
             x {diceCount}

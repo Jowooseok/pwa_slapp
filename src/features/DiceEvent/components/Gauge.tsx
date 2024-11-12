@@ -1,3 +1,5 @@
+//src\features\DiceEvent\components\Gauge.tsx
+
 import React from 'react';
 import GaugeComponent from 'react-gauge-component';
 
