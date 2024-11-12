@@ -187,7 +187,7 @@ const AIXrayAnalysis: React.FC = () => {
       <div className="flex items-center w-full mt-4 relative">
         {/* 뒤로가기 버튼 */}
         <FaChevronLeft
-          className="text-2xl cursor-pointer mr-2"  // absolute를 제거하고 margin을 조정
+          className="text-2xl cursor-pointer mr-2"
           onClick={() => navigate(-1)}
         />
         <h1 className="text-2xl mx-auto font-semibold">{getTitle()}</h1>
@@ -300,8 +300,8 @@ const AIXrayAnalysis: React.FC = () => {
   
       {/* 이미지 업로드 요청 모달 */}
       {showModal && (
-        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg text-black text-center w-4/5">
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center md:mx-10">
+          <div className="bg-white p-6 rounded-lg text-black text-center mx-3">
             <p>
               {Alert.split('\n').map((line, index) => (
                 <React.Fragment key={index}>
