@@ -69,13 +69,13 @@ const ResultWin: React.FC<ResultWinProps> = ({
                 className="rounded-full h-14 w-32 bg-gray-200 text-[#171717] font-medium"
                 onClick={onQuit}
               >
-                Stop
+                Collect
               </button>
               <button
                 className="rounded-full h-14 w-32 bg-[#21212f] text-white font-medium"
                 onClick={onContinue}
               >
-                Continue
+                Gamble
               </button>
             </>
           )}
@@ -102,9 +102,8 @@ const ResultLose: React.FC<ResultLoseProps> = ({ winnings, onQuit }) => {
         </div>
         <div className="font-jalnan text-[20px]">
           <p>
-            Too bad,
-            <br />
-            Better luck next time!
+                       Better luck            <br />
+                       next time!
           </p>
         </div>
 

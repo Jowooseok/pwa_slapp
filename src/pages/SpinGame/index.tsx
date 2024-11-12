@@ -178,7 +178,7 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
         onClick={handleSpinClick}
         className="flex items-center justify-center bg-[#21212f] text-white h-14 mt-4 w-[342px] rounded-full font-medium"
       >
-        Spin the Roulette
+        Spin the Wheel
       </button>
 
       <AlertDialog open={isDialogOpen}>
@@ -242,9 +242,9 @@ const SpinGame: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
       }}
     >
       <h1 className="text-[#fde047] font-jalnan text-center text-[36px] mt-8 ">
-        Let's play,
+        Spin the Wheel,
         <br />
-        Roulette Game!
+        Win Prizes!
       </h1>
 
       {showSpin ? (

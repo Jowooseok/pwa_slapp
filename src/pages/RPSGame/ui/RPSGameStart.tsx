@@ -44,11 +44,11 @@ const RPSGameStart: React.FC<RPSGameStartProps> = ({
   };
 
   return (
-    <div className=" h-screen md:min-w-[600px] flex flex-col items-center justify-center">
-      <h1 className="text-[#E20100] font-jalnan text-center text-[36px] mt-4  ">
-        Let's play,
+    <div className=" h-screen md:min-w-[600px] flex flex-col items-center justify-center px-12">
+      <h1 className="text-[#E20100] font-jalnan text-center text-[26px] mt-4  ">
+      Triple or Nothing!
         <br />
-        Rock Paper Scissors!
+        Spin for Your Chance!
        
       </h1>
 
