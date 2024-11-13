@@ -34,8 +34,6 @@ const Dice = forwardRef(({ onRollComplete, gaugeValue }: DiceProps, ref) => {
       const randomX = (Math.floor(Math.random() * 4) + 1) * 360;
       const randomY = (Math.floor(Math.random() * 4) + 1) * 360;
 
-      const newFaceOrder = faceOrder.slice().sort(() => Math.random() - 0.5);
-
       controls
         .start({
           y: [0, -100, 0],
@@ -56,21 +54,22 @@ const Dice = forwardRef(({ onRollComplete, gaugeValue }: DiceProps, ref) => {
         })
         .then(() => {
           setRotation({ rotateX: -30, rotateY: 30 }); // 최종 회전 값 초기화
-          console.log(targetFace)
+
+          // faceOrder 배열을 업데이트하여 targetFace를 윗면에 배치
+          const newFaceOrder = Array.from({ length: 6 }, (_, i) => i + 1).filter(
+            (face) => face !== targetFace
+          );
+          newFaceOrder.splice(4, 0, targetFace); // 윗면 위치에 targetFace 설정
+
+          setFaceOrder(newFaceOrder); // 새 faceOrder 설정
           setFrontFace(targetFace); // 앞면 상태값을 서버에서 받은 결과로 설정
 
-          setFaceOrder(newFaceOrder); // 면 순서를 무작위로 업데이트하여 던지는 효과 유지
           setIsRolling(false); // 굴리기 종료 상태로 설정
 
           if (onRollComplete) {
             onRollComplete(targetFace); // 최종 결과 콜백 호출
           }
         });
-
-      // 주사위가 공중에 떠있는 동안 숫자 변경
-      setTimeout(() => {
-        setFaceOrder(newFaceOrder);
-      }, 777); // 숫자 변경 시간 조정
     } catch (error) {
       console.error("주사위 굴리기 오류:", error);
       alert("주사위 굴리기에 실패했습니다. 다시 시도해주세요.");
