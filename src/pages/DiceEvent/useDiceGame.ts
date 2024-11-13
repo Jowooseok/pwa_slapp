@@ -277,10 +277,8 @@ export const useDiceGame = () => {
         setDiceCount((prev) => prev + winnings);
         showReward("star", winnings);
       }
-
-      setPosition(6);
     },
-    [showReward, setDiceCount, setPosition]
+    [showReward, setDiceCount]
   );
 
   // 스핀 게임 종료 처리 함수 (변경 없음)
@@ -289,8 +287,7 @@ export const useDiceGame = () => {
     setSelectingTile(false);
     setButtonDisabled(false);
     setMoving(false);
-    setPosition(16);
-  }, [setPosition]);
+  }, []);
 
   const handleMouseDown = useCallback(() => {
     if (!buttonDisabled && diceCount > 0) {
