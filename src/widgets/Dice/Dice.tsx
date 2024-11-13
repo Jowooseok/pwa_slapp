@@ -1,3 +1,5 @@
+// src/widgets/Dice.tsx
+
 import React, { useState, forwardRef, useImperativeHandle } from "react";
 import { motion, useAnimation } from "framer-motion";
 import "./Dice.css";
@@ -13,7 +15,6 @@ const Dice = forwardRef(({ onRollComplete, gaugeValue }: DiceProps, ref) => {
   const controls = useAnimation();
   const [rotation, setRotation] = useState({ rotateX: -30, rotateY: 30 });
   const [faceOrder, setFaceOrder] = useState<number[]>([1, 2, 3, 4, 5, 6]);
-  const [frontFace, setFrontFace] = useState(1); // 앞면 상태값
   const [isRolling, setIsRolling] = useState(false);
 
   useImperativeHandle(ref, () => ({
@@ -62,7 +63,6 @@ const Dice = forwardRef(({ onRollComplete, gaugeValue }: DiceProps, ref) => {
           newFaceOrder.splice(4, 0, targetFace); // 윗면 위치에 targetFace 설정
 
           setFaceOrder(newFaceOrder); // 새 faceOrder 설정
-          setFrontFace(targetFace); // 앞면 상태값을 서버에서 받은 결과로 설정
 
           setIsRolling(false); // 굴리기 종료 상태로 설정
 

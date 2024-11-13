@@ -1,3 +1,5 @@
+//src\pages\DiceEvent\GameBoard.tsx
+
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Tile from "./tile";

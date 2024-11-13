@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useGauge } from "@/features/DiceEvent";
 import { useRPSGameStore } from "../RPSGame/store";
 import { useUserStore } from "@/entities/User/model/userModel";
-import { rollDiceAPI } from "@/features/DiceEvent/api/rollDiceApi";
+// import { rollDiceAPI } from "@/features/DiceEvent/api/rollDiceApi"; // 제거
 
 export interface Reward {
   type: string;
@@ -69,11 +69,11 @@ export const useDiceGame = () => {
         const diceReward = parseInt(tile.getAttribute("data-dice") || "0", 10);
 
         if (starReward > 0) {
-          setStarPoints((prev: number) => prev + starReward); // prev에 타입 지정
+          setStarPoints((prev: number) => prev + starReward);
           showReward('star', starReward);
         }
         if (diceReward > 0) {
-          setDiceCount((prev: number) => prev + diceReward); // prev에 타입 지정
+          setDiceCount((prev: number) => prev + diceReward);
           showReward('dice', diceReward);
         }
 
@@ -98,10 +98,10 @@ export const useDiceGame = () => {
         setPosition(currentPosition);
 
         if (currentPosition === 0) {
-          setStarPoints((prev: number) => prev + 200); // prev에 타입 지정
+          setStarPoints((prev: number) => prev + 200);
           showReward('star', 200);
-          setDiceCount((prev: number) => prev + 1); // prev에 타입 지정
-          setLotteryCount((prev: number) => prev + 1); // prev에 타입 지정
+          setDiceCount((prev: number) => prev + 1);
+          setLotteryCount((prev: number) => prev + 1);
           setTimeout(() => showReward('lottery', 1), 200);
         }
 
@@ -171,12 +171,12 @@ export const useDiceGame = () => {
     (value: number) => {
       console.log('handleRollComplete 호출됨');
       setShowDiceValue(true);
+      setRolledValue(value);
       setTimeout(() => {
         setShowDiceValue(false);
       }, 1000);
       setButtonDisabled(true);
-      
-      const newPosition = (position + value) % 20; // 새로운 위치 계산 const newPosition = tileSequence;
+      const newPosition = (position + value) % 20;
       const currentPosition = position;
 
       movePiece(currentPosition, newPosition, () => {
@@ -188,8 +188,8 @@ export const useDiceGame = () => {
         } else {
           setButtonDisabled(false);
         }
-          // 모든 경우에 버튼 활성화
-    setButtonDisabled(false);
+        // 모든 경우에 버튼 활성화
+        setButtonDisabled(false);
         setIsRolling(false); // 주사위 굴리기 완료 후 상태 리셋
       });
     },
@@ -208,64 +208,16 @@ export const useDiceGame = () => {
     ]
   );
 
-  // 주사위 굴리기 함수
-  const rollDice = useCallback(async () => {
+  // 주사위 굴리기 함수 수정
+  const rollDice = useCallback(() => {
     if (diceCount > 0 && !isRolling) {
       setIsRolling(true);
       setButtonDisabled(true);
-
-      try {
-        // gaugeValue 검증 및 제한
-        const validGaugeValue = Math.max(1, Math.min(6, gaugeValue));
-
-        // 서버에 주사위 굴리기 API 호출
-        const data = await rollDiceAPI(validGaugeValue);
-
-        // 서버 응답 데이터에서 필요한 값 추출
-        const {
-          diceResult,
-          tileSequence: newTileSequence,
-          rank,
-          star,
-          ticket,
-          dice: newDiceCount,
-          slToken,
-        } = data;
-
-        // 상태 업데이트
-        setRolledValue(diceResult);
-        setTileSequence(newTileSequence); // 새로운 위치를 상태로 저장
-        setRank(rank);
-        setStarPoints(star);
-        setLotteryCount(ticket);
-        setDiceCount(newDiceCount);
-        setSlToken(slToken);
-
-        // 주사위 애니메이션 시작
-        diceRef.current?.roll(diceResult);
-
-      } catch (error) {
-        console.error("주사위 굴리기 에러:", error);
-        alert("주사위 굴리기에 실패했습니다. 다시 시도해주세요.");
-        setIsRolling(false);
-        setButtonDisabled(false);
-      }
+      diceRef.current?.roll(); // Dice 컴포넌트의 roll 메소드 호출
     }
-  }, [
-    diceCount,
-    isRolling,
-    gaugeValue,
-    setRolledValue,
-    setTileSequence,
-    setRank,
-    setStarPoints,
-    setLotteryCount,
-    setDiceCount,
-    setSlToken,
-    diceRef,
-  ]);
+  }, [diceCount, isRolling]);
 
-  // 타일 클릭 핸들러
+  // 타일 클릭 핸들러 (변경 없음)
   const handleTileClick = useCallback(
     (tileId: number) => {
       if (!selectingTile || tileId === 18) return;
@@ -313,7 +265,7 @@ export const useDiceGame = () => {
     ]
   );
 
-  // 가위바위보 게임 종료 처리 함수
+  // 가위바위보 게임 종료 처리 함수 (변경 없음)
   const handleRPSGameEnd = useCallback(
     (result: "win" | "lose", winnings: number) => {
       setIsRPSGameActive(false);
@@ -331,7 +283,7 @@ export const useDiceGame = () => {
     [showReward, setDiceCount, setPosition]
   );
 
-  // 스핀 게임 종료 처리 함수
+  // 스핀 게임 종료 처리 함수 (변경 없음)
   const handleSpinGameEnd = useCallback(() => {
     setIsSpinGameActive(false);
     setSelectingTile(false);
