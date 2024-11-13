@@ -70,7 +70,7 @@ const App: React.FC = () => {
           {/* <InstallPrompt /> */}
           <Routes>
             <Route path="/home" element={
-                <DiceEventLayout hidden={true}>
+                <DiceEventLayout >
                   <Home />
                   </DiceEventLayout>
               } />

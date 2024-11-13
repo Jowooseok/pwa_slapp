@@ -1,63 +1,81 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { motion, useAnimation } from 'framer-motion';
-import './Dice.css';
-import Images from '@/shared/assets/images'; // 이미지 경로에 맞게 수정
+import React, { useState, forwardRef, useImperativeHandle } from "react";
+import { motion, useAnimation } from "framer-motion";
+import "./Dice.css";
+import Images from "@/shared/assets/images";
+import { rollDiceAPI } from "@/features/DiceEvent/api/rollDiceApi"; // 서버 API 가져오기
 
 interface DiceProps {
   onRollComplete?: (value: number) => void;
-  targetFace?: number;
+  gaugeValue: number; // 서버에 전달할 게이지 값
 }
 
-const Dice = forwardRef(({ onRollComplete, targetFace }: DiceProps, ref) => {
+const Dice = forwardRef(({ onRollComplete, gaugeValue }: DiceProps, ref) => {
   const controls = useAnimation();
   const [rotation, setRotation] = useState({ rotateX: -30, rotateY: 30 });
+  const [faceOrder, setFaceOrder] = useState<number[]>([1, 2, 3, 4, 5, 6]);
+  const [frontFace, setFrontFace] = useState(1); // 앞면 상태값
+  const [isRolling, setIsRolling] = useState(false);
 
   useImperativeHandle(ref, () => ({
     roll: () => handleRoll(),
   }));
 
-  // 각 면에 해당하는 회전 각도 정의 (front 면에 원하는 숫자가 오도록)
-  const faceRotations: { [key: number]: { rotateX: number; rotateY: number } } = {
-    1: { rotateX: 270, rotateY: 0 },  // 윗면이 front로 오도록
-    2: { rotateX: 0, rotateY: 0 },    // 앞면이 front로 오도록
-    3: { rotateX: 0, rotateY: 90 },   // 오른쪽 면이 front로 오도록
-    4: { rotateX: 0, rotateY: -90 },  // 왼쪽 면이 front로 오도록
-    5: { rotateX: 180, rotateY: 0 },  // 뒷면이 front로 오도록
-    6: { rotateX: 90, rotateY: 0 },   // 아랫면이 front로 오도록
-  };
+  const handleRoll = async () => {
+    if (isRolling) return; // 이미 굴리고 있다면 중복 실행 방지
 
-  const handleRoll = () => {
-    const animationDuration = 1; // 초 단위
+    setIsRolling(true); // 굴리기 상태 설정
 
-    const targetRotation = faceRotations[targetFace || 1];
+    try {
+      // 서버에 주사위 결과 요청
+      const data = await rollDiceAPI(gaugeValue);
+      const targetFace = data.diceResult; // 서버에서 받은 결과 값
 
-    const randomX = (Math.floor(Math.random() * 4) + 1) * 360;
-    const randomY = (Math.floor(Math.random() * 4) + 1) * 360;
+      // 임의 회전 애니메이션으로 시작
+      const randomX = (Math.floor(Math.random() * 4) + 1) * 360;
+      const randomY = (Math.floor(Math.random() * 4) + 1) * 360;
 
-    const finalRotationX = rotation.rotateX + randomX + targetRotation.rotateX;
-    const finalRotationY = rotation.rotateY + randomY + targetRotation.rotateY;
+      const newFaceOrder = faceOrder.slice().sort(() => Math.random() - 0.5);
 
-    controls.start({
-      y: [0, -100, 0], // 위로 던졌다가 내려오는 애니메이션
-      rotateX: [rotation.rotateX, finalRotationX],
-      rotateY: [rotation.rotateY, finalRotationY],
-      transition: {
-        duration: animationDuration,
-        ease: 'easeOut',
-      },
-    });
+      controls
+        .start({
+          y: [0, -100, 0],
+          rotateX: [
+            rotation.rotateX,
+            rotation.rotateX + randomX,
+            rotation.rotateX + randomX + 360,
+          ],
+          rotateY: [
+            rotation.rotateY,
+            rotation.rotateY + randomY,
+            rotation.rotateY + randomY + 360,
+          ],
+          transition: {
+            duration: 1,
+            ease: "linear",
+          },
+        })
+        .then(() => {
+          setRotation({ rotateX: -30, rotateY: 30 }); // 최종 회전 값 초기화
+          console.log(targetFace)
+          setFrontFace(targetFace); // 앞면 상태값을 서버에서 받은 결과로 설정
 
-    setTimeout(() => {
-      if (onRollComplete) {
-        onRollComplete(targetFace || 1);
-      }
-    }, animationDuration * 1000);
+          setFaceOrder(newFaceOrder); // 면 순서를 무작위로 업데이트하여 던지는 효과 유지
+          setIsRolling(false); // 굴리기 종료 상태로 설정
 
-    // 회전 값 업데이트
-    setRotation({
-      rotateX: finalRotationX % 360,
-      rotateY: finalRotationY % 360,
-    });
+          if (onRollComplete) {
+            onRollComplete(targetFace); // 최종 결과 콜백 호출
+          }
+        });
+
+      // 주사위가 공중에 떠있는 동안 숫자 변경
+      setTimeout(() => {
+        setFaceOrder(newFaceOrder);
+      }, 777); // 숫자 변경 시간 조정
+    } catch (error) {
+      console.error("주사위 굴리기 오류:", error);
+      alert("주사위 굴리기에 실패했습니다. 다시 시도해주세요.");
+      setIsRolling(false);
+    }
   };
 
   const getFaceImage = (face: number) => {
@@ -86,25 +104,24 @@ const Dice = forwardRef(({ onRollComplete, targetFace }: DiceProps, ref) => {
           className="cube"
           animate={controls}
           initial={{ rotateX: rotation.rotateX, rotateY: rotation.rotateY }}
-          style={{ transformStyle: 'preserve-3d' }}
         >
           <div className="cube__face cube__face--front">
-            <img src={getFaceImage(2)} alt="front" />
+            <img src={getFaceImage(faceOrder[0])} alt="1" />
           </div>
           <div className="cube__face cube__face--back">
-            <img src={getFaceImage(5)} alt="back" />
+            <img src={getFaceImage(faceOrder[1])} alt="2" />
           </div>
           <div className="cube__face cube__face--right">
-            <img src={getFaceImage(3)} alt="right" />
+            <img src={getFaceImage(faceOrder[2])} alt="3" />
           </div>
           <div className="cube__face cube__face--left">
-            <img src={getFaceImage(4)} alt="left" />
+            <img src={getFaceImage(faceOrder[3])} alt="4" />
           </div>
           <div className="cube__face cube__face--top">
-            <img src={getFaceImage(1)} alt="top" />
+            <img src={getFaceImage(faceOrder[4])} alt="5" />
           </div>
           <div className="cube__face cube__face--bottom">
-            <img src={getFaceImage(6)} alt="bottom" />
+            <img src={getFaceImage(faceOrder[5])} alt="6" />
           </div>
         </motion.div>
       </div>

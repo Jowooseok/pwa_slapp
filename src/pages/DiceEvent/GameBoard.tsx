@@ -135,7 +135,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
           <Dice
         ref={diceRef}
         onRollComplete={handleRollComplete}
-        targetFace={rolledValue} // 서버에서 받은 diceResult를 전달
+        gaugeValue={gaugeValue}  // gaugeValue 전달
+      
       />
 
           </div>

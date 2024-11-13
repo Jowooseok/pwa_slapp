@@ -117,7 +117,7 @@ const WalletPage: React.FC = () => {
   const WalletCard: React.FC<WalletCardProps> = ({ text, imgSrc }) => {
     return (
       <button
-        className="flex flex-row items-center gap-2 border-2 border-[#142964] h-16 rounded-3xl pl-5 mx-6 md:mx-28"
+        className="flex flex-row items-center gap-2 border-2 border-[#142964] h-16 rounded-3xl pl-5 md:mx-28"
         onClick={handleOpen}
       >
         <img src={imgSrc} className="w-6 h-6" alt={`${text} logo`} />
@@ -127,10 +127,10 @@ const WalletPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col text-white mb-32  mx-6 md:min-w-[600px] h-screen ">
+    <div className="flex flex-col text-white mb-32   md:min-w-[600px] h-screen ">
       <TopTitle title="Wallet" />
-      {/* *월렛이 선택되어있지 않은 경우 */}
-      {/* <div className="flex flex-col gap-3">
+      {/* *월렛이 선택되어있지 않은 경우 */} 
+       {/* <div className="flex flex-col gap-3">
         <WalletCard text="ICP" imgSrc={Images.IcpLogo} />
         <WalletCard text="BINANCE" imgSrc={Images.BinanceLogo} />
         <WalletCard text="OKX" imgSrc={Images.OkxLogo} />
@@ -313,7 +313,7 @@ const WalletPage: React.FC = () => {
       </AlertDialog> */}
 
       {/* *기본 월렛이 설정이 되어 있는 경우 */}
-      <div className=" mx-6 ">
+      <div className="  ">
         <h2 className=" text-lg font-semibold">Wallet Selection</h2>
         <p className="text-[#a3a3a3] text-sm">
           Please select a defualt wallet or add a new wallet.
