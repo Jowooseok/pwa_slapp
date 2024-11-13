@@ -4,7 +4,6 @@ import { useState, useCallback, useRef } from "react";
 import { useGauge } from "@/features/DiceEvent";
 import { useRPSGameStore } from "../RPSGame/store";
 import { useUserStore } from "@/entities/User/model/userModel";
-// import { rollDiceAPI } from "@/features/DiceEvent/api/rollDiceApi"; // 제거
 
 export interface Reward {
   type: string;
@@ -85,9 +84,13 @@ export const useDiceGame = () => {
     [showReward, setStarPoints, setDiceCount]
   );
 
-  // 이동 함수
+  // 이동 함수 수정
   const movePiece = useCallback(
-    (startPosition: number, endPosition: number, onMoveComplete: () => void) => {
+    (
+      startPosition: number,
+      endPosition: number,
+      onMoveComplete: (finalPosition: number) => void
+    ) => {
       setMoving(true);
       console.log('movePiece 호출됨:', startPosition, endPosition);
       let currentPosition = startPosition;
@@ -116,7 +119,7 @@ export const useDiceGame = () => {
                 setPosition(15);
                 applyReward(15);
                 setMoving(false);
-                onMoveComplete();
+                onMoveComplete(15); // 최종 위치 전달
               }, 300);
               break;
             case 8:
@@ -129,7 +132,7 @@ export const useDiceGame = () => {
                 setTimeout(() => showReward("lottery", 1), 200);
                 applyReward(5);
                 setMoving(false);
-                onMoveComplete();
+                onMoveComplete(5); // 최종 위치 전달
               }, 300);
               break;
             case 13:
@@ -137,17 +140,17 @@ export const useDiceGame = () => {
                 setPosition(0);
                 applyReward(0);
                 setMoving(false);
-                onMoveComplete();
+                onMoveComplete(0); // 최종 위치 전달
               }, 300);
               break;
             case 18:
               setSelectingTile(true);
               setMoving(false);
-              onMoveComplete(); // 추가
+              onMoveComplete(18); // 최종 위치 전달
               break;
             default:
               setMoving(false);
-              onMoveComplete();
+              onMoveComplete(currentPosition); // 최종 위치 전달
               break;
           }
         }
@@ -166,7 +169,7 @@ export const useDiceGame = () => {
     ]
   );
 
-  // 주사위 결과 처리 함수
+  // 주사위 결과 처리 함수 수정
   const handleRollComplete = useCallback(
     (value: number) => {
       console.log('handleRollComplete 호출됨');
@@ -179,16 +182,15 @@ export const useDiceGame = () => {
       const newPosition = (position + value) % 20;
       const currentPosition = position;
 
-      movePiece(currentPosition, newPosition, () => {
-        if (newPosition === 5) {
+      movePiece(currentPosition, newPosition, (finalPosition) => {
+        if (finalPosition === 5) {
           setIsRPSGameActive(true);
           rpsGameStore.setBetAmount(diceCount);
-        } else if (newPosition === 15) {
+        } else if (finalPosition === 15) {
           setIsSpinGameActive(true);
         } else {
           setButtonDisabled(false);
         }
-        // 모든 경우에 버튼 활성화
         setButtonDisabled(false);
         setIsRolling(false); // 주사위 굴리기 완료 후 상태 리셋
       });
@@ -204,7 +206,6 @@ export const useDiceGame = () => {
       setIsRPSGameActive,
       setIsSpinGameActive,
       setIsRolling,
-      tileSequence,
     ]
   );
 
@@ -265,7 +266,7 @@ export const useDiceGame = () => {
     ]
   );
 
-  // 가위바위보 게임 종료 처리 함수 (변경 없음)
+  // 가위바위보 게임 종료 처리 함수 수정
   const handleRPSGameEnd = useCallback(
     (result: "win" | "lose", winnings: number) => {
       setIsRPSGameActive(false);
@@ -277,16 +278,19 @@ export const useDiceGame = () => {
         setDiceCount((prev) => prev + winnings);
         showReward("star", winnings);
       }
+
+      // setPosition(6); // 추가 이동 제거
     },
     [showReward, setDiceCount]
   );
 
-  // 스핀 게임 종료 처리 함수 (변경 없음)
+  // 스핀 게임 종료 처리 함수 수정
   const handleSpinGameEnd = useCallback(() => {
     setIsSpinGameActive(false);
     setSelectingTile(false);
     setButtonDisabled(false);
     setMoving(false);
+    // setPosition(16); // 추가 이동 제거
   }, []);
 
   const handleMouseDown = useCallback(() => {

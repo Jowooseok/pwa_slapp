@@ -63,7 +63,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     <div className="grid grid-cols-6 grid-rows-6 gap-1 text-xs md:text-base">
       {renderTile(10, <img src={Images.DesertIsland} className="z-0 w-[41px] h-[41px]" />, "0", "0")}
       {renderTile(9, <StarTile count={100} />, "100", "0")}
-      {renderTile(8, <AirplaneTile text="Go Game" />, "0", "0")}
+      {renderTile(8, <AirplaneTile text="Battle" />, "0", "0")}
       {renderTile(7, <DiceTile count={1} />, "0", "1")}
       {renderTile(6, <StarTile count={30} />, "30", "0")}
       {renderTile(5, <img src={Images.RPSImage} className="z-0 w-[51px] h-[51px]" />, "0", "0")}
@@ -167,8 +167,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
       {renderTile(4, <StarTile count={30} />, "30", "0")}
       {renderTile(12, <DiceTile count={1} />, "0", "1")}
       {renderTile(3, <DiceTile count={1} />, "0", "1")}
-      {renderTile(13, <AirplaneTile text="Go Home" />, "0", "0")}
-      {renderTile(2, <AirplaneTile text="Go Spin" />, "0", "0")}
+      {renderTile(13, <AirplaneTile text="Home" />, "0", "0")}
+      {renderTile(2, <AirplaneTile text="Spin" />, "0", "0")}
       {renderTile(14, <StarTile count={50} />, "50", "0")}
       {renderTile(1, <StarTile count={30} />, "30", "0")}
       {renderTile(15, <img src={Images.SpinImage} className="z-0 w-[41px] h-[41px]" />, "0", "0")}
