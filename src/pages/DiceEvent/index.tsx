@@ -161,9 +161,9 @@ const DiceEventPage: React.FC = () => {
             initialY={initialY}
             delta={delta}
           />
-     
-          <Attendance />
+          <br />
           <MyRankingWidget />
+          <Attendance />
           <MissionWidget />
           <br /> <br /> <br />
           <br />

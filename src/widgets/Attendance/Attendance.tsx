@@ -1,3 +1,5 @@
+//src\widgets\Attendance\Attendance.tsx
+
 import React, { useEffect, useState } from 'react';
 import AttendanceDay from '@/features/AttendanceDay/components/AttendanceDay';
 
