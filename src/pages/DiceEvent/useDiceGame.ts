@@ -182,10 +182,13 @@ export const useDiceGame = () => {
       const newPosition = (position + value) % 20;
       const currentPosition = position;
 
+      // 주사위를 굴렸으므로 diceCount를 1 감소시킵니다.
+      setDiceCount((prev) => prev - 1);
+
       movePiece(currentPosition, newPosition, (finalPosition) => {
         if (finalPosition === 5) {
           setIsRPSGameActive(true);
-          rpsGameStore.setBetAmount(diceCount);
+          rpsGameStore.setBetAmount(diceCount - 1); // 감소된 diceCount 사용
         } else if (finalPosition === 15) {
           setIsSpinGameActive(true);
         } else {
