@@ -57,7 +57,7 @@ interface UserState {
   setCharacterType: (type: 'dog' | 'cat') => void;
 
   slToken: number;
-  setSlToken: (slToken: number) => void;
+  setSlToken: (value: number | ((prev: number) => number)) => void;
 
   rank: number;
   setRank: (rank: number) => void;
@@ -130,7 +130,10 @@ export const useUserStore = create<UserState>((set, get) => ({
   setCharacterType: (type) => set({ characterType: type }),
 
   slToken: 0,
-  setSlToken: (slToken) => set({ slToken }),
+  setSlToken: (value) =>
+    set((state) => ({
+      slToken: typeof value === "function" ? value(state.slToken) : value,
+    })),
 
   rank: 0,
   setRank: (rank) => set({ rank }),

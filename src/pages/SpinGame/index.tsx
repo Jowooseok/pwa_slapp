@@ -1,3 +1,5 @@
+// src/pages/SpinGame/index.tsx
+
 import React, { useState } from "react";
 import Images from "@/shared/assets/images";
 import { Wheel } from "react-custom-roulette";
@@ -8,116 +10,139 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui";
 import { HiX } from "react-icons/hi";
+import api from "@/shared/api/axiosInstance";
+import { useUserStore } from "@/entities/User/model/userModel";
+
 
 const data = [
+  // 스타 보상
   {
-    option: "0",
+    option: "1000 Stars",
     image: {
       uri: `${Images.Star}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
+    prize: { type: "STAR", amount: 1000 },
     style: { backgroundColor: "#2FAF74" },
   },
+  // 주사위 보상
   {
-    option: "1",
+    option: "5 Dice",
     image: {
       uri: `${Images.Dice}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
+    prize: { type: "DICE", amount: 5 },
     style: { backgroundColor: "#39A1E8" },
   },
+  // 스타 보상
   {
-    option: "2",
-    image: {
-      uri: `${Images.TokenReward}`,
-      sizeMultiplier: 0.5,
-      offsetY: 150,
-    },
-    style: { backgroundColor: "#FBA629" },
-  },
-  {
-    option: "3",
+    option: "2000 Stars",
     image: {
       uri: `${Images.Star}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: "#F3F3E9" },
+    prize: { type: "STAR", amount: 2000 },
+    style: { backgroundColor: "#FBA629" },
   },
+  // 주사위 보상
   {
-    option: "4",
+    option: "10 Dice",
     image: {
       uri: `${Images.Dice}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    style: { backgroundColor: "#2FAF74" },
+    prize: { type: "DICE", amount: 10 },
+    style: { backgroundColor: "#F3F3E9" },
   },
+  // 스타 보상
   {
-    option: "5",
+    option: "4000 Stars",
     image: {
-      uri: `${Images.TokenReward}`,
+      uri: `${Images.Star}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
+    prize: { type: "STAR", amount: 4000 },
+    style: { backgroundColor: "#2FAF74" },
+  },
+  // 주사위 보상
+  {
+    option: "20 Dice",
+    image: {
+      uri: `${Images.Dice}`,
+      sizeMultiplier: 0.5,
+      offsetY: 150,
+    },
+    prize: { type: "DICE", amount: 20 },
     style: { backgroundColor: "#39A1E8" },
   },
+  // 스타 보상
   {
-    option: "6",
+    option: "5000 Stars",
     image: {
       uri: `${Images.Star}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
+    prize: { type: "STAR", amount: 5000 },
     style: { backgroundColor: "#FBA629" },
   },
+  // 주사위 보상
   {
-    option: "7",
+    option: "30 Dice",
     image: {
       uri: `${Images.Dice}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
+    prize: { type: "DICE", amount: 30 },
     style: { backgroundColor: "#F3F3E9" },
   },
+  // 토큰 보상
   {
-    option: "8",
+    option: "10 Coins",
     image: {
       uri: `${Images.TokenReward}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
+    prize: { type: "SL", amount: 10 },
     style: { backgroundColor: "#2FAF74" },
   },
+  // 래플권 보상
   {
-    option: "9",
+    option: "1 Raffle Ticket",
     image: {
-      uri: `${Images.LosingTicket}`,
+      uri: `${Images.LotteryTicket}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
+    prize: { type: "TICKET", amount: 1 },
     style: { backgroundColor: "#39A1E8" },
   },
 ];
 
 const SpinGameStart: React.FC<{ onStart: () => void }> = ({ onStart }) => {
   return (
-    <div className=" flex flex-col items-center">
+    <div className="flex flex-col items-center">
       <img
         src={Images.SpinExample}
         alt="spin-example"
-        className=" w-[306px] h-[376px] mt-4 self-center"
+        className="w-[306px] h-[376px] mt-4 self-center"
       />
-      <div className=" border-2 border-[#21212f] rounded-3xl text-center bg-white text-[#171717] font-medium w-[342px] h-[110px] flex items-center justify-center mt-4">
+      <div className="border-2 border-[#21212f] rounded-3xl text-center bg-white text-[#171717] font-medium w-[342px] h-[110px] flex items-center justify-center mt-4">
         <p>
           ※ Note ※<br /> If you leave without spinning the roulette, <br />
           you will lose your turn.
         </p>
       </div>
       <button
-        className=" flex items-center justify-center bg-[#21212f] text-white h-14 mt-4 w-[342px] rounded-full font-medium"
+        className="flex items-center justify-center bg-[#21212f] text-white h-14 mt-4 w-[342px] rounded-full font-medium"
         onClick={onStart}
       >
         Start
@@ -130,21 +155,83 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [prizeData, setPrizeData] = useState<{ spinType: string; amount: number } | null>(
+    null
+  );
 
-  const handleSpinClick = () => {
-    const newPrizeNumber = Math.floor(Math.random() * data.length);
-    setPrizeNumber(newPrizeNumber);
-    setMustSpin(true);
+  const {
+    setStarPoints,
+    setDiceCount,
+    setSlToken,
+    setLotteryCount,
+  } = useUserStore();
+
+  const handleSpinClick = async () => {
+    try {
+      // /play-spin API 호출
+      const response = await api.get("/play-spin");
+      console.log("Server response:", response.data); // 서버 응답 출력
+      if (response.data.code === "OK") {
+        const { spinType, amount } = response.data.data;
+
+        // data 배열에서 서버로부터 받은 보상과 일치하는 인덱스 찾기
+        const prizeIndex = data.findIndex(
+          (item) => item.prize.type === spinType && item.prize.amount === amount
+        );
+
+        if (prizeIndex >= 0) {
+          console.log("Prize index found:", prizeIndex); // 찾은 인덱스 출력
+          setPrizeNumber(prizeIndex);
+          setPrizeData({ spinType, amount });
+          setMustSpin(true);
+        } else {
+          console.error("Prize not found in wheel segments");
+        }
+      } else {
+        console.error("Error in play-spin API:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error calling play-spin API:", error);
+    }
   };
 
   const handleSpinEnd = () => {
     setMustSpin(false);
-    setIsDialogOpen(true); // 스핀 종료 후 다이얼로그 오픈
+    // 사용자 상태 업데이트
+    if (prizeData) {
+      console.log("Prize data:", prizeData); // prizeData 출력
+      const { spinType, amount } = prizeData;
+      if (spinType === "STAR") {
+        setStarPoints((prev: number) => prev + amount);
+      } else if (spinType === "DICE") {
+        setDiceCount((prev: number) => prev + amount);
+      } else if (spinType === "SL") {
+        setSlToken((prev: number) => prev + amount);
+      } else if (spinType === "TICKET") {
+        setLotteryCount((prev: number) => prev + amount);
+      }
+    }
+    setIsDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
-    onSpinEnd(); // 다이얼로그에서 닫기 버튼을 눌렀을 때 주사위 게임으로 돌아가기
+    onSpinEnd();
+  };
+
+  const getPrizeDisplayName = (spinType: string | undefined) => {
+    switch (spinType) {
+      case "STAR":
+        return "Stars";
+      case "DICE":
+        return "Dice";
+      case "SL":
+        return "Coins";
+      case "TICKET":
+        return "Raffle Ticket";
+      default:
+        return spinType ?? "Unknown";
+    }
   };
 
   return (
@@ -153,7 +240,7 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
       <img
         src={Images.SpinPin}
         alt="Spin-game"
-        className="w-[126px] h-[142] absolute z-10 top-28 transform rotate-45"
+        className="w-[126px] h-[142px] absolute z-10 top-28 transform rotate-45"
       />
       <div className="absolute top-10 left-1/2 transform -translate-x-1/2 z-0">
         <Wheel
@@ -204,7 +291,8 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
             </div>
             <div className="text-center space-y-2">
               <p className="text-xl font-semibold">
-                Congratulations! You won {data[prizeNumber].option}!
+                Congratulations! You won {prizeData?.amount}{" "}
+                {getPrizeDisplayName(prizeData?.spinType)}!
               </p>
               <p className="text-[#a3a3a3]">
                 This reward has been added to your account.
@@ -213,7 +301,7 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
             <div className="space-y-3 w-full">
               <button
                 className="w-full h-14 rounded-full bg-[#0147e5]"
-                onClick={handleCloseDialog} // 확인 버튼 클릭 시 주사위 게임으로 돌아가도록 설정
+                onClick={handleCloseDialog}
               >
                 OK
               </button>
@@ -234,7 +322,7 @@ const SpinGame: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
 
   return (
     <div
-      className="flex flex-col z-50 h-screen bg-white w-full  items-center"
+      className="flex flex-col z-50 h-screen bg-white w-full items-center"
       style={{
         backgroundImage: `url(${Images.BGSpinGame})`,
         backgroundSize: "cover",
