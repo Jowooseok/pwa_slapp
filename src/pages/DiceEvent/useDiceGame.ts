@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useGauge } from "@/features/DiceEvent";
 import { useRPSGameStore } from "../RPSGame/store";
 import { useUserStore } from "@/entities/User/model/userModel";
+import { anywhereAPI } from "@/features/DiceEvent/api/anywhereApi"; // 추가
 
 export interface Reward {
   type: string;
@@ -84,7 +85,7 @@ export const useDiceGame = () => {
     [showReward, setStarPoints, setDiceCount]
   );
 
-  // 이동 함수 수정
+  // 이동 함수
   const movePiece = useCallback(
     (
       startPosition: number,
@@ -169,7 +170,7 @@ export const useDiceGame = () => {
     ]
   );
 
-  // 주사위 결과 처리 함수 수정
+  // 주사위 결과 처리 함수
   const handleRollComplete = useCallback(
     (value: number) => {
       console.log('handleRollComplete 호출됨');
@@ -212,7 +213,7 @@ export const useDiceGame = () => {
     ]
   );
 
-  // 주사위 굴리기 함수 수정
+  // 주사위 굴리기 함수
   const rollDice = useCallback(() => {
     if (diceCount > 0 && !isRolling) {
       setIsRolling(true);
@@ -221,55 +222,57 @@ export const useDiceGame = () => {
     }
   }, [diceCount, isRolling]);
 
-  // 타일 클릭 핸들러 (변경 없음)
+  // 타일 클릭 핸들러 수정
   const handleTileClick = useCallback(
-    (tileId: number) => {
+    async (tileId: number) => {
       if (!selectingTile || tileId === 18) return;
 
-      if (tileId === 5) {
-        if (!rpsGameStore.isGameStarted) {
-          setIsRPSGameActive(true);
-          rpsGameStore.setBetAmount(diceCount);
-        }
-      } else if (tileId === 15) {
-        if (!isSpinGameActive) {
-          setIsSpinGameActive(true);
-        }
-      } else {
-        setPosition(tileId);
+      try {
+        setButtonDisabled(true); // 버튼 비활성화
+        setMoving(true); // 이동 중 상태 설정
+
+        // anywhereAPI 호출
+        const data = await anywhereAPI(tileId);
+        console.log('Move via airplane successful:', data);
+
+        // 서버로부터 받은 데이터로 상태 업데이트
+        setRank(data.rank);
+        setStarPoints(data.star);
+        setLotteryCount(data.ticket);
+        setDiceCount(data.dice);
+        setSlToken(data.slToken);
+        setRolledValue(data.diceResult);
+        setPosition(data.tileSequence);
+
+        // 필요한 경우 추가적인 보상 처리
+        applyReward(tileId);
+
+      } catch (error: any) {
+        console.error('Error moving via airplane:', error);
+        // 에러 처리 (예: 사용자에게 알림)
+        alert(error.message || 'Failed to move via airplane.');
+      } finally {
         setSelectingTile(false);
         setMoving(false);
         setButtonDisabled(false);
-
-        if (tileId !== 19) {
-          setStarPoints((prev) => prev + 200);
-          setDiceCount((prev) => prev + 1);
-          setLotteryCount((prev) => prev + 1);
-          showReward("star", 200);
-          setTimeout(() => showReward("lottery", 1), 500);
-        }
-
-        applyReward(tileId);
       }
     },
     [
       selectingTile,
-      showReward,
-      diceCount,
-      rpsGameStore,
-      isSpinGameActive,
-      applyReward,
-      setPosition,
-      setSelectingTile,
-      setMoving,
       setButtonDisabled,
+      setMoving,
+      setRank,
       setStarPoints,
-      setDiceCount,
       setLotteryCount,
+      setDiceCount,
+      setSlToken,
+      setRolledValue,
+      setPosition,
+      applyReward,
     ]
   );
 
-  // 가위바위보 게임 종료 처리 함수 수정
+  // 가위바위보 게임 종료 처리 함수
   const handleRPSGameEnd = useCallback(
     (result: "win" | "lose", winnings: number) => {
       setIsRPSGameActive(false);
@@ -281,19 +284,16 @@ export const useDiceGame = () => {
         setDiceCount((prev) => prev + winnings);
         showReward("star", winnings);
       }
-
-      // setPosition(6); // 추가 이동 제거
     },
     [showReward, setDiceCount]
   );
 
-  // 스핀 게임 종료 처리 함수 수정
+  // 스핀 게임 종료 처리 함수
   const handleSpinGameEnd = useCallback(() => {
     setIsSpinGameActive(false);
     setSelectingTile(false);
     setButtonDisabled(false);
     setMoving(false);
-    // setPosition(16); // 추가 이동 제거
   }, []);
 
   const handleMouseDown = useCallback(() => {
