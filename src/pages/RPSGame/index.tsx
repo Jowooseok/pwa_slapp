@@ -1,3 +1,5 @@
+//src\pages\RPSGame\index.tsx
+
 import React, { useEffect } from "react";
 import Images from "@/shared/assets/images";
 import { motion } from "framer-motion";

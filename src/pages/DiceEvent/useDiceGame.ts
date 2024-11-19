@@ -102,9 +102,6 @@ export const useDiceGame = () => {
         setPosition(currentPosition);
 
         if (currentPosition === 0) {
-          setStarPoints((prev: number) => prev + 200);
-          showReward('star', 200);
-          setDiceCount((prev: number) => prev + 1);
           setLotteryCount((prev: number) => prev + 1);
           setTimeout(() => showReward('lottery', 1), 200);
         }
@@ -126,12 +123,11 @@ export const useDiceGame = () => {
             case 8:
               setTimeout(() => {
                 setPosition(5);
-                setStarPoints((prev) => prev + 200);
-                setDiceCount((prev) => prev + 1);
+         
                 setLotteryCount((prev) => prev + 1);
-                showReward("star", 200);
+           
                 setTimeout(() => showReward("lottery", 1), 200);
-                applyReward(5);
+            
                 setMoving(false);
                 onMoveComplete(5); // 최종 위치 전달
               }, 300);
@@ -139,7 +135,7 @@ export const useDiceGame = () => {
             case 13:
               setTimeout(() => {
                 setPosition(0);
-                applyReward(0);
+              
                 setMoving(false);
                 onMoveComplete(0); // 최종 위치 전달
               }, 300);

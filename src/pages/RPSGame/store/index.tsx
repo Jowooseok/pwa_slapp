@@ -1,3 +1,5 @@
+//src\pages\RPSGame\store\index.tsx
+
 import create from "zustand";
 
 interface RPSGameState {

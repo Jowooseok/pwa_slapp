@@ -1,3 +1,5 @@
+//src\pages\RPSGame\ui\RPSResultDialog.tsx
+
 import React from "react";
 import { AlertDialog, AlertDialogContent } from "@/shared/components/ui";
 import Images from "@/shared/assets/images";
