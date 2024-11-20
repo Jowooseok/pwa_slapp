@@ -1,14 +1,16 @@
-//src\pages\RPSGame\ui\RPSResultDialog.tsx
+// src/pages/RPSGame/ui/RPSResultDialog.tsx
 
 import React from "react";
 import { AlertDialog, AlertDialogContent } from "@/shared/components/ui";
 import Images from "@/shared/assets/images";
+import { formatNumber } from "@/shared/utils/formatNumber";
 
 interface ResultWinProps {
   winnings: number;
   onContinue: () => void;
   onQuit: () => void;
   consecutiveWins: number;
+  winMultiplier: number;
 }
 
 interface ResultLoseProps {
@@ -21,8 +23,9 @@ const ResultWin: React.FC<ResultWinProps> = ({
   onContinue,
   onQuit,
   consecutiveWins,
+  winMultiplier,
 }) => {
-  const isFinalWin = consecutiveWins === 3;
+  const isFinalWin = consecutiveWins >= 3;
 
   return (
     <div>
@@ -34,7 +37,7 @@ const ResultWin: React.FC<ResultWinProps> = ({
       <div className="flex flex-col items-center justify-center w-full h-full gap-2">
         <div className="flex bg-white rounded-3xl w-[264px] h-[86px] border-2 border-[#21212f] flex-row items-center justify-center gap-1">
           <p className="font-semibold text-[30px] text-[#171717]">
-            +{winnings}
+            +{formatNumber(winnings)}
           </p>
           <img src={Images.Star} className="w-9 h-9" />
         </div>
@@ -45,12 +48,12 @@ const ResultWin: React.FC<ResultWinProps> = ({
             You've won 27x your bet!
           </div>
         ) : (
-          <div className="font-jalnan text-[30px]">
+          <div className="font-jalnan text-[30px] text-center">
             <div className="flex flex-col justify-center items-center">
               Continue with <br />
               <div className="flex flex-row items-center justify-center">
-                <div className="flex flex-row items-center justify-center font-semibold font-pretendard text-base w-12 h-8 bg-[#21212F] rounded-full">
-                  <p>x{Math.pow(3, consecutiveWins + 1)}</p>
+                <div className="flex flex-row items-center justify-center font-semibold text-base w-12 h-8 bg-[#21212F] rounded-full">
+                  <p>x{winMultiplier}</p>
                 </div>
                 ?
               </div>
@@ -60,7 +63,7 @@ const ResultWin: React.FC<ResultWinProps> = ({
         <div className="flex flex-row gap-2">
           {isFinalWin ? (
             <button
-              className="rounded-full h-14 w-[270px] bg-[#21212f] text-white font-medium"
+              className="rounded-full h-14 w-32 bg-[#21212f] text-white font-medium"
               onClick={onQuit}
             >
               Finish
@@ -98,19 +101,19 @@ const ResultLose: React.FC<ResultLoseProps> = ({ winnings, onQuit }) => {
       <div className="flex flex-col items-center justify-center w-full h-full gap-4">
         <div className="flex bg-white rounded-3xl w-[264px] h-[86px] border-2 border-[#21212f] flex-row items-center justify-center gap-1">
           <p className="font-semibold text-[30px] text-[#171717]">
-            -{winnings}
+            {formatNumber(winnings)}
           </p>
           <img src={Images.Star} className="w-9 h-9" />
         </div>
-        <div className="font-jalnan text-[20px]">
+        <div className="font-jalnan text-[20px] text-center">
           <p>
-                       Better luck            <br />
-                       next time!
+            Better luck <br />
+            next time!
           </p>
         </div>
 
         <button
-          className="rounded-full h-14 w-[270px] bg-[#21212f] text-white font-medium"
+          className="rounded-full h-14 w-32 bg-[#21212f] text-white font-medium"
           onClick={onQuit}
         >
           Quit
@@ -128,6 +131,7 @@ interface RPSResultDialogProps {
   onContinue: () => void;
   onQuit: () => void;
   consecutiveWins: number;
+  winMultiplier: number;
 }
 
 const RPSResultDialog: React.FC<RPSResultDialogProps> = ({
@@ -138,11 +142,14 @@ const RPSResultDialog: React.FC<RPSResultDialogProps> = ({
   onContinue,
   onQuit,
   consecutiveWins,
+  winMultiplier,
 }) => {
+  console.log("RPSResultDialog props:", { isOpen, result, winnings, consecutiveWins, winMultiplier });
+
   return (
-    <AlertDialog open={isOpen}>
+    <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent
-        className="rounded-3xl bg-[#21212F] text-white border-none w-[342px] h-[384px] "
+        className="rounded-3xl bg-[#21212F] text-white border-none w-[342px] h-[384px]"
         style={{
           background: `url(${Images.RPSResultBG})`,
           backgroundSize: "cover",
@@ -155,6 +162,7 @@ const RPSResultDialog: React.FC<RPSResultDialogProps> = ({
             onContinue={onContinue}
             onQuit={onQuit}
             consecutiveWins={consecutiveWins}
+            winMultiplier={winMultiplier}
           />
         ) : (
           <ResultLose winnings={winnings} onQuit={onQuit} />

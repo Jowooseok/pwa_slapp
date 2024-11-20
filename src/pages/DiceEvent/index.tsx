@@ -102,12 +102,20 @@ const DiceEventPage: React.FC = () => {
     return <div>Error loading data: {error}</div>;
   }
 
+  const handleRPSGameEnd = (result: "win" | "lose", winnings: number) => {
+    // 로그 출력
+    console.log(`RPS Game Ended: ${result}, Winnings: ${winnings}`);
+    // 배당금에 따른 추가 로직 구현 가능
+    // 게임 흐름을 주사위 게임으로 전환
+    game.handleRPSGameEnd(result, winnings);
+  };
+
   return (
     <div className="flex flex-col items-center relative w-full h-full overflow-x-hidden">
       {game.isRPSGameActive ? (
         <RPSGame
-          onGameEnd={game.handleRPSGameEnd}
-          onCancel={() => game.handleRPSGameEnd('lose', 0)}
+          onGameEnd={handleRPSGameEnd}
+          onCancel={() => handleRPSGameEnd("lose", 0)}
         />
       ) : game.isSpinGameActive ? (
         <SpinGame onSpinEnd={game.handleSpinGameEnd} />
@@ -117,7 +125,6 @@ const DiceEventPage: React.FC = () => {
             <UserLevel
               userLv={userLv}
               charactorImageSrc={charactorImageSrc}
-            
             />
             <MonthlyPrize
               month={monthlyPrize.month}
@@ -141,7 +148,7 @@ const DiceEventPage: React.FC = () => {
             handleMouseDown={game.handleMouseDown}
             handleMouseUp={game.handleMouseUp}
           />
-               {game.selectingTile && (
+          {game.selectingTile && (
             <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-20">
               <div className="absolute top-0 left-0 w-full h-full bg-black opacity-75"></div>
               <div className="text-white text-lg z-30 flex flex-col items-center justify-center mb-96 md:mb-[442px]">
@@ -154,7 +161,7 @@ const DiceEventPage: React.FC = () => {
               </div>
             </div>
           )}
-           <Board
+          <Board
             position={position}
             charactorImageSrc={charactorImageSrc}
             initialX={initialX}
@@ -169,7 +176,7 @@ const DiceEventPage: React.FC = () => {
           <br /> <br /> <br />
           <br />
           <br />
-         
+
           <div className="hidden md:block md:mb-40"> &nbsp;</div>
         </>
       )}

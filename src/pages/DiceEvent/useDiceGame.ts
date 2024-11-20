@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useGauge } from "@/features/DiceEvent";
 import { useRPSGameStore } from "../RPSGame/store";
 import { useUserStore } from "@/entities/User/model/userModel";
-import { anywhereAPI } from "@/features/DiceEvent/api/anywhereApi"; // 추가
+import { anywhereAPI } from "@/features/DiceEvent/api/anywhereApi";
 
 export interface Reward {
   type: string;
@@ -102,8 +102,9 @@ export const useDiceGame = () => {
         setPosition(currentPosition);
 
         if (currentPosition === 0) {
+          // 홈을 지났을 때 래플권만 증가
           setLotteryCount((prev: number) => prev + 1);
-          setTimeout(() => showReward('lottery', 1), 200);
+          showReward('lottery', 1);
         }
 
         if (currentPosition !== endPosition) {
@@ -122,12 +123,10 @@ export const useDiceGame = () => {
               break;
             case 8:
               setTimeout(() => {
-                setPosition(5);
-         
+                // 홈을 지났을 때 래플권만 증가
                 setLotteryCount((prev) => prev + 1);
-           
-                setTimeout(() => showReward("lottery", 1), 200);
-            
+                showReward("lottery", 1);
+                setPosition(5);
                 setMoving(false);
                 onMoveComplete(5); // 최종 위치 전달
               }, 300);
@@ -135,7 +134,7 @@ export const useDiceGame = () => {
             case 13:
               setTimeout(() => {
                 setPosition(0);
-              
+                // applyReward(0)를 제거하여 중복 보상 방지
                 setMoving(false);
                 onMoveComplete(0); // 최종 위치 전달
               }, 300);
@@ -160,8 +159,6 @@ export const useDiceGame = () => {
       setPosition,
       setSelectingTile,
       showReward,
-      setStarPoints,
-      setDiceCount,
       setLotteryCount,
     ]
   );
@@ -185,7 +182,8 @@ export const useDiceGame = () => {
       movePiece(currentPosition, newPosition, (finalPosition) => {
         if (finalPosition === 5) {
           setIsRPSGameActive(true);
-          rpsGameStore.setBetAmount(diceCount - 1); // 감소된 diceCount 사용
+          // RPS 게임 시작 시 allowedBetting을 fetch 합니다.
+          rpsGameStore.fetchAllowedBetting();
         } else if (finalPosition === 15) {
           setIsSpinGameActive(true);
         } else {
@@ -233,7 +231,6 @@ export const useDiceGame = () => {
 
         // 서버로부터 받은 데이터로 상태 업데이트
         setRank(data.rank);
-        setStarPoints(data.star);
         setLotteryCount(data.ticket);
         setDiceCount(data.dice);
         setSlToken(data.slToken);
@@ -258,7 +255,6 @@ export const useDiceGame = () => {
       setButtonDisabled,
       setMoving,
       setRank,
-      setStarPoints,
       setLotteryCount,
       setDiceCount,
       setSlToken,
@@ -268,7 +264,7 @@ export const useDiceGame = () => {
     ]
   );
 
-  // 가위바위보 게임 종료 처리 함수
+  // RPS 게임 종료 처리 함수
   const handleRPSGameEnd = useCallback(
     (result: "win" | "lose", winnings: number) => {
       setIsRPSGameActive(false);
@@ -277,11 +273,11 @@ export const useDiceGame = () => {
       setMoving(false);
 
       if (result === "win") {
-        setDiceCount((prev) => prev + winnings);
-        showReward("star", winnings);
+        // 이미 userStore에서 포인트가 업데이트 되었으므로 별도의 업데이트는 필요 없음
+        // 추가적인 로직이 필요하다면 여기서 구현
       }
     },
-    [showReward, setDiceCount]
+    []
   );
 
   // 스핀 게임 종료 처리 함수
@@ -310,7 +306,6 @@ export const useDiceGame = () => {
     moving,
     selectingTile,
     diceCount,
-    starPoints,
     lotteryCount,
     showDiceValue,
     rolledValue,
@@ -338,7 +333,6 @@ export const useDiceGame = () => {
     handleSpinGameEnd,
     rollDice,
     setDiceCount,
-    setStarPoints,
     setLotteryCount,
     setRank,
     setSlToken,
