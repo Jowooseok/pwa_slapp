@@ -25,6 +25,7 @@ const DiceEventPage: React.FC = () => {
     position,
     monthlyPrize,
   } = useUserStore();
+  
   const game = useDiceGame();
   const [initialX, setInitialX] = useState<number>(140);
   const [initialY, setInitialY] = useState<number>(474);
@@ -102,11 +103,12 @@ const DiceEventPage: React.FC = () => {
     return <div>Error loading data: {error}</div>;
   }
 
+  // handleRPSGameEnd 함수 수정
   const handleRPSGameEnd = (result: "win" | "lose", winnings: number) => {
-    // 로그 출력
     console.log(`RPS Game Ended: ${result}, Winnings: ${winnings}`);
-    // 배당금에 따른 추가 로직 구현 가능
-    // 게임 흐름을 주사위 게임으로 전환
+    // 사용자 데이터 다시 가져오기
+    fetchUserData();
+    // useDiceGame의 handleRPSGameEnd 호출하여 상태 업데이트
     game.handleRPSGameEnd(result, winnings);
   };
 

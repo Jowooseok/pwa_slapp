@@ -30,7 +30,6 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
     consecutiveWins,
     lastReward,
     isGameStarted,
-    setBetAmount,
     startGame,
     spin,
     stopSpin,
@@ -54,7 +53,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
     spin(); // 스핀 상태 활성화
     setIsAnimating(true); // 애니메이션 상태 활성화
 
-    console.log("Spinning with choice:", userChoice);
+    console.log("Spinning with choice:", userChoice, "current betAmount:", betAmount);
 
     // 애니메이션 시간 (예: 2초) 동안 대기
     setTimeout(async () => {
@@ -70,10 +69,9 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
     }, 2000); // 2초 후 서버 요청
   };
 
-  const handleGameStart = (amount: number) => {
-    setBetAmount(amount);
+  const handleGameStart = () => {
     startGame();
-    console.log("Game started with betAmount:", amount);
+    console.log("Game started with betAmount:", betAmount);
   };
 
   const handleContinue = () => {
@@ -82,19 +80,14 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
       handleQuit();
     } else {
       continueGame();
-      console.log("Continuing game");
+      console.log("Continuing game with betAmount:", betAmount);
     }
   };
 
   const handleQuit = () => {
     endGame();
-    if (gameResult === "win") {
-      onGameEnd("win", lastReward);
-      console.log("Game ended with win:", lastReward);
-    } else if (gameResult === "lose") {
-      onGameEnd("lose", lastReward); // lastReward is negative
-      console.log("Game ended with loss:", lastReward);
-    }
+    onGameEnd(gameResult!, lastReward); // gameResult가 null이 아님을 확신할 수 있도록 '!' 추가
+    console.log(`Game ended with ${gameResult}:`, lastReward);
   };
 
   useEffect(() => {
@@ -131,7 +124,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
           {/* 배팅 금액과 배율 표시 */}
           <div className="flex flex-row items-center justify-center h-[86px] w-[264px] border-2 border-[#21212f] rounded-3xl bg-white gap-3">
             <div className="flex flex-row items-center gap-1">
-              <img src={Images.Star} alt="star" className="w-9 h-9" />
+              <img src={Images.Star} alt="Star" className="w-9 h-9" />
               <p className="text-3xl font-semibold">
                 {formatNumber(betAmount)}
               </p>
@@ -145,7 +138,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
           <div className="mt-8 relative">
             <img
               src={Images.RPSGame}
-              alt="RPSGame"
+              alt="RPS Game"
               className="w-[352px] mx-auto"
             />
             {/* Computer's choice slots */}
@@ -182,7 +175,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
                       {/* 회전 애니메이션 제거 */}
                       <img
                         src={rpsImages.scissors}
-                        alt="spinning"
+                        alt="Spinning"
                         className="h-[70px] min-w-[50px] self-center"
                       />
                     </div>
@@ -224,7 +217,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
             >
               <img
                 src={Images.RockButton}
-                alt="rock"
+                alt="Rock"
                 className={`w-[68px] h-[68px] cursor-pointer ${
                   isSpinning || isAnimating
                     ? "opacity-50 cursor-not-allowed"
@@ -234,7 +227,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
               />
               <img
                 src={Images.PaperButton}
-                alt="paper"
+                alt="Paper"
                 className={`w-[68px] h-[68px] cursor-pointer ${
                   isSpinning || isAnimating
                     ? "opacity-50 cursor-not-allowed"
@@ -244,7 +237,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
               />
               <img
                 src={Images.ScissorsButton}
-                alt="scissors"
+                alt="Scissors"
                 className={`w-[68px] h-[68px] cursor-pointer ${
                   isSpinning || isAnimating
                     ? "opacity-50 cursor-not-allowed"

@@ -144,7 +144,7 @@ const RPSResultDialog: React.FC<RPSResultDialogProps> = ({
   consecutiveWins,
   winMultiplier,
 }) => {
-  console.log("RPSResultDialog props:", { isOpen, result, winnings, consecutiveWins, winMultiplier });
+
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>

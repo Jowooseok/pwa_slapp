@@ -119,6 +119,7 @@ export const useDiceGame = () => {
                 applyReward(15);
                 setMoving(false);
                 onMoveComplete(15); // 최종 위치 전달
+                setIsRPSGameActive(true); // RPS 게임 활성화
               }, 300);
               break;
             case 8:
@@ -160,6 +161,7 @@ export const useDiceGame = () => {
       setSelectingTile,
       showReward,
       setLotteryCount,
+      setIsRPSGameActive,
     ]
   );
 
@@ -267,6 +269,7 @@ export const useDiceGame = () => {
   // RPS 게임 종료 처리 함수
   const handleRPSGameEnd = useCallback(
     (result: "win" | "lose", winnings: number) => {
+      console.log(`useDiceGame - RPS Game Ended: ${result}, Winnings: ${winnings}`);
       setIsRPSGameActive(false);
       setSelectingTile(false);
       setButtonDisabled(false);
@@ -276,6 +279,8 @@ export const useDiceGame = () => {
         // 이미 userStore에서 포인트가 업데이트 되었으므로 별도의 업데이트는 필요 없음
         // 추가적인 로직이 필요하다면 여기서 구현
       }
+
+      // 필요시 추가적인 주사위 게임 복귀 로직
     },
     []
   );
@@ -329,7 +334,7 @@ export const useDiceGame = () => {
     setButtonDisabled,
     isRPSGameActive,
     isSpinGameActive,
-    handleRPSGameEnd,
+    handleRPSGameEnd, // 노출
     handleSpinGameEnd,
     rollDice,
     setDiceCount,
@@ -338,3 +343,5 @@ export const useDiceGame = () => {
     setSlToken,
   };
 };
+
+export default useDiceGame;

@@ -91,7 +91,6 @@ interface UserState {
 
   diceResult: number;
   rollDice: (gauge: number) => Promise<void>;
-
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
@@ -168,7 +167,6 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   error: null,
   setError: (error) => set({ error }),
-
 
   // 사용자 데이터 설정 함수
   fetchUserData: async () => {

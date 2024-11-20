@@ -56,7 +56,11 @@ export const useRPSGameStore = create<RPSGameState>((set, get) => ({
   lastReward: 0,
   winMultiplier: 1,
 
-  setBetAmount: (amount: number) => set({ betAmount: amount }),
+  setBetAmount: (amount: number) => {
+    console.log(`Setting betAmount to: ${amount}`);
+    set({ betAmount: amount });
+  },
+  
   setAllowedBetting: (amount: number) => set({ allowedBetting: amount }),
 
   startGame: () => {
@@ -126,18 +130,28 @@ export const useRPSGameStore = create<RPSGameState>((set, get) => ({
   // 가위바위보 게임 진행
   playRound: async (userChoice: string): Promise<PlayRoundResponse | null> => {
     const bettingAmount = get().betAmount;
-    console.log("Playing round with userChoice:", userChoice, "betAmount:", bettingAmount);
+    console.log("Current betAmount:", bettingAmount);
+
+    if (bettingAmount <= 0) {
+      console.error("Betting amount must be greater than 0.");
+      return null;
+    }
+
     try {
-      const response = await api.post("/play-rps", {
+      // 서버로 보낼 데이터 로그
+      const requestData = {
         bettingAmount: bettingAmount,
-        value: userChoice === "rock" ? 1 : userChoice === "paper" ? 2 : 0,
-      });
-      console.log("playRound response:", response);
+        value: userChoice === "rock" ? 1 : userChoice === "paper" ? 2 : 3, // scissors는 3으로 설정
+      };
+      console.log("Sending POST /play-rps with data:", requestData);
+
+      const response = await api.post("/play-rps", requestData);
+      console.log("Received response from POST /play-rps:", response);
 
       if (response.data.code === "OK") {
         const { reward, result, pcValue } = response.data.data;
         const computerChoice =
-          pcValue === 0 ? "scissors" : pcValue === 1 ? "rock" : "paper";
+          pcValue === 3 ? "scissors" : pcValue === 1 ? "rock" : "paper";
 
         let winnings = 0;
         let newConsecutiveWins = get().consecutiveWins;
@@ -145,47 +159,56 @@ export const useRPSGameStore = create<RPSGameState>((set, get) => ({
 
         if (result === "WIN") {
           newConsecutiveWins += 1;
-          newWinMultiplier = Math.pow(3, newConsecutiveWins);
-          winnings = bettingAmount * newWinMultiplier;
-          // Update user points
+          newWinMultiplier = Math.pow(3, newConsecutiveWins); // 3^n 배수
+          winnings = bettingAmount * 3; // 이긴 금액을 3배로 설정
+
+          // 사용자 포인트 업데이트
           useUserStore.getState().setStarPoints(
             useUserStore.getState().starPoints + winnings
           );
 
           console.log(`Round ${get().currentRound}: WIN! Winnings: +${winnings}`);
 
-          // Check if max rounds reached
+          // 상태 업데이트
+          set({
+            slotResults: [...get().slotResults, { userChoice, computerChoice }],
+            gameResult: "win",
+            isDialogOpen: true,
+            consecutiveWins: newConsecutiveWins,
+            lastReward: winnings,
+            winMultiplier: newWinMultiplier,
+            betAmount: winnings, // 다음 라운드에 베팅할 금액을 업데이트
+            currentRound: get().currentRound + 1,
+          });
+
+          console.log(`Proceeding to round ${get().currentRound} with betAmount: ${winnings} and winMultiplier: ${newWinMultiplier}`);
+
+          // 최대 연속 승리 시 게임 종료
           if (newConsecutiveWins >= get().totalRounds) {
-            // Max rounds reached, finish the game
-            set({
-              slotResults: [...get().slotResults, { userChoice, computerChoice }],
-              gameResult: "win",
-              isDialogOpen: true,
-              consecutiveWins: newConsecutiveWins,
-              lastReward: winnings,
-              winMultiplier: newWinMultiplier,
-              // currentRound remains same or set to totalRounds
-            });
-            console.log("Max rounds reached. Game finished.");
-          } else {
-            // Continue to next round
-            set({
-              slotResults: [...get().slotResults, { userChoice, computerChoice }],
-              gameResult: "win",
-              isDialogOpen: true,
-              consecutiveWins: newConsecutiveWins,
-              lastReward: winnings,
-              winMultiplier: newWinMultiplier,
-              currentRound: get().currentRound + 1,
-            });
-            console.log(`Proceeding to round ${get().currentRound + 1}`);
+            console.log("Maximum consecutive wins reached. Ending game.");
+            setTimeout(() => {
+              set({
+                isDialogOpen: false,
+                isGameStarted: false,
+                betAmount: 0, // 베팅 금액 초기화
+                currentRound: 1,
+                consecutiveWins: 0,
+                winMultiplier: 1,
+                gameResult: null,
+                lastReward: 0,
+                slotResults: [],
+              });
+              // 게임 종료 후 콜백 호출 (RPSGame 컴포넌트에서 처리)
+              // 예: onGameEnd 호출 (이 부분은 컴포넌트에서 처리)
+            }, 2000); // 2초 후 게임 종료
           }
         } else {
-          // Lose
+          // 패배 시
           newConsecutiveWins = 0;
-          newWinMultiplier = 1;
+          newWinMultiplier = 1; // 배율을 초기화
           winnings = -bettingAmount;
-          // Update user points
+
+          // 사용자 포인트 업데이트
           useUserStore.getState().setStarPoints(
             useUserStore.getState().starPoints + winnings
           );
@@ -197,6 +220,7 @@ export const useRPSGameStore = create<RPSGameState>((set, get) => ({
             consecutiveWins: newConsecutiveWins,
             lastReward: winnings,
             winMultiplier: newWinMultiplier,
+            betAmount: 0, // 패배 시 베팅 금액 초기화
           });
           console.log(`Round ${get().currentRound}: LOSE! Winnings: ${winnings}`);
         }
@@ -212,9 +236,11 @@ export const useRPSGameStore = create<RPSGameState>((set, get) => ({
         console.error("Error playing RPS:", response.data.message);
         return null;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error playing RPS:", error);
       return null;
     }
   },
 }));
+
+export default useRPSGameStore;
