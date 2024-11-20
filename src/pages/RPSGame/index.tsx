@@ -39,6 +39,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
     playRound,
     allowedBetting,
     currentRound,
+    handleRPSGameEnd, // handleRPSGameEnd 추가
   } = useRPSGameStore();
 
   const { starPoints } = useUserStore();
@@ -117,7 +118,10 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
         <RPSGameStart
           onStart={handleGameStart}
           allowedBetting={allowedBetting}
-          onCancel={onCancel}
+          onCancel={() => {
+            onCancel(); // 기존 onCancel 호출
+            handleRPSGameEnd("lose", 0); // 상태 업데이트 및 페이지 복귀
+          }}
         />
       ) : (
         <div className="flex flex-col items-center justify-center h-full w-[600px] overflow-hidden mx-auto">

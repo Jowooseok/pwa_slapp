@@ -40,6 +40,7 @@ interface RPSGameState {
   closeDialog: () => void;
   fetchAllowedBetting: () => Promise<void>;
   playRound: (userChoice: string) => Promise<PlayRoundResponse | null>;
+  handleRPSGameEnd: (result: "win" | "lose", winnings: number) => void;
 }
 
 export const useRPSGameStore = create<RPSGameState>((set, get) => ({
@@ -141,7 +142,7 @@ export const useRPSGameStore = create<RPSGameState>((set, get) => ({
       // 서버로 보낼 데이터 로그
       const requestData = {
         bettingAmount: bettingAmount,
-        value: userChoice === "rock" ? 1 : userChoice === "paper" ? 2 : 3, // scissors는 3으로 설정
+        value: userChoice === "rock" ? 1 : userChoice === "paper" ? 2 : 0, // scissors는 0으로 설정
       };
       console.log("Sending POST /play-rps with data:", requestData);
 
@@ -151,7 +152,7 @@ export const useRPSGameStore = create<RPSGameState>((set, get) => ({
       if (response.data.code === "OK") {
         const { reward, result, pcValue } = response.data.data;
         const computerChoice =
-          pcValue === 3 ? "scissors" : pcValue === 1 ? "rock" : "paper";
+          pcValue === 1 ? "rock" : pcValue === 2 ? "paper" : "scissors";
 
         let winnings = 0;
         let newConsecutiveWins = get().consecutiveWins;
@@ -240,6 +241,22 @@ export const useRPSGameStore = create<RPSGameState>((set, get) => ({
       console.error("Error playing RPS:", error);
       return null;
     }
+  },
+
+  // RPS 게임 종료 처리 함수 추가
+  handleRPSGameEnd: (result: "win" | "lose", winnings: number) => {
+    console.log(`useRPSGameStore - handleRPSGameEnd called with: ${result}, ${winnings}`);
+    set({
+      isDialogOpen: false,
+      isGameStarted: false,
+      consecutiveWins: 0,
+      winMultiplier: 1,
+      gameResult: null,
+      lastReward: 0,
+      slotResults: [],
+      betAmount: 0,
+      currentRound: 1,
+    });
   },
 }));
 
