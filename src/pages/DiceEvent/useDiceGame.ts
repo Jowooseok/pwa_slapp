@@ -119,6 +119,7 @@ export const useDiceGame = () => {
                 applyReward(15);
                 setMoving(false);
                 onMoveComplete(15); // 최종 위치 전달
+                // 게임 활성화는 handleRollComplete에서 처리
               }, 300);
               break;
             case 8:
@@ -160,7 +161,7 @@ export const useDiceGame = () => {
       setSelectingTile,
       showReward,
       setLotteryCount,
-      setIsRPSGameActive,
+      // setIsRPSGameActive, // 제거: movePiece에서 사용하지 않음
     ]
   );
 
@@ -183,12 +184,17 @@ export const useDiceGame = () => {
       movePiece(currentPosition, newPosition, (finalPosition) => {
         if (finalPosition === 5) {
           setIsRPSGameActive(true);
-          // RPS 게임 시작 시 allowedBetting을 fetch 합니다.
+          setIsSpinGameActive(false); // SpinGame 비활성화
           rpsGameStore.fetchAllowedBetting();
+          console.log("RPSGame 활성화됨.");
         } else if (finalPosition === 15) {
           setIsSpinGameActive(true);
+          setIsRPSGameActive(false); // RPSGame 비활성화
+          console.log("SpinGame 활성화됨.");
         } else {
-          setButtonDisabled(false);
+          setIsRPSGameActive(false);
+          setIsSpinGameActive(false);
+          console.log("게임 비활성화됨.");
         }
         setButtonDisabled(false);
         setIsRolling(false); // 주사위 굴리기 완료 후 상태 리셋
@@ -214,41 +220,62 @@ export const useDiceGame = () => {
       setIsRolling(true);
       setButtonDisabled(true);
       diceRef.current?.roll(); // Dice 컴포넌트의 roll 메소드 호출
+      console.log("주사위 굴리기 시작됨.");
     }
   }, [diceCount, isRolling]);
 
   // 타일 클릭 핸들러 수정
   const handleTileClick = useCallback(
     async (tileId: number) => {
-      if (!selectingTile || tileId === 18) return;
+      if (!selectingTile) return;
 
-      try {
-        setButtonDisabled(true); // 버튼 비활성화
-        setMoving(true); // 이동 중 상태 설정
+      console.log(`Tile ${tileId} clicked while selecting tile.`);
 
-        // anywhereAPI 호출
-        const data = await anywhereAPI(tileId);
-        console.log('Move via airplane successful:', data);
+      if (tileId === 5 || tileId === 15) {
+        // tileId가 5 또는 15인 경우에만 게임 활성화
+        try {
+          setButtonDisabled(true); // 버튼 비활성화
+          setMoving(true); // 이동 중 상태 설정
 
-        // 서버로부터 받은 데이터로 상태 업데이트
-        setRank(data.rank);
-        setLotteryCount(data.ticket);
-        setDiceCount(data.dice);
-        setSlToken(data.slToken);
-        setRolledValue(data.diceResult);
-        setPosition(data.tileSequence);
+          // anywhereAPI 호출
+          const data = await anywhereAPI(tileId);
+          console.log('Move via airplane successful:', data);
 
-        // 필요한 경우 추가적인 보상 처리
-        applyReward(tileId);
+          // 서버로부터 받은 데이터로 상태 업데이트
+          setRank(data.rank);
+          setLotteryCount(data.ticket);
+          setDiceCount(data.dice);
+          setSlToken(data.slToken);
+          setRolledValue(data.diceResult);
+          setPosition(data.tileSequence);
 
-      } catch (error: any) {
-        console.error('Error moving via airplane:', error);
-        // 에러 처리 (예: 사용자에게 알림)
-        alert(error.message || 'Failed to move via airplane.');
-      } finally {
-        setSelectingTile(false);
-        setMoving(false);
-        setButtonDisabled(false);
+          // 필요한 경우 추가적인 보상 처리
+          applyReward(tileId);
+
+          // 게임 활성화
+          if (tileId === 5) {
+            setIsRPSGameActive(true);
+            setIsSpinGameActive(false);
+            rpsGameStore.fetchAllowedBetting();
+            console.log("RPSGame 활성화됨 (타일 5 클릭).");
+          } else if (tileId === 15) {
+            setIsSpinGameActive(true);
+            setIsRPSGameActive(false);
+            console.log("SpinGame 활성화됨 (타일 15 클릭).");
+          }
+
+        } catch (error: any) {
+          console.error('Error moving via airplane:', error);
+          // 에러 처리 (예: 사용자에게 알림)
+          alert(error.message || 'Failed to move via airplane.');
+        } finally {
+          setSelectingTile(false);
+          setMoving(false);
+          setButtonDisabled(false);
+        }
+      } else {
+        console.log("Clicked tile is neither 5 nor 15. Ignoring.");
+        // 필요에 따라 다른 타일 클릭 시 동작 추가
       }
     },
     [
@@ -262,6 +289,9 @@ export const useDiceGame = () => {
       setRolledValue,
       setPosition,
       applyReward,
+      setIsRPSGameActive,
+      setIsSpinGameActive,
+      rpsGameStore,
     ]
   );
 
@@ -270,23 +300,19 @@ export const useDiceGame = () => {
     (result: "win" | "lose", winnings: number) => {
       console.log(`useDiceGame - RPS Game Ended: ${result}, Winnings: ${winnings}`);
       setIsRPSGameActive(false);
+      setIsSpinGameActive(false);
       setSelectingTile(false);
       setButtonDisabled(false);
       setMoving(false);
-
-      if (result === "win") {
-        // 이미 userStore에서 포인트가 업데이트 되었으므로 별도의 업데이트는 필요 없음
-        // 추가적인 로직이 필요하다면 여기서 구현
-      }
-
-      // 필요시 추가적인 주사위 게임 복귀 로직
     },
     []
   );
 
   // 스핀 게임 종료 처리 함수
   const handleSpinGameEnd = useCallback(() => {
+    console.log("useDiceGame - Spin Game Ended");
     setIsSpinGameActive(false);
+    setIsRPSGameActive(false);
     setSelectingTile(false);
     setButtonDisabled(false);
     setMoving(false);
