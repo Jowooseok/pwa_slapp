@@ -129,11 +129,23 @@ const data = [
 
 const SpinGameStart: React.FC<{ onStart: () => void }> = ({ onStart }) => {
   return (
-    <div className="flex flex-col items-center">
+    <div className=" flex flex-col items-center justify-center px-12 pb-8 h-full w-full"      
+     style={{
+      backgroundImage: `url(${Images.BGSpinGame})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    }}>
+
+<h1 className="text-[#fde047] font-jalnan text-center text-[36px] mt-8 ">
+        Spin the Wheel,
+        <br />
+        Win Prizes!
+      </h1>
+
       <img
         src={Images.SpinExample}
         alt="spin-example"
-        className="w-[306px] h-[376px] mt-4 self-center"
+        className="md:w-[306px] md:h-[372px] w-[230px]  mt-4 self-center"
       />
       <div className="border-2 border-[#21212f] rounded-3xl text-center bg-white text-[#171717] font-medium w-[342px] h-[110px] flex items-center justify-center mt-4">
         <p>
@@ -235,14 +247,25 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
   };
 
   return (
-    <div className="relative flex flex-col items-center">
-      <img src={Images.Spin} alt="Spin-game" className="w-[368px] mt-2" />
+    <div className="relative flex flex-col items-center h-screen justify-center  w-full" style={{
+      backgroundImage: `url(${Images.BGSpinGame})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    }}>
+<h1 className="text-[#fde047] font-jalnan text-center text-[36px] mt-8 md:mb-12" >
+        Spin the Wheel,
+        <br />
+        Win Prizes!
+      </h1>
+     
+      <img src={Images.Spin} alt="Spin-game" className="w-[320px] md:w-[360px] md:mt-16" />
+      
       <img
         src={Images.SpinPin}
         alt="Spin-game"
-        className="w-[126px] h-[142px] absolute z-10 top-28 transform rotate-45"
+        className="w-[126px] h-[142px] absolute z-10  transform rotate-45"
       />
-      <div className="absolute top-10 left-1/2 transform -translate-x-1/2 z-0">
+      <div className="absolute top-[1/2] left-1/2 transform -translate-x-1/2 z-0">
         <Wheel
           mustStartSpinning={mustSpin}
           prizeNumber={prizeNumber}
@@ -322,19 +345,8 @@ const SpinGame: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
 
   return (
     <div
-      className="flex flex-col z-50 h-screen bg-white w-full items-center"
-      style={{
-        backgroundImage: `url(${Images.BGSpinGame})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className="flex flex-col  z-50 h-screen w-full items-center min-w-[600px]"
     >
-      <h1 className="text-[#fde047] font-jalnan text-center text-[36px] mt-8 ">
-        Spin the Wheel,
-        <br />
-        Win Prizes!
-      </h1>
-
       {showSpin ? (
         <Spin onSpinEnd={onSpinEnd} />
       ) : (

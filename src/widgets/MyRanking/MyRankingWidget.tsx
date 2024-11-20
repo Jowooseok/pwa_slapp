@@ -65,7 +65,7 @@ const MyRankingWidget: React.FC = () => {
           {/* SL 토큰 */}
           <div className="flex flex-col items-center justify-center gap-2">
             <img
-              src={Images.RankingSLToken}
+              src={Images.TokenReward}
               alt="RankingSLToken"
               className="w-6 h-6"
             />
