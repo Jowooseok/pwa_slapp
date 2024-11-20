@@ -119,7 +119,6 @@ export const useDiceGame = () => {
                 applyReward(15);
                 setMoving(false);
                 onMoveComplete(15); // 최종 위치 전달
-                setIsRPSGameActive(true); // RPS 게임 활성화
               }, 300);
               break;
             case 8:
