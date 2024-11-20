@@ -198,12 +198,15 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
           setMustSpin(true);
         } else {
           console.error("Prize not found in wheel segments");
+          window.location.reload();
         }
       } else {
         console.error("Error in play-spin API:", response.data.message);
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error calling play-spin API:", error);
+      window.location.reload();
     }
   };
 

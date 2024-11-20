@@ -255,7 +255,7 @@ export const useDiceGame = () => {
       } catch (error: any) {
         console.error('Error moving via airplane:', error);
         // 에러 처리 (예: 사용자에게 알림)
-        alert(error.message || 'Failed to move via airplane.');
+        window.location.reload();
       } finally {
         setSelectingTile(false);
         setMoving(false);

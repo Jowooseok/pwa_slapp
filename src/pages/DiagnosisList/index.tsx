@@ -29,7 +29,6 @@ const DiagnosisRecords: React.FC = () => {
                 }
             } catch (error) {
                 console.error('Failed to fetch records:', error);
-                alert('Failed to load records. Please try again later.');
             } finally {
                 setLoading(false); // 로딩 상태 비활성화
             }

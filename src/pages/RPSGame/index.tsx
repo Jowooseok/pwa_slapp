@@ -58,15 +58,24 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
 
     // 애니메이션 시간 (예: 2초) 동안 대기
     setTimeout(async () => {
-      // 서버 요청을 통해 결과 가져오기
-      const response = await playRound(userChoice);
-      if (response) {
-        // 스핀 중지 및 슬롯 결과 업데이트
-        stopSpin(userChoice, response.computerChoice);
+      try {
+        // 서버 요청을 통해 결과 가져오기
+        const response = await playRound(userChoice);
+        if (response) {
+          // 스핀 중지 및 슬롯 결과 업데이트
+          stopSpin(userChoice, response.computerChoice);
+        } else {
+          // playRound가 null을 반환한 경우 에러로 간주
+          throw new Error("Failed to play round.");
+        }
+      } catch (error) {
+        console.error("Error during RPS playRound:", error);
+        alert("An error occurred while playing Rock-Paper-Scissors. The page will reload.");
+        window.location.reload();
+      } finally {
+        setIsAnimating(false); // 애니메이션 상태 비활성화
+        console.log("Spin completed");
       }
-
-      setIsAnimating(false); // 애니메이션 상태 비활성화
-      console.log("Spin completed");
     }, 2000); // 2초 후 서버 요청
   };
 
