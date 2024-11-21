@@ -273,12 +273,13 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
         Win Prizes!
       </h1>
      
-      <img src={Images.Spin} alt="Spin-game" className="w-[320px] md:w-[360px] md:mt-16" />
+      <img src={Images.Spin} alt="Spin-game" className="w-[320px] md:w-[360px] md:mt-16" loading="lazy" />
       
       <img
         src={Images.SpinPin}
         alt="Spin-game"
         className="w-[126px] h-[142px] absolute z-10  transform rotate-45"
+        loading="lazy"
       />
       <div className="absolute top-[1/2] left-1/2 transform -translate-x-1/2 z-0">
         <Wheel
