@@ -14,6 +14,7 @@ import { Board } from "@/features/DiceEvent";
 import RPSGame from "../RPSGame";
 import SpinGame from "../SpinGame";
 import { useUserStore } from '@/entities/User/model/userModel';
+import LoadingSpinner from "@/shared/components/ui/LoadingSpinner";
 
 const DiceEventPage: React.FC = () => {
   const {
@@ -96,7 +97,7 @@ const DiceEventPage: React.FC = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
