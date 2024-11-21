@@ -176,7 +176,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       {renderTile(17, <DiceTile count={2} />, "0", "2")}
       {renderTile(18, <AirplaneTile text="Anywhere" />, "0", "0")}
       {renderTile(19, <StarTile count={50} />, "50", "0")}
-      {renderTile(0, "Home", "200", "0")}
+      {renderTile(0, "Home", "0", "0")}
     </div>
   );
 };
