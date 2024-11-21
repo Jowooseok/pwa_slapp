@@ -170,6 +170,8 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
   const [prizeData, setPrizeData] = useState<{ spinType: string; amount: number } | null>(
     null
   );
+  const [isSpinning, setIsSpinning] = useState(false);
+
 
   const {
     setStarPoints,
@@ -179,7 +181,13 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
   } = useUserStore();
 
   const handleSpinClick = async () => {
+
+    if (isSpinning) return;
+
     try {
+
+      setIsSpinning(true); // 스핀 시작
+
       // /play-spin API 호출
       const response = await api.get("/play-spin");
       console.log("Server response:", response.data); // 서버 응답 출력
@@ -207,6 +215,8 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
     } catch (error) {
       console.error("Error calling play-spin API:", error);
       window.location.reload();
+    }finally {
+      setIsSpinning(false); // 스핀 완료
     }
   };
 
@@ -227,11 +237,13 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
       }
     }
     setIsDialogOpen(true);
+
   };
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     onSpinEnd();
+    setIsSpinning(false); // 스핀 완료
   };
 
   const getPrizeDisplayName = (spinType: string | undefined) => {
@@ -288,11 +300,17 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
       </div>
 
       <button
-        onClick={handleSpinClick}
-        className="flex items-center justify-center bg-[#21212f] text-white h-14 mt-4 w-[342px] rounded-full font-medium"
-      >
-        Spin the Wheel
-      </button>
+  onClick={handleSpinClick}
+  disabled={isSpinning || mustSpin} // 스핀 중이거나 반드시 스핀해야 하는 상태일 때 비활성화
+  className={`flex items-center justify-center h-14 mt-4 w-[342px] rounded-full font-medium ${
+    isSpinning || mustSpin
+      ? "bg-[#21212f] opacity-65 text-white cursor-not-allowed" // 비활성화된 스타일
+      : "bg-[#21212f] text-white" // 활성화된 스타일
+  }`}
+>
+  {isSpinning ? "Spinning..." : "Spin the Wheel"} {/* 스핀 중일 때 텍스트 변경 */}
+</button>
+
 
       <AlertDialog open={isDialogOpen}>
         <AlertDialogContent className="rounded-3xl bg-[#21212F] text-white border-none">
