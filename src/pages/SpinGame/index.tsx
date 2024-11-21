@@ -24,7 +24,7 @@ const data = [
       offsetY: 150,
     },
     prize: { type: "STAR", amount: 1000 },
-    style: { backgroundColor: "#2FAF74" },
+    style: { backgroundColor: "#FBA629" },
   },
   // 주사위 보상
   {
@@ -35,7 +35,7 @@ const data = [
       offsetY: 150,
     },
     prize: { type: "DICE", amount: 5 },
-    style: { backgroundColor: "#39A1E8" },
+    style: { backgroundColor: "#F3F3E9" },
   },
   // 스타 보상
   {
@@ -46,7 +46,7 @@ const data = [
       offsetY: 150,
     },
     prize: { type: "STAR", amount: 2000 },
-    style: { backgroundColor: "#FBA629" },
+    style: { backgroundColor: "#2FAF74" },
   },
   // 주사위 보상
   {
@@ -57,7 +57,7 @@ const data = [
       offsetY: 150,
     },
     prize: { type: "DICE", amount: 10 },
-    style: { backgroundColor: "#F3F3E9" },
+    style: { backgroundColor: "#39A1E8" },
   },
   // 스타 보상
   {
@@ -68,7 +68,7 @@ const data = [
       offsetY: 150,
     },
     prize: { type: "STAR", amount: 4000 },
-    style: { backgroundColor: "#2FAF74" },
+    style: { backgroundColor: "#CA3D77" },
   },
   // 주사위 보상
   {
@@ -79,7 +79,7 @@ const data = [
       offsetY: 150,
     },
     prize: { type: "DICE", amount: 20 },
-    style: { backgroundColor: "#39A1E8" },
+    style: { backgroundColor: "#FBA629" },
   },
   // 스타 보상
   {
@@ -90,7 +90,7 @@ const data = [
       offsetY: 150,
     },
     prize: { type: "STAR", amount: 5000 },
-    style: { backgroundColor: "#FBA629" },
+    style: { backgroundColor: "#F3F3E9" },
   },
   // 주사위 보상
   {
@@ -101,7 +101,7 @@ const data = [
       offsetY: 150,
     },
     prize: { type: "DICE", amount: 30 },
-    style: { backgroundColor: "#F3F3E9" },
+    style: { backgroundColor: "#2FAF74" },
   },
   // 토큰 보상
   {
@@ -112,7 +112,7 @@ const data = [
       offsetY: 150,
     },
     prize: { type: "SL", amount: 10 },
-    style: { backgroundColor: "#2FAF74" },
+    style: { backgroundColor: "#39A1E8" },
   },
   // 래플권 보상
   {
@@ -123,7 +123,7 @@ const data = [
       offsetY: 150,
     },
     prize: { type: "TICKET", amount: 1 },
-    style: { backgroundColor: "#39A1E8" },
+    style: { backgroundColor: "#CA3D77" },
   },
 ];
 
@@ -273,10 +273,10 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
           mustStartSpinning={mustSpin}
           prizeNumber={prizeNumber}
           data={data}
-          outerBorderColor="#DEDEDE"
+          outerBorderColor="#E52025"
           onStopSpinning={handleSpinEnd} // 스핀 종료 후 처리
           spinDuration={0.5}
-          outerBorderWidth={10}
+          outerBorderWidth={20}
           radiusLineColor="none"
           pointerProps={{
             style: {
