@@ -7,6 +7,10 @@ import { StarTile, DiceTile, AirplaneTile, Gauge } from "@/features/DiceEvent";
 import Dice from "@/widgets/Dice";
 import { BsDice5Fill } from "react-icons/bs";
 import Images from "@/shared/assets/images";
+import {Switch}  from "@/shared/components/ui"
+
+
+
 
 interface GameBoardProps {
   position: number;
@@ -145,6 +149,27 @@ const GameBoard: React.FC<GameBoardProps> = ({
           <p className="absolute text-white text-sm font-semibold drop-shadow bottom-6 right-5 z-20 md:bottom-11 md:right-9">
             x {diceCount}
           </p>
+          <div className=" absolute z-50 -top-4 -left-8 md:-left-14 md:-top-12 ">
+          <img src={Images.Lucky} alt={"lucky"} className=" min-w-[180px] md:min-w-[280px]"  />
+          </div>
+          <div className="absolute text-white -left-11 -bottom-14 md:-left-24 md:-bottom-28 font-semibold text-xs md:text-sm md:space-y-1">{/**nft 표시 */}
+                <div className="flex flex-row gap-1 items-center "> 
+                  <img src={Images.Gold} alt="gold" className=" w-4 h-4 md:w-6 md:h-6" />
+                  <p>x 1</p>
+                </div>
+                <div className="flex flex-row gap-1 items-center "> 
+                  <img src={Images.Silver} alt="silver" className=" w-4 h-4 md:w-6 md:h-6" />
+                  <p>x 3</p>
+                </div>
+                <div className="flex flex-row gap-1 items-center "> 
+                  <img src={Images.Bronze} alt="bronze" className=" w-4 h-4 md:w-6 md:h-6" />
+                  <p>x 2</p>
+                </div>
+          </div>
+          <div className=" absolute flex flex-col items-center text-white -right-11 md:-right-24 md:-bottom-24 -bottom-14 ">
+          <Switch className=" w-[26px] h-4 md:h-6 md:w-11 text-[#0147E5]" />
+            <p className=" text-xs font-semibold md:text-sm">Auto</p>
+          </div>
           <button
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}

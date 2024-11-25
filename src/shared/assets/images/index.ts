@@ -91,6 +91,10 @@ import pointStar from "./star.png";
 import line from "./line_btn.png";
 import BottomBarAI from "./bottomBarAI.png";
 import SeletedBottomBarAI from "./seletedBottomBarAI.png" 
+import Gold from "./gold.png";
+import Silver from "./silver.png";
+import Bronze from "./bronze.png";
+import Lucky from "./lucky.png";
 
 const Images = {
   HorizontalLogo,
@@ -184,7 +188,11 @@ const Images = {
   pointStar,
   line,
   BottomBarAI,
-  SeletedBottomBarAI
+  SeletedBottomBarAI,
+  Gold,
+  Silver,
+  Bronze,
+  Lucky,
 };
 
 export default Images;
