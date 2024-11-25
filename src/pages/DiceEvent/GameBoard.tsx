@@ -251,15 +251,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     <div className="pl-8 text-sm space-y-1">
                       <div className="flex flex-row items-center gap-2">
                         <IoDice className="w-5 h-5" />
-                        <p>Dice Generation : x18</p>
+                        <p>Dice Generation : x4</p>
                       </div>
                       <div className="flex flex-row items-center gap-2">
                         <IoGameController className="w-5 h-5" />
-                        <p>Game Board Rewards : x18</p>
+                        <p>Game Board Rewards : x20</p>
                       </div>
                       <div className="flex flex-row items-center gap-2">
                         <IoTicket className="w-5 h-5" />
-                        <p>Raffle Tickets Rewards: x5</p>
+                        <p>Raffle Tickets Rewards: x60</p>
                       </div>
                     </div>
                   </div>
@@ -272,15 +272,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     <div className="pl-8 text-sm space-y-1">
                       <div className="flex flex-row items-center gap-2">
                         <IoDice className="w-5 h-5" />
-                        <p>Dice Generation : x18</p>
+                        <p>Dice Generation : x3</p>
                       </div>
                       <div className="flex flex-row items-center gap-2">
                         <IoGameController className="w-5 h-5" />
-                        <p>Game Board Rewards : x18</p>
+                        <p>Game Board Rewards : x15</p>
                       </div>
                       <div className="flex flex-row items-center gap-2">
                         <IoTicket className="w-5 h-5" />
-                        <p>Raffle Tickets Rewards: x5</p>
+                        <p>Raffle Tickets Rewards: x30</p>
                       </div>
                     </div>
                   </div>
@@ -293,15 +293,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     <div className="pl-8 text-sm space-y-1">
                       <div className="flex flex-row items-center gap-2">
                         <IoDice className="w-5 h-5" />
-                        <p>Dice Generation : x18</p>
+                        <p>Dice Generation : x2</p>
                       </div>
                       <div className="flex flex-row items-center gap-2">
                         <IoGameController className="w-5 h-5" />
-                        <p>Game Board Rewards : x18</p>
+                        <p>Game Board Rewards : x10</p>
                       </div>
                       <div className="flex flex-row items-center gap-2">
                         <IoTicket className="w-5 h-5" />
-                        <p>Raffle Tickets Rewards: x5</p>
+                        <p>Raffle Tickets Rewards: x10</p>
                       </div>
                     </div>
                   </div>
