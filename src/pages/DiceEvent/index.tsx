@@ -16,6 +16,7 @@ import SpinGame from "../SpinGame";
 import { useUserStore } from '@/entities/User/model/userModel';
 import LoadingSpinner from "@/shared/components/ui/loadingSpinner";
 
+
 const DiceEventPage: React.FC = () => {
   const {
     fetchUserData,
@@ -180,6 +181,7 @@ const DiceEventPage: React.FC = () => {
           <br /> <br /> <br />
           <br />
           <br />
+
 
           <div className="hidden md:block md:mb-40"> &nbsp;</div>
         </>

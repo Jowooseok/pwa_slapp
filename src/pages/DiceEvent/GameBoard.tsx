@@ -8,6 +8,15 @@ import Dice from "@/widgets/Dice";
 import { BsDice5Fill } from "react-icons/bs";
 import Images from "@/shared/assets/images";
 import { Switch } from "@/shared/components/ui";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shared/components/ui";
+import { IoDice, IoGameController, IoTicket } from "react-icons/io5";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 interface GameBoardProps {
   position: number;
@@ -82,7 +91,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         "0"
       )}
       {renderTile(11, <StarTile count={30} />, "30", "0")}
-      
+
       {/* 중앙 보드 */}
       <div className="col-span-4 row-span-4 flex flex-col items-center justify-evenly bg-center rotate-background">
         <div className="w-full flex justify-center mb-4">
@@ -152,7 +161,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
           <div className="flex flex-col w-full h-full items-center justify-center dice-container">
             <Dice
               ref={diceRef}
-              onRollComplete={(value: number) => handleRollComplete(value, gaugeValue)} // 게이지 값 전달
+              onRollComplete={(value: number) =>
+                handleRollComplete(value, gaugeValue)
+              } // 게이지 값 전달
               gaugeValue={gaugeValue} // gaugeValue 전달
             />
           </div>
@@ -174,21 +185,131 @@ const GameBoard: React.FC<GameBoardProps> = ({
             )}
           </AnimatePresence>
 
-          <div className="absolute text-white -left-11 -bottom-14 md:-left-24 md:-bottom-28 font-semibold text-xs md:text-sm md:space-y-1">
-            {/* NFT 표시 */}
-            <div className="flex flex-row gap-1 items-center ">
-              <img src={Images.Gold} alt="gold" className=" w-4 h-4 md:w-6 md:h-6" />
-              <p>x 1</p>
-            </div>
-            <div className="flex flex-row gap-1 items-center ">
-              <img src={Images.Silver} alt="silver" className=" w-4 h-4 md:w-6 md:h-6" />
-              <p>x 3</p>
-            </div>
-            <div className="flex flex-row gap-1 items-center ">
-              <img src={Images.Bronze} alt="bronze" className=" w-4 h-4 md:w-6 md:h-6" />
-              <p>x 2</p>
-            </div>
-          </div>
+          <Dialog>
+            <DialogTrigger>
+              <div className="absolute text-white -left-11 -bottom-14 md:-left-24 md:-bottom-28 font-semibold text-xs md:text-sm md:space-y-1">
+                {/* NFT 표시 */}
+                <div className="flex flex-row gap-1 items-center ">
+                  <img
+                    src={Images.Gold}
+                    alt="gold"
+                    className=" w-4 h-4 md:w-6 md:h-6"
+                  />
+                  <p>x 1</p>
+                </div>
+                <div className="flex flex-row gap-1 items-center ">
+                  <img
+                    src={Images.Silver}
+                    alt="silver"
+                    className=" w-4 h-4 md:w-6 md:h-6"
+                  />
+                  <p>x 3</p>
+                </div>
+                <div className="flex flex-row gap-1 items-center ">
+                  <img
+                    src={Images.Bronze}
+                    alt="bronze"
+                    className=" w-4 h-4 md:w-6 md:h-6"
+                  />
+                  <p>x 2</p>
+                </div>
+              </div>
+            </DialogTrigger>
+            <DialogContent className=" bg-[#21212F] border-none rounded-3xl text-white">
+              <DialogHeader className="">
+                <DialogTitle>Your Current Abilities</DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col mt-4 gap-4">
+                <div className="flex flex-col bg-[#1F1E27] p-5 rounded-3xl border-2 border-[#35383F] font-medium gap-2">
+                  <div className="flex flex-row items-center gap-2">
+                    <IoDice className="w-6 h-6" />
+                    <p>Dice Generation : x18</p>
+                  </div>
+                  <div className="flex flex-row items-center gap-2">
+                    <IoGameController className="w-6 h-6" />
+                    <p>Game Board Rewards : x10</p>
+                  </div>
+                  <div className="flex flex-row items-center gap-2">
+                    <IoTicket className="w-6 h-6" />
+                    <p>Raffle Tickets Rewards: x5</p>
+                  </div>
+                </div>
+                <div className="flex flex-row items-center justify-end gap-1">
+                  <p className="text-end text-sm font-medium">
+                    How these are claculated?
+                  </p>
+                  <AiOutlineInfoCircle className=" w-5 h-5" />
+                </div>
+
+                <div className="flex flex-col bg-[#1F1E27] p-5 rounded-3xl border-2 border-[#35383F] font-medium gap-4 ">
+                  <div className=" relative space-y-2">
+                    {" "}
+                    <div className="flex flex-row items-center gap-2">
+                      <img src={Images.Gold} alt="gold" className="w-6 h-6" />
+                      <p className="font-semibold">Gold NFT</p>
+                    </div>
+                    <div className="pl-8 text-sm space-y-1">
+                      <div className="flex flex-row items-center gap-2">
+                        <IoDice className="w-5 h-5" />
+                        <p>Dice Generation : x18</p>
+                      </div>
+                      <div className="flex flex-row items-center gap-2">
+                        <IoGameController className="w-5 h-5" />
+                        <p>Game Board Rewards : x18</p>
+                      </div>
+                      <div className="flex flex-row items-center gap-2">
+                        <IoTicket className="w-5 h-5" />
+                        <p>Raffle Tickets Rewards: x5</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className=" relative space-y-2">
+                    {" "}
+                    <div className="flex flex-row items-center gap-2">
+                      <img src={Images.Silver} alt="Silver" className="w-6 h-6" />
+                      <p className="font-semibold">Silver NFT</p>
+                    </div>
+                    <div className="pl-8 text-sm space-y-1">
+                      <div className="flex flex-row items-center gap-2">
+                        <IoDice className="w-5 h-5" />
+                        <p>Dice Generation : x18</p>
+                      </div>
+                      <div className="flex flex-row items-center gap-2">
+                        <IoGameController className="w-5 h-5" />
+                        <p>Game Board Rewards : x18</p>
+                      </div>
+                      <div className="flex flex-row items-center gap-2">
+                        <IoTicket className="w-5 h-5" />
+                        <p>Raffle Tickets Rewards: x5</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className=" relative space-y-2">
+                    {" "}
+                    <div className="flex flex-row items-center gap-2">
+                      <img src={Images.Bronze} alt="Bronze" className="w-6 h-6" />
+                      <p className="font-semibold">Bronze NFT</p>
+                    </div>
+                    <div className="pl-8 text-sm space-y-1">
+                      <div className="flex flex-row items-center gap-2">
+                        <IoDice className="w-5 h-5" />
+                        <p>Dice Generation : x18</p>
+                      </div>
+                      <div className="flex flex-row items-center gap-2">
+                        <IoGameController className="w-5 h-5" />
+                        <p>Game Board Rewards : x18</p>
+                      </div>
+                      <div className="flex flex-row items-center gap-2">
+                        <IoTicket className="w-5 h-5" />
+                        <p>Raffle Tickets Rewards: x5</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           <div className=" absolute flex flex-col items-center text-white -right-11 md:-right-24 md:-bottom-24 -bottom-14 ">
             <Switch className=" w-[26px] h-4 md:h-6 md:w-11 text-[#0147E5]" />
             <p className=" text-xs font-semibold md:text-sm">Auto</p>
