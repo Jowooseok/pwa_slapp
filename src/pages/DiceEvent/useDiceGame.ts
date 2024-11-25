@@ -196,7 +196,7 @@ export const useDiceGame = () => {
       const expectedDiceValue = getExpectedDiceValue(receivedGaugeValue);
       if (value === expectedDiceValue) {
         setIsLuckyVisible(true);
-        setTimeout(() => setIsLuckyVisible(false), 1500); // 1.5초 후 사라짐
+        setTimeout(() => setIsLuckyVisible(false), 800); //0.8초 후 사라짐
       }
 
       const newPosition = (position + value) % 20;
