@@ -8,13 +8,13 @@ import { MonthlyPrize } from "@/entities/MonthlyPrize";
 import Attendance from "@/widgets/Attendance";
 import MyRankingWidget from "@/widgets/MyRanking/MyRankingWidget";
 import MissionWidget from "@/widgets/MissionWidget/MissionWidget";
-import { useDiceGame } from "./useDiceGame";
+import useDiceGame from "./useDiceGame"; // 수정된 import
 import GameBoard from "./GameBoard";
 import { Board } from "@/features/DiceEvent";
 import RPSGame from "../RPSGame";
 import SpinGame from "../SpinGame";
 import { useUserStore } from '@/entities/User/model/userModel';
-import LoadingSpinner from "@/shared/components/ui/LoadingSpinner";
+import LoadingSpinner from "@/shared/components/ui/loadingSpinner";
 
 const DiceEventPage: React.FC = () => {
   const {
@@ -150,6 +150,7 @@ const DiceEventPage: React.FC = () => {
             isHolding={game.isHolding}
             handleMouseDown={game.handleMouseDown}
             handleMouseUp={game.handleMouseUp}
+            isLuckyVisible={game.isLuckyVisible} // "LUCKY" 상태 전달
           />
           {game.selectingTile && (
             <div className="absolute md:-top-40 -top-20 left-0 w-full h-full flex justify-center items-center z-20">

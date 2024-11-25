@@ -1,4 +1,4 @@
-//src\pages\DiceEvent\GameBoard.tsx
+// src/pages/DiceEvent/GameBoard.tsx
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,10 +7,7 @@ import { StarTile, DiceTile, AirplaneTile, Gauge } from "@/features/DiceEvent";
 import Dice from "@/widgets/Dice";
 import { BsDice5Fill } from "react-icons/bs";
 import Images from "@/shared/assets/images";
-import {Switch}  from "@/shared/components/ui"
-
-
-
+import { Switch } from "@/shared/components/ui";
 
 interface GameBoardProps {
   position: number;
@@ -22,11 +19,12 @@ interface GameBoardProps {
   rolledValue: number;
   buttonDisabled: boolean;
   diceRef: React.RefObject<any>;
-  handleRollComplete: (value: number) => void;
+  handleRollComplete: (value: number, gaugeValue: number) => void; // 인자 추가
   reward: { type: string; value: number; top: string; left: string } | null;
   isHolding: boolean;
   handleMouseDown: () => void;
   handleMouseUp: () => void;
+  isLuckyVisible: boolean; // 추가된 prop
 }
 
 const GameBoard: React.FC<GameBoardProps> = ({
@@ -44,6 +42,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   isHolding,
   handleMouseDown,
   handleMouseUp,
+  isLuckyVisible, // 전달받은 prop
 }) => {
   const renderTile = (
     id: number,
@@ -64,14 +63,27 @@ const GameBoard: React.FC<GameBoardProps> = ({
   );
 
   return (
-    <div className="grid grid-cols-6 grid-rows-6 gap-1 text-xs md:text-base">
-      {renderTile(10, <img src={Images.DesertIsland} className="z-0 w-[41px] h-[41px]" />, "0", "0")}
+    <div className="grid grid-cols-6 grid-rows-6 gap-1 text-xs md:text-base relative">
+      {/* 타일 렌더링 */}
+      {renderTile(
+        10,
+        <img src={Images.DesertIsland} className="z-0 w-[41px] h-[41px]" />,
+        "0",
+        "0"
+      )}
       {renderTile(9, <StarTile count={100} />, "100", "0")}
       {renderTile(8, <AirplaneTile text="Battle" />, "0", "0")}
       {renderTile(7, <DiceTile count={1} />, "0", "1")}
       {renderTile(6, <StarTile count={30} />, "30", "0")}
-      {renderTile(5, <img src={Images.RPSImage} className="z-0 w-[51px] h-[51px]" />, "0", "0")}
+      {renderTile(
+        5,
+        <img src={Images.RPSImage} className="z-0 w-[51px] h-[51px]" />,
+        "0",
+        "0"
+      )}
       {renderTile(11, <StarTile count={30} />, "30", "0")}
+      
+      {/* 중앙 보드 */}
       <div className="col-span-4 row-span-4 flex flex-col items-center justify-evenly bg-center rotate-background">
         <div className="w-full flex justify-center mb-4">
           <Gauge gaugeValue={gaugeValue} />
@@ -138,36 +150,47 @@ const GameBoard: React.FC<GameBoardProps> = ({
           </AnimatePresence>
           <div className="bg-[#FACC15] rounded-full w-[110px] h-[110px] object-center absolute left-[5px] top-[5px] md:left-2 md:top-2 md:w-40 md:h-40"></div>
           <div className="flex flex-col w-full h-full items-center justify-center dice-container">
-          <Dice
-        ref={diceRef}
-        onRollComplete={handleRollComplete}
-        gaugeValue={gaugeValue}  // gaugeValue 전달
-      
-      />
-
+            <Dice
+              ref={diceRef}
+              onRollComplete={(value: number) => handleRollComplete(value, gaugeValue)} // 게이지 값 전달
+              gaugeValue={gaugeValue} // gaugeValue 전달
+            />
           </div>
           <p className="absolute text-white text-sm font-semibold drop-shadow bottom-6 right-5 z-20 md:bottom-11 md:right-9">
             x {diceCount}
           </p>
-          <div className=" absolute z-50 -top-4 -left-8 md:-left-14 md:-top-12 ">
-          <img src={Images.Lucky} alt={"lucky"} className=" min-w-[180px] md:min-w-[280px]"  />
-          </div>
-          <div className="absolute text-white -left-11 -bottom-14 md:-left-24 md:-bottom-28 font-semibold text-xs md:text-sm md:space-y-1">{/**nft 표시 */}
-                <div className="flex flex-row gap-1 items-center "> 
-                  <img src={Images.Gold} alt="gold" className=" w-4 h-4 md:w-6 md:h-6" />
-                  <p>x 1</p>
-                </div>
-                <div className="flex flex-row gap-1 items-center "> 
-                  <img src={Images.Silver} alt="silver" className=" w-4 h-4 md:w-6 md:h-6" />
-                  <p>x 3</p>
-                </div>
-                <div className="flex flex-row gap-1 items-center "> 
-                  <img src={Images.Bronze} alt="bronze" className=" w-4 h-4 md:w-6 md:h-6" />
-                  <p>x 2</p>
-                </div>
+          {/* "LUCKY" 이미지 애니메이션 */}
+          <AnimatePresence>
+            {isLuckyVisible && (
+              <motion.img
+                src={Images.Lucky} // "LUCKY" 이미지 경로
+                alt="Lucky Dice"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1.2, opacity: 1 }}
+                exit={{ scale: 0.5, opacity: 0 }}
+                transition={{ duration: 1 }}
+                className="absolute  bottom-0 -left-8 md:-left-14 md:-bottom-4 z-10 min-w-[180px] md:min-w-[280px]"
+              />
+            )}
+          </AnimatePresence>
+
+          <div className="absolute text-white -left-11 -bottom-14 md:-left-24 md:-bottom-28 font-semibold text-xs md:text-sm md:space-y-1">
+            {/* NFT 표시 */}
+            <div className="flex flex-row gap-1 items-center ">
+              <img src={Images.Gold} alt="gold" className=" w-4 h-4 md:w-6 md:h-6" />
+              <p>x 1</p>
+            </div>
+            <div className="flex flex-row gap-1 items-center ">
+              <img src={Images.Silver} alt="silver" className=" w-4 h-4 md:w-6 md:h-6" />
+              <p>x 3</p>
+            </div>
+            <div className="flex flex-row gap-1 items-center ">
+              <img src={Images.Bronze} alt="bronze" className=" w-4 h-4 md:w-6 md:h-6" />
+              <p>x 2</p>
+            </div>
           </div>
           <div className=" absolute flex flex-col items-center text-white -right-11 md:-right-24 md:-bottom-24 -bottom-14 ">
-          <Switch className=" w-[26px] h-4 md:h-6 md:w-11 text-[#0147E5]" />
+            <Switch className=" w-[26px] h-4 md:h-6 md:w-11 text-[#0147E5]" />
             <p className=" text-xs font-semibold md:text-sm">Auto</p>
           </div>
           <button
@@ -189,6 +212,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           <BsDice5Fill className="w-3 h-3" /> <p> : 1h 20m</p>{" "}
         </div>
       </div>
+      {/* 추가 타일 렌더링 */}
       {renderTile(4, <StarTile count={30} />, "30", "0")}
       {renderTile(12, <DiceTile count={1} />, "0", "1")}
       {renderTile(3, <DiceTile count={1} />, "0", "1")}
@@ -196,7 +220,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
       {renderTile(2, <AirplaneTile text="Spin" />, "0", "0")}
       {renderTile(14, <StarTile count={50} />, "50", "0")}
       {renderTile(1, <StarTile count={30} />, "30", "0")}
-      {renderTile(15, <img src={Images.SpinImage} className="z-0 w-[41px] h-[41px]" />, "0", "0")}
+      {renderTile(
+        15,
+        <img src={Images.SpinImage} className="z-0 w-[41px] h-[41px]" />,
+        "0",
+        "0"
+      )}
       {renderTile(16, <StarTile count={50} />, "50", "0")}
       {renderTile(17, <DiceTile count={2} />, "0", "2")}
       {renderTile(18, <AirplaneTile text="Anywhere" />, "0", "0")}
