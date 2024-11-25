@@ -306,6 +306,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     </div>
                   </div>
                 </div>
+                <button className=" font-medium bg-[#0147E5] rounded-full h-14 w-[165px] self-center" > Shop NFT</button>
               </div>
             </DialogContent>
           </Dialog>
