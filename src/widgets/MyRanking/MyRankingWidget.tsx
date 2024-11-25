@@ -6,6 +6,7 @@ import { formatNumber } from '@/shared/utils/formatNumber';
 import { useNavigate } from 'react-router-dom';
 import { useNavigationStore } from '@/shared/store/navigationStore';
 import { useUserStore } from '@/entities/User/model/userModel'; // useUserStore 임포트
+import CountUp from 'react-countup'; // CountUp 임포트
 
 const MyRankingWidget: React.FC = () => {
   const navigate = useNavigate();
@@ -35,7 +36,12 @@ const MyRankingWidget: React.FC = () => {
         <div className="w-[121px] h-full flex flex-col items-center justify-center gap-2">
           <p className="text-base font-semibold">My Rank</p>
           <p className="text-2xl text-[#fde047] font-jalnan">
-            {formatNumber(rank)}
+            <CountUp 
+              start={0} 
+              end={rank} 
+              duration={1} 
+              separator="," 
+            />
           </p>
         </div>
         
@@ -49,7 +55,14 @@ const MyRankingWidget: React.FC = () => {
           {/* 스타 포인트 */}
           <div className="flex flex-col items-center justify-center gap-2">
             <img src={Images.Star} alt="star" className="w-6 h-6" />
-            <p>{formatNumber(starPoints)}</p>
+            <p>
+              <CountUp 
+                start={0} 
+                end={starPoints} 
+                duration={1} 
+                separator="," 
+              />
+            </p>
           </div>
           
           {/* 추첨권 */}
@@ -59,7 +72,14 @@ const MyRankingWidget: React.FC = () => {
               alt="lottery-ticket"
               className="w-6 h-6"
             />
-            <p>{formatNumber(lotteryCount)}</p>
+            <p>
+              <CountUp 
+                start={0} 
+                end={lotteryCount} 
+                duration={1} 
+                separator="," 
+              />
+            </p>
           </div>
           
           {/* SL 토큰 */}
@@ -69,7 +89,14 @@ const MyRankingWidget: React.FC = () => {
               alt="RankingSLToken"
               className="w-6 h-6"
             />
-            <p>{formatNumber(slToken)}</p>
+            <p>
+              <CountUp 
+                start={0} 
+                end={slToken} 
+                duration={1} 
+                separator="," 
+              />
+            </p>
           </div>
         </div>
       </div>
