@@ -20,9 +20,11 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 import { useUserStore } from "@/entities/User/model/userModel";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import utc from "dayjs/plugin/utc"; // UTC 플러그인 추가
 import { RollDiceResponseData } from "@/features/DiceEvent/api/rollDiceApi";
 
 dayjs.extend(duration);
+dayjs.extend(utc); // UTC 플러그인 적용
 
 interface GameBoardProps {
   position: number;
@@ -34,7 +36,7 @@ interface GameBoardProps {
   rolledValue: number;
   buttonDisabled: boolean;
   diceRef: React.RefObject<any>;
-  handleRollComplete: (value: number, data: RollDiceResponseData) => void; // 수정된 부분
+  handleRollComplete: (value: number, data: RollDiceResponseData) => void;
   reward: { type: string; value: number; top: string; left: string } | null;
   isHolding: boolean;
   handleMouseDown: () => void;
@@ -59,17 +61,27 @@ const GameBoard: React.FC<GameBoardProps> = ({
   handleMouseUp,
   isLuckyVisible,
 }) => {
-  const { items, diceRefilledAt, boards } = useUserStore();
+  const { items, diceRefilledAt, boards, fetchUserData } = useUserStore();
   const [timeUntilRefill, setTimeUntilRefill] = useState("");
 
   useEffect(() => {
     const updateRefillTime = () => {
       if (diceRefilledAt) {
-        const now = dayjs();
-        const refillTime = dayjs(diceRefilledAt);
+        // diceRefilledAt 문자열을 밀리초 단위까지 잘라서 UTC로 파싱
+        const trimmedDiceRefilledAt = diceRefilledAt.substring(0, 23); // "2024-11-27T16:32:29.817"
+        const now = dayjs().utc();
+        const refillTime = dayjs(trimmedDiceRefilledAt).utc().add(2, 'hour'); // 다음 리필 시간 계산
         const diff = refillTime.diff(now);
+
+        // 디버깅을 위한 콘솔 출력
+        console.log("현재 UTC 시간:", now.format());
+        console.log("다음 리필 UTC 시간:", refillTime.format());
+        console.log("남은 시간 (밀리초):", diff);
+
         if (diff <= 0) {
           setTimeUntilRefill("0m");
+          // 주사위가 리필되었으므로 서버에서 최신 데이터 다시 가져오기
+          fetchUserData(); // 서버에서 최신 데이터를 다시 가져옴
         } else {
           const remainingDuration = dayjs.duration(diff);
           const hours = remainingDuration.hours();
@@ -84,7 +96,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     updateRefillTime();
     const interval = setInterval(updateRefillTime, 60000);
     return () => clearInterval(interval);
-  }, [diceRefilledAt]);
+  }, [diceRefilledAt, fetchUserData]);
 
   // Mapping from front-end tile IDs to server tile sequences
   const tileIdToSequenceMap: { [key: number]: number } = {
@@ -263,7 +275,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           <div className="flex flex-col w-full h-full items-center justify-center dice-container">
             <Dice
               ref={diceRef}
-              onRollComplete={(value: number, data: RollDiceResponseData) => // 수정된 부분
+              onRollComplete={(value: number, data: RollDiceResponseData) =>
                 handleRollComplete(value, data)
               }
               gaugeValue={gaugeValue}
