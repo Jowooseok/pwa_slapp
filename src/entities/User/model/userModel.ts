@@ -3,7 +3,9 @@
 import create from 'zustand';
 import { fetchHomeData } from '@/entities/User/api/userApi';
 import api from '@/shared/api/axiosInstance';
-import { rollDiceAPI } from '@/features/DiceEvent/api/rollDiceApi';
+import { rollDiceAPI, RollDiceResponseData } from '@/features/DiceEvent/api/rollDiceApi';
+
+
 
 // 월간 보상 정보 인터페이스
 interface MonthlyPrize {
@@ -90,7 +92,7 @@ interface UserState {
   fetchUserData: () => Promise<void>;
 
   diceResult: number;
-  rollDice: (gauge: number) => Promise<void>;
+  rollDice: (gauge: number) => Promise<RollDiceResponseData>;
 
   diceRefilledAt: string | null;
   setDiceRefilledAt: (value: string | null) => void;
@@ -387,23 +389,27 @@ export const useUserStore = create<UserState>((set, get) => ({
   },  
 
   diceResult: 0,
-   rollDice: async (gauge: number) => {
+  rollDice: async (gauge: number): Promise<RollDiceResponseData> => {
     set({ isLoading: true, error: null });
-
+  
+    const sequence = get().position; // 현재 위치 가져오기
+  
     try {
-      const data = await rollDiceAPI(gauge);
-
+      const data = await rollDiceAPI(gauge, sequence);
+  
+      // 상태 업데이트를 여기서 하지 않고, 데이터만 반환합니다.
       set({
         rank: data.rank,
         starPoints: data.star,
         lotteryCount: data.ticket,
         diceCount: data.dice,
         slToken: data.slToken,
-        diceResult: data.diceResult,
-        position: data.tileSequence,
         isLoading: false,
         error: null,
+        // position: data.tileSequence, // position 업데이트는 나중에
       });
+  
+      return data; // 데이터를 반환합니다.
     } catch (error: any) {
       set({ isLoading: false, error: error.message || 'Roll dice failed' });
       throw error;

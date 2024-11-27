@@ -20,6 +20,7 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 import { useUserStore } from "@/entities/User/model/userModel";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import { RollDiceResponseData } from "@/features/DiceEvent/api/rollDiceApi";
 
 dayjs.extend(duration);
 
@@ -33,7 +34,7 @@ interface GameBoardProps {
   rolledValue: number;
   buttonDisabled: boolean;
   diceRef: React.RefObject<any>;
-  handleRollComplete: (value: number, gaugeValue: number) => void;
+  handleRollComplete: (value: number, data: RollDiceResponseData) => void; // 수정된 부분
   reward: { type: string; value: number; top: string; left: string } | null;
   isHolding: boolean;
   handleMouseDown: () => void;
@@ -262,8 +263,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
           <div className="flex flex-col w-full h-full items-center justify-center dice-container">
             <Dice
               ref={diceRef}
-              onRollComplete={(value: number) =>
-                handleRollComplete(value, gaugeValue)
+              onRollComplete={(value: number, data: RollDiceResponseData) => // 수정된 부분
+                handleRollComplete(value, data)
               }
               gaugeValue={gaugeValue}
             />
@@ -345,7 +346,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 {/* Additional information section */}
                 <div className="flex flex-col bg-[#1F1E27] p-5 rounded-3xl border-2 border-[#35383F] font-medium gap-4 ">
                   <div className=" relative space-y-2">
-                    {" "}
                     <div className="flex flex-row items-center gap-2">
                       <img src={Images.Gold} alt="gold" className="w-6 h-6" />
                       <p className="font-semibold">Gold NFT</p>
@@ -366,7 +366,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     </div>
                   </div>
                   <div className=" relative space-y-2">
-                    {" "}
                     <div className="flex flex-row items-center gap-2">
                       <img src={Images.Silver} alt="Silver" className="w-6 h-6" />
                       <p className="font-semibold">Silver NFT</p>
@@ -387,7 +386,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     </div>
                   </div>
                   <div className=" relative space-y-2">
-                    {" "}
                     <div className="flex flex-row items-center gap-2">
                       <img src={Images.Bronze} alt="Bronze" className="w-6 h-6" />
                       <p className="font-semibold">Bronze NFT</p>

@@ -5,6 +5,8 @@ import { useGauge } from "@/features/DiceEvent";
 import { useRPSGameStore } from "../RPSGame/store";
 import { useUserStore } from "@/entities/User/model/userModel";
 import { anywhereAPI } from "@/features/DiceEvent/api/anywhereApi";
+import { RollDiceResponseData } from '@/features/DiceEvent/api/rollDiceApi';
+
 
 export interface Reward {
   type: string;
@@ -179,57 +181,75 @@ export const useDiceGame = () => {
   );
 
   // 주사위 결과 처리 함수
-  const handleRollComplete = useCallback(
-    (value: number, receivedGaugeValue: number) => {
-      console.log('handleRollComplete 호출됨');
-      setShowDiceValue(true);
-      setRolledValue(value);
-      setTimeout(() => {
-        setShowDiceValue(false);
-      }, 1000);
-      setButtonDisabled(true);
+// src/pages/DiceEvent/useDiceGame.ts
 
-      // 주사위를 굴렸으므로 diceCount를 1 감소시킵니다.
-      setDiceCount((prev) => prev - 1);
+const handleRollComplete = useCallback(
+  (value: number, data: RollDiceResponseData) => {
+    console.log('handleRollComplete 호출됨');
 
-      // "LUCKY" 이미지 표시 조건 확인
-      const expectedDiceValue = getExpectedDiceValue(receivedGaugeValue);
-      if (value === expectedDiceValue) {
-        setIsLuckyVisible(true);
-        setTimeout(() => setIsLuckyVisible(false), 800); //0.8초 후 사라짐
+    const previousPosition = position; // 이전 위치 저장
+    const newPosition = data.tileSequence; // 서버에서 받은 새로운 위치
+
+    // 서버 응답 데이터를 상태에 업데이트
+    setRank(data.rank);
+    setStarPoints(data.star);
+    setLotteryCount(data.ticket);
+    setDiceCount(data.dice);
+    setSlToken(data.slToken);
+    setPosition(newPosition); // 여기서 position 업데이트
+
+    // 주사위를 굴렸으므로 diceCount를 1 감소시킵니다.
+    // setDiceCount((prev) => prev - 1); // 이미 업데이트되었으므로 제거
+
+    // 주사위 값 및 애니메이션 처리
+    setShowDiceValue(true);
+    setRolledValue(value);
+    setTimeout(() => {
+      setShowDiceValue(false);
+    }, 1000);
+    setButtonDisabled(true);
+
+    // "LUCKY" 이미지 표시 조건 확인
+    const expectedDiceValue = getExpectedDiceValue(gaugeValue);
+    if (value === expectedDiceValue) {
+      setIsLuckyVisible(true);
+      setTimeout(() => setIsLuckyVisible(false), 800); //0.8초 후 사라짐
+    }
+
+    movePiece(previousPosition, newPosition, (finalPosition) => {
+      if (finalPosition === 5) {
+        setIsRPSGameActive(true);
+        rpsGameStore.fetchAllowedBetting();
+      } else if (finalPosition === 15) {
+        setIsSpinGameActive(true);
+      } else {
+        setButtonDisabled(false);
       }
+      setIsRolling(false); // 주사위 굴리기 완료 후 상태 리셋
+    });
+  },
+  [
+    position,
+    setPosition,
+    setRank,
+    setStarPoints,
+    setLotteryCount,
+    setDiceCount,
+    setSlToken,
+    movePiece,
+    setButtonDisabled,
+    setRolledValue,
+    setShowDiceValue,
+    setIsRPSGameActive,
+    setIsSpinGameActive,
+    setIsRolling,
+    getExpectedDiceValue,
+    setIsLuckyVisible,
+    gaugeValue,
+    rpsGameStore,
+  ]
+);
 
-      const newPosition = (position + value) % 20;
-      const currentPosition = position;
-
-      movePiece(currentPosition, newPosition, (finalPosition) => {
-        if (finalPosition === 5) {
-          setIsRPSGameActive(true);
-          // RPS 게임 시작 시 allowedBetting을 fetch 합니다.
-          rpsGameStore.fetchAllowedBetting();
-        } else if (finalPosition === 15) {
-          setIsSpinGameActive(true);
-        } else {
-          setButtonDisabled(false);
-        }
-        setIsRolling(false); // 주사위 굴리기 완료 후 상태 리셋
-      });
-    },
-    [
-      position,
-      diceCount,
-      rpsGameStore,
-      movePiece,
-      setButtonDisabled,
-      setRolledValue,
-      setShowDiceValue,
-      setIsRPSGameActive,
-      setIsSpinGameActive,
-      setIsRolling,
-      getExpectedDiceValue,
-      setIsLuckyVisible,
-    ]
-  );
 
   // 주사위 굴리기 함수
   const rollDice = useCallback(() => {
