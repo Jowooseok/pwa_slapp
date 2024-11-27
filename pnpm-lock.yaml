@@ -107,6 +107,9 @@ importers:
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
+      dayjs:
+        specifier: 1.11.13
+        version: 1.11.13
       embla-carousel-autoplay:
         specifier: ^8.1.5
         version: 8.5.1(embla-carousel@8.5.1)
@@ -2847,6 +2850,9 @@ packages:
 
   date-fns@3.6.0:
     resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
+
+  dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -8423,6 +8429,8 @@ snapshots:
 
   date-fns@3.6.0: {}
 
+  dayjs@1.11.13: {}
+
   debug@2.6.9:
     dependencies:
       ms: 2.0.0
@@ -10850,6 +10858,7 @@ snapshots:
       lucide-react: 0.390.0(react@18.3.1)
       pretendard: 1.3.9
       react: 18.3.1
+      react-countup: 6.5.3(react@18.3.1)
       react-custom-roulette: 1.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-day-picker: 8.10.1(date-fns@3.6.0)(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)

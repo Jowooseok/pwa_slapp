@@ -91,6 +91,34 @@ interface UserState {
 
   diceResult: number;
   rollDice: (gauge: number) => Promise<void>;
+
+  diceRefilledAt: string | null;
+  setDiceRefilledAt: (value: string | null) => void;
+
+  items: Items;
+  setItems: (items: Items) => void;
+
+  boards: Board[];
+  setBoards: (boards: Board[]) => void;
+
+}
+
+// 필요한 인터페이스 정의
+interface Items {
+  goldCount: number;
+  silverCount: number;
+  bronzeCount: number;
+  timeDiceTimes: number;
+  boardRewardTimes: number;
+  ticketTimes: number;
+}
+
+interface Board {
+  rewardAmount: number | null;
+  tileType: 'HOME' | 'REWARD' | 'SPIN' | 'RPS' | 'MOVE' | 'JAIL';
+  rewardType: 'STAR' | 'DICE' | null;
+  sequence: number;
+  moveType: 'SPIN' | 'RPS' | 'HOME' | 'ANYWHERE' | null;
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
@@ -170,48 +198,61 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   // 사용자 데이터 설정 함수
   fetchUserData: async () => {
-    console.log('Step 4-1: fetchUserData 시작');
     set({ isLoading: true, error: null });
     try {
-      const data = await fetchHomeData(); // userApi.ts의 fetchHomeData 사용
+      const data = await fetchHomeData();
       if (!data) {
         throw new Error('No data returned from /home API');
       }
-      console.log('Step 4-2: fetchUserData 성공, 데이터:', data);
+  
+      // 서버 응답에서 필요한 데이터 추출
+      const {
+        nowDice,
+        rank,
+        pet,
+        monthlyPrize,
+        weekAttendance,
+        items,
+        boards,
+      } = data;
+  
       set({
-        position: data.nowDice.tileSequence,
-        diceCount: data.nowDice.dice,
-        starPoints: data.rank.star,
-        lotteryCount: data.rank.ticket,
-        userLv: data.pet.level,
-        characterType: data.pet.type.toLowerCase() as 'dog' | 'cat',
-        slToken: data.rank.slToken,
-        rank: data.rank.rank,
+        position: nowDice.tileSequence,
+        diceCount: nowDice.dice,
+        starPoints: rank.star,
+        lotteryCount: rank.ticket,
+        userLv: pet.level,
+        characterType: pet.type.toLowerCase() as 'dog' | 'cat',
+        slToken: rank.slToken,
+        rank: rank.rank,
+        diceRefilledAt: rank.diceRefilledAt, // 추가된 부분
+        items, // 추가된 부분
+        boards, // 추가된 부분
         monthlyPrize: {
-          year: data.monthlyPrize.year,
-          month: data.monthlyPrize.month,
-          prizeType: data.monthlyPrize.prizeType,
-          amount: data.monthlyPrize.amount,
+          year: monthlyPrize.year,
+          month: monthlyPrize.month,
+          prizeType: monthlyPrize.prizeType,
+          amount: monthlyPrize.amount,
         },
         weekAttendance: {
-          mon: data.weekAttendance.mon,
-          tue: data.weekAttendance.tue,
-          wed: data.weekAttendance.wed,
-          thu: data.weekAttendance.thu,
-          fri: data.weekAttendance.fri,
-          sat: data.weekAttendance.sat,
-          sun: data.weekAttendance.sun,
+          mon: weekAttendance.mon,
+          tue: weekAttendance.tue,
+          wed: weekAttendance.wed,
+          thu: weekAttendance.thu,
+          fri: weekAttendance.fri,
+          sat: weekAttendance.sat,
+          sun: weekAttendance.sun,
         },
-        currentMiniGame: data.nowDice.currentMiniGame || '', // 설정
         isLoading: false,
         error: null,
       });
     } catch (error: any) {
-      console.error('Step 5: fetchUserData 실패:', error);
+      console.error('fetchUserData 실패:', error);
       set({ isLoading: false, error: error.message });
-      throw error; // 에러를 다시 던져 호출한 쪽에서 인지할 수 있도록 함
+      throw error;
     }
   },
+  
 
   // 로그인 함수
   login: async (initData: string): Promise<void> => {
@@ -368,4 +409,20 @@ export const useUserStore = create<UserState>((set, get) => ({
       throw error;
     }
   },
+
+  diceRefilledAt: null,
+  setDiceRefilledAt: (value) => set({ diceRefilledAt: value }),
+
+  items: {
+    goldCount: 0,
+    silverCount: 0,
+    bronzeCount: 0,
+    timeDiceTimes: 0,
+    boardRewardTimes: 0,
+    ticketTimes: 0,
+  },
+  setItems: (items) => set({ items }),
+
+  boards: [],
+  setBoards: (boards) => set({ boards }),
 }));

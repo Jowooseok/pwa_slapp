@@ -1,6 +1,6 @@
 // src/pages/DiceEvent/GameBoard.tsx
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Tile from "./tile";
 import { StarTile, DiceTile, AirplaneTile, Gauge } from "@/features/DiceEvent";
@@ -17,6 +17,11 @@ import {
 } from "@/shared/components/ui";
 import { IoDice, IoGameController, IoTicket } from "react-icons/io5";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import { useUserStore } from "@/entities/User/model/userModel";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+
+dayjs.extend(duration);
 
 interface GameBoardProps {
   position: number;
@@ -53,6 +58,36 @@ const GameBoard: React.FC<GameBoardProps> = ({
   handleMouseUp,
   isLuckyVisible, // 전달받은 prop
 }) => {
+  const { items, diceRefilledAt } = useUserStore();
+  const [timeUntilRefill, setTimeUntilRefill] = useState("");
+
+  useEffect(() => {
+    const updateRefillTime = () => {
+      if (diceRefilledAt) {
+        const now = dayjs();
+        const refillTime = dayjs(diceRefilledAt);
+        const diff = refillTime.diff(now);
+        if (diff <= 0) {
+          setTimeUntilRefill("0m");
+        } else {
+          const remainingDuration = dayjs.duration(diff);
+          const hours = remainingDuration.hours();
+          const minutes = remainingDuration.minutes();
+          setTimeUntilRefill(`${hours}h ${minutes}m`);
+        }
+      } else {
+        // diceRefilledAt이 null인 경우 "Waiting"을 표시
+        setTimeUntilRefill("Waiting");
+      }
+    };
+    updateRefillTime();
+    const interval = setInterval(updateRefillTime, 60000);
+    return () => clearInterval(interval);
+  }, [diceRefilledAt]);
+  
+
+  
+
   const renderTile = (
     id: number,
     content: React.ReactNode,
@@ -195,7 +230,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     alt="gold"
                     className=" w-4 h-4 md:w-6 md:h-6"
                   />
-                  <p>x 1</p>
+                  {/* goldCount */}
+                  <p>x {items.goldCount}</p>
                 </div>
                 <div className="flex flex-row gap-1 items-center ">
                   <img
@@ -203,7 +239,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     alt="silver"
                     className=" w-4 h-4 md:w-6 md:h-6"
                   />
-                  <p>x 3</p>
+                  {/* silverCount */}
+                  <p>x {items.silverCount}</p>
                 </div>
                 <div className="flex flex-row gap-1 items-center ">
                   <img
@@ -211,7 +248,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     alt="bronze"
                     className=" w-4 h-4 md:w-6 md:h-6"
                   />
-                  <p>x 2</p>
+                  {/* bronzeCount */}
+                  <p>x {items.bronzeCount}</p>
                 </div>
               </div>
             </DialogTrigger>
@@ -223,20 +261,23 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 <div className="flex flex-col bg-[#1F1E27] p-5 rounded-3xl border-2 border-[#35383F] font-medium gap-2">
                   <div className="flex flex-row items-center gap-2">
                     <IoDice className="w-6 h-6" />
-                    <p>Dice Generation : x18</p>
+                    {/* timeDiceTimes */}
+                    <p>Dice Generation : x{items.timeDiceTimes}</p>
                   </div>
                   <div className="flex flex-row items-center gap-2">
                     <IoGameController className="w-6 h-6" />
-                    <p>Game Board Rewards : x10</p>
+                    {/* boardRewardTimes */}
+                    <p>Game Board Rewards : x{items.boardRewardTimes}</p>
                   </div>
                   <div className="flex flex-row items-center gap-2">
                     <IoTicket className="w-6 h-6" />
-                    <p>Raffle Tickets Rewards: x5</p>
+                    {/* ticketTimes */}
+                    <p>Raffle Tickets Rewards: x{items.ticketTimes}</p>
                   </div>
                 </div>
                 <div className="flex flex-row items-center justify-end gap-1">
                   <p className="text-end text-sm font-medium">
-                    How these are claculated?
+                    How these are calculated?
                   </p>
                   <AiOutlineInfoCircle className=" w-5 h-5" />
                 </div>
@@ -306,7 +347,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     </div>
                   </div>
                 </div>
-                <button className=" font-medium bg-[#0147E5] rounded-full h-14 w-[165px] self-center" > Shop NFT</button>
+                <button className=" font-medium bg-[#0147E5] rounded-full h-14 w-[165px] self-center">
+                  Shop NFT
+                </button>
               </div>
             </DialogContent>
           </Dialog>
@@ -331,7 +374,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
           </button>
         </div>
         <div className="flex flex-row text-white items-center justify-center gap-1 mt-6">
-          <BsDice5Fill className="w-3 h-3" /> <p> : 1h 20m</p>{" "}
+          <BsDice5Fill className="w-3 h-3" />
+          {/* diceRefilledAt 표시 */}
+          <p>: {timeUntilRefill}</p>
         </div>
       </div>
       {/* 추가 타일 렌더링 */}
