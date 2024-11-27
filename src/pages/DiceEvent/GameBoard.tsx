@@ -33,12 +33,12 @@ interface GameBoardProps {
   rolledValue: number;
   buttonDisabled: boolean;
   diceRef: React.RefObject<any>;
-  handleRollComplete: (value: number, gaugeValue: number) => void; // 인자 추가
+  handleRollComplete: (value: number, gaugeValue: number) => void;
   reward: { type: string; value: number; top: string; left: string } | null;
   isHolding: boolean;
   handleMouseDown: () => void;
   handleMouseUp: () => void;
-  isLuckyVisible: boolean; // 추가된 prop
+  isLuckyVisible: boolean;
 }
 
 const GameBoard: React.FC<GameBoardProps> = ({
@@ -56,9 +56,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
   isHolding,
   handleMouseDown,
   handleMouseUp,
-  isLuckyVisible, // 전달받은 prop
+  isLuckyVisible,
 }) => {
-  const { items, diceRefilledAt } = useUserStore();
+  const { items, diceRefilledAt, boards } = useUserStore();
   const [timeUntilRefill, setTimeUntilRefill] = useState("");
 
   useEffect(() => {
@@ -84,50 +84,116 @@ const GameBoard: React.FC<GameBoardProps> = ({
     const interval = setInterval(updateRefillTime, 60000);
     return () => clearInterval(interval);
   }, [diceRefilledAt]);
-  
 
-  
+  // Mapping from front-end tile IDs to server tile sequences
+  const tileIdToSequenceMap: { [key: number]: number } = {
+    // Front-end tile ID: Server tile sequence
+    10: 10,
+    9: 9,
+    8: 8,
+    7: 7,
+    6: 6,
+    5: 5,
+    11: 11,
+    4: 4,
+    12: 12,
+    3: 3,
+    13: 13,
+    2: 2,
+    14: 14,
+    1: 1,
+    15: 15,
+    16: 16,
+    17: 17,
+    18: 18,
+    19: 19,
+    0: 0,
+  };
 
-  const renderTile = (
-    id: number,
-    content: React.ReactNode,
-    dataStar: string,
-    dataDice: string
-  ) => (
-    <Tile
-      id={id}
-      onClick={() => handleTileClick(id)}
-      position={position}
-      selectingTile={selectingTile}
-      data-star={dataStar}
-      data-dice={dataDice}
-    >
-      {content}
-    </Tile>
-  );
+  const renderTile = (id: number) => {
+    const sequence = tileIdToSequenceMap[id];
+    const tileData = boards.find((tile) => tile.sequence === sequence);
+
+    let content: React.ReactNode = null;
+    let dataStar = "0";
+    let dataDice = "0";
+
+    if (tileData) {
+      switch (tileData.tileType) {
+        case "HOME":
+          content = "Home";
+          break;
+        case "REWARD":
+          if (tileData.rewardType === "STAR") {
+            content = <StarTile count={tileData.rewardAmount || 0} />;
+            dataStar = (tileData.rewardAmount || 0).toString();
+          } else if (tileData.rewardType === "DICE") {
+            content = <DiceTile count={tileData.rewardAmount || 0} />;
+            dataDice = (tileData.rewardAmount || 0).toString();
+          }
+          break;
+        case "SPIN":
+          content = (
+            <img
+              src={Images.SpinImage}
+              alt="Spin"
+              className="z-0 w-[41px] h-[41px]"
+            />
+          );
+          break;
+        case "RPS":
+          content = (
+            <img
+              src={Images.RPSImage}
+              alt="RPS"
+              className="z-0 w-[51px] h-[51px]"
+            />
+          );
+          break;
+        case "MOVE":
+          content = <AirplaneTile text={tileData.moveType || ""} />;
+          break;
+        case "JAIL":
+          content = (
+            <img
+              src={Images.DesertIsland}
+              alt="Jail"
+              className="z-0 w-[41px] h-[41px]"
+            />
+          );
+          break;
+        default:
+          content = null;
+      }
+    }
+
+    return (
+      <Tile
+        key={id}
+        id={id}
+        onClick={() => handleTileClick(id)}
+        position={position}
+        selectingTile={selectingTile}
+        data-star={dataStar}
+        data-dice={dataDice}
+      >
+        {content}
+      </Tile>
+    );
+  };
 
   return (
     <div className="grid grid-cols-6 grid-rows-6 gap-1 text-xs md:text-base relative">
-      {/* 타일 렌더링 */}
-      {renderTile(
-        10,
-        <img src={Images.DesertIsland} className="z-0 w-[41px] h-[41px]" />,
-        "0",
-        "0"
-      )}
-      {renderTile(9, <StarTile count={100} />, "100", "0")}
-      {renderTile(8, <AirplaneTile text="Battle" />, "0", "0")}
-      {renderTile(7, <DiceTile count={1} />, "0", "1")}
-      {renderTile(6, <StarTile count={30} />, "30", "0")}
-      {renderTile(
-        5,
-        <img src={Images.RPSImage} className="z-0 w-[51px] h-[51px]" />,
-        "0",
-        "0"
-      )}
-      {renderTile(11, <StarTile count={30} />, "30", "0")}
+      {/* Tile rendering */}
+      {renderTile(10)}
+      {renderTile(9)}
+      {renderTile(8)}
+      {renderTile(7)}
+      {renderTile(6)}
+      {renderTile(5)}
+      {renderTile(11)}
 
-      {/* 중앙 보드 */}
+      {/* Central board */}
       <div className="col-span-4 row-span-4 flex flex-col items-center justify-evenly bg-center rotate-background">
         <div className="w-full flex justify-center mb-4">
           <Gauge gaugeValue={gaugeValue} />
@@ -198,24 +264,24 @@ const GameBoard: React.FC<GameBoardProps> = ({
               ref={diceRef}
               onRollComplete={(value: number) =>
                 handleRollComplete(value, gaugeValue)
-              } // 게이지 값 전달
-              gaugeValue={gaugeValue} // gaugeValue 전달
+              }
+              gaugeValue={gaugeValue}
             />
           </div>
           <p className="absolute text-white text-sm font-semibold drop-shadow bottom-6 right-5 z-20 md:bottom-11 md:right-9">
             x {diceCount}
           </p>
-          {/* "LUCKY" 이미지 애니메이션 */}
+          {/* "LUCKY" image animation */}
           <AnimatePresence>
             {isLuckyVisible && (
               <motion.img
-                src={Images.Lucky} // "LUCKY" 이미지 경로
+                src={Images.Lucky}
                 alt="Lucky Dice"
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1.2, opacity: 1 }}
                 exit={{ scale: 0.5, opacity: 0 }}
                 transition={{ duration: 1 }}
-                className="absolute  bottom-0 -left-8 md:-left-14 md:-bottom-4 z-10 min-w-[180px] md:min-w-[280px]"
+                className="absolute bottom-0 -left-8 md:-left-14 md:-bottom-4 z-10 min-w-[180px] md:min-w-[280px]"
               />
             )}
           </AnimatePresence>
@@ -223,14 +289,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
           <Dialog>
             <DialogTrigger>
               <div className="absolute text-white -left-11 -bottom-14 md:-left-24 md:-bottom-28 font-semibold text-xs md:text-sm md:space-y-1">
-                {/* NFT 표시 */}
+                {/* NFT display */}
                 <div className="flex flex-row gap-1 items-center ">
                   <img
                     src={Images.Gold}
                     alt="gold"
                     className=" w-4 h-4 md:w-6 md:h-6"
                   />
-                  {/* goldCount */}
                   <p>x {items.goldCount}</p>
                 </div>
                 <div className="flex flex-row gap-1 items-center ">
@@ -239,7 +304,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     alt="silver"
                     className=" w-4 h-4 md:w-6 md:h-6"
                   />
-                  {/* silverCount */}
                   <p>x {items.silverCount}</p>
                 </div>
                 <div className="flex flex-row gap-1 items-center ">
@@ -248,7 +312,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
                     alt="bronze"
                     className=" w-4 h-4 md:w-6 md:h-6"
                   />
-                  {/* bronzeCount */}
                   <p>x {items.bronzeCount}</p>
                 </div>
               </div>
@@ -261,17 +324,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 <div className="flex flex-col bg-[#1F1E27] p-5 rounded-3xl border-2 border-[#35383F] font-medium gap-2">
                   <div className="flex flex-row items-center gap-2">
                     <IoDice className="w-6 h-6" />
-                    {/* timeDiceTimes */}
                     <p>Dice Generation : x{items.timeDiceTimes}</p>
                   </div>
                   <div className="flex flex-row items-center gap-2">
                     <IoGameController className="w-6 h-6" />
-                    {/* boardRewardTimes */}
                     <p>Game Board Rewards : x{items.boardRewardTimes}</p>
                   </div>
                   <div className="flex flex-row items-center gap-2">
                     <IoTicket className="w-6 h-6" />
-                    {/* ticketTimes */}
                     <p>Raffle Tickets Rewards: x{items.ticketTimes}</p>
                   </div>
                 </div>
@@ -282,70 +342,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   <AiOutlineInfoCircle className=" w-5 h-5" />
                 </div>
 
+                {/* Additional information section */}
                 <div className="flex flex-col bg-[#1F1E27] p-5 rounded-3xl border-2 border-[#35383F] font-medium gap-4 ">
-                  <div className=" relative space-y-2">
-                    {" "}
-                    <div className="flex flex-row items-center gap-2">
-                      <img src={Images.Gold} alt="gold" className="w-6 h-6" />
-                      <p className="font-semibold">Gold NFT</p>
-                    </div>
-                    <div className="pl-8 text-sm space-y-1">
-                      <div className="flex flex-row items-center gap-2">
-                        <IoDice className="w-5 h-5" />
-                        <p>Dice Generation : x4</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoGameController className="w-5 h-5" />
-                        <p>Game Board Rewards : x20</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoTicket className="w-5 h-5" />
-                        <p>Raffle Tickets Rewards: x60</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className=" relative space-y-2">
-                    {" "}
-                    <div className="flex flex-row items-center gap-2">
-                      <img src={Images.Silver} alt="Silver" className="w-6 h-6" />
-                      <p className="font-semibold">Silver NFT</p>
-                    </div>
-                    <div className="pl-8 text-sm space-y-1">
-                      <div className="flex flex-row items-center gap-2">
-                        <IoDice className="w-5 h-5" />
-                        <p>Dice Generation : x3</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoGameController className="w-5 h-5" />
-                        <p>Game Board Rewards : x15</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoTicket className="w-5 h-5" />
-                        <p>Raffle Tickets Rewards: x30</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className=" relative space-y-2">
-                    {" "}
-                    <div className="flex flex-row items-center gap-2">
-                      <img src={Images.Bronze} alt="Bronze" className="w-6 h-6" />
-                      <p className="font-semibold">Bronze NFT</p>
-                    </div>
-                    <div className="pl-8 text-sm space-y-1">
-                      <div className="flex flex-row items-center gap-2">
-                        <IoDice className="w-5 h-5" />
-                        <p>Dice Generation : x2</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoGameController className="w-5 h-5" />
-                        <p>Game Board Rewards : x10</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoTicket className="w-5 h-5" />
-                        <p>Raffle Tickets Rewards: x10</p>
-                      </div>
-                    </div>
-                  </div>
+                  {/* You can add more detailed NFT information here if needed */}
                 </div>
                 <button className=" font-medium bg-[#0147E5] rounded-full h-14 w-[165px] self-center">
                   Shop NFT
@@ -375,29 +374,24 @@ const GameBoard: React.FC<GameBoardProps> = ({
         </div>
         <div className="flex flex-row text-white items-center justify-center gap-1 mt-6">
           <BsDice5Fill className="w-3 h-3" />
-          {/* diceRefilledAt 표시 */}
           <p>: {timeUntilRefill}</p>
         </div>
       </div>
-      {/* 추가 타일 렌더링 */}
-      {renderTile(4, <StarTile count={30} />, "30", "0")}
-      {renderTile(12, <DiceTile count={1} />, "0", "1")}
-      {renderTile(3, <DiceTile count={1} />, "0", "1")}
-      {renderTile(13, <AirplaneTile text="Home" />, "0", "0")}
-      {renderTile(2, <AirplaneTile text="Spin" />, "0", "0")}
-      {renderTile(14, <StarTile count={50} />, "50", "0")}
-      {renderTile(1, <StarTile count={30} />, "30", "0")}
-      {renderTile(
-        15,
-        <img src={Images.SpinImage} className="z-0 w-[41px] h-[41px]" />,
-        "0",
-        "0"
-      )}
-      {renderTile(16, <StarTile count={50} />, "50", "0")}
-      {renderTile(17, <DiceTile count={2} />, "0", "2")}
-      {renderTile(18, <AirplaneTile text="Anywhere" />, "0", "0")}
-      {renderTile(19, <StarTile count={50} />, "50", "0")}
-      {renderTile(0, "Home", "0", "0")}
+
+      {/* Additional tile rendering */}
+      {renderTile(4)}
+      {renderTile(12)}
+      {renderTile(3)}
+      {renderTile(13)}
+      {renderTile(2)}
+      {renderTile(14)}
+      {renderTile(1)}
+      {renderTile(15)}
+      {renderTile(16)}
+      {renderTile(17)}
+      {renderTile(18)}
+      {renderTile(19)}
+      {renderTile(0)}
     </div>
   );
 };
