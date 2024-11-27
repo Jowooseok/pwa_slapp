@@ -95,7 +95,6 @@ export const useDiceGame = () => {
 
         if (currentPosition === 0) {
           // 홈을 지났을 때 래플권만 증가
-        
           showReward('lottery', 1);
         }
 

@@ -1,6 +1,5 @@
 // src/pages/DiceEvent/GameBoard.tsx
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Tile from "./tile";
 import { StarTile, DiceTile, AirplaneTile, Gauge } from "@/features/DiceEvent";
@@ -61,35 +60,37 @@ const GameBoard: React.FC<GameBoardProps> = ({
   handleMouseUp,
   isLuckyVisible,
 }) => {
-  const { items, diceRefilledAt, boards, fetchUserData } = useUserStore();
+  const { items, diceRefilledAt, boards, fetchUserData, error } = useUserStore();
   const [timeUntilRefill, setTimeUntilRefill] = useState("");
+  const hasFetchedAfterRefill = useRef(false); // 플래그 추가
 
   useEffect(() => {
     const updateRefillTime = () => {
       if (diceRefilledAt) {
-        // diceRefilledAt 문자열을 밀리초 단위까지 잘라서 UTC로 파싱
-        const trimmedDiceRefilledAt = diceRefilledAt.substring(0, 23); // "2024-11-27T16:32:29.817"
-        const now = dayjs().utc();
-        const refillTime = dayjs(trimmedDiceRefilledAt).utc().add(2, 'hour'); // 다음 리필 시간 계산
+        console.log("Original diceRefilledAt:", diceRefilledAt);
+        // 'Z'를 포함한 전체 문자열을 사용하여 UTC로 파싱
+        const refillTime = dayjs.utc(diceRefilledAt).add(2, 'hour');
+        const now = dayjs.utc();
         const diff = refillTime.diff(now);
 
-        // 디버깅을 위한 콘솔 출력
         console.log("현재 UTC 시간:", now.format());
         console.log("다음 리필 UTC 시간:", refillTime.format());
         console.log("남은 시간 (밀리초):", diff);
 
         if (diff <= 0) {
           setTimeUntilRefill("0m");
-          // 주사위가 리필되었으므로 서버에서 최신 데이터 다시 가져오기
-          fetchUserData(); // 서버에서 최신 데이터를 다시 가져옴
+          if (!hasFetchedAfterRefill.current) {
+            fetchUserData();
+            hasFetchedAfterRefill.current = true; // 한 번만 호출
+          }
         } else {
           const remainingDuration = dayjs.duration(diff);
           const hours = remainingDuration.hours();
           const minutes = remainingDuration.minutes();
           setTimeUntilRefill(`${hours}h ${minutes}m`);
+          hasFetchedAfterRefill.current = false; // 리필 시간이 남아있으면 플래그 리셋
         }
       } else {
-        // diceRefilledAt이 null인 경우 "Waiting"을 표시
         setTimeUntilRefill("Waiting");
       }
     };
@@ -197,6 +198,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
   return (
     <div className="grid grid-cols-6 grid-rows-6 gap-1 text-xs md:text-base relative">
+      {/* 에러 메시지 표시 */}
+      {error && (
+        <div className="absolute top-0 left-0 w-full bg-red-500 text-white p-2 text-center z-50">
+          {error}
+        </div>
+      )}
+
       {/* Tile rendering */}
       {renderTile(10)}
       {renderTile(9)}
