@@ -158,7 +158,7 @@ const RPSGameStart: React.FC<RPSGameStartProps> = ({
               disabled={
                 !betAmount ||
                 parseInt(betAmount) <= 0 ||
-                parseInt(betAmount) > allowedBetting
+                parseInt(betAmount) > allowedBetting+1
               }
               // onClick={handleStartClick} // 이미 onSubmit에서 처리하므로 제거
             >
