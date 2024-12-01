@@ -19,11 +19,13 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 import { useUserStore } from "@/entities/User/model/userModel";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc"; // UTC 플러그인 추가
 import { RollDiceResponseData } from "@/features/DiceEvent/api/rollDiceApi";
 
 dayjs.extend(duration);
 dayjs.extend(utc); // UTC 플러그인 적용
+dayjs.extend(timezone); // 타임존 플러그인 적용
 
 interface GameBoardProps {
   position: number;
@@ -67,21 +69,25 @@ const GameBoard: React.FC<GameBoardProps> = ({
   useEffect(() => {
     const updateRefillTime = () => {
       if (diceRefilledAt) {
-        console.log("Original diceRefilledAt:", diceRefilledAt);
-        // 'Z'를 포함한 전체 문자열을 사용하여 UTC로 파싱
-        const refillTime = dayjs.utc(diceRefilledAt).add(2, 'hour');
-        const now = dayjs.utc();
+        // 소수점 이하 3자리로 제한
+        const trimmedDiceRefilledAt = diceRefilledAt.substring(0, 23) + "Z"; // ISO 8601 형식 보정
+        console.log("Original diceRefilledAt:", trimmedDiceRefilledAt);
+        
+        // KST로 파싱
+        const refillTime = dayjs.tz(trimmedDiceRefilledAt, "Asia/Seoul");
+        const now = dayjs().tz("Asia/Seoul");
         const diff = refillTime.diff(now);
 
-        console.log("현재 UTC 시간:", now.format());
-        console.log("다음 리필 UTC 시간:", refillTime.format());
+        console.log("현재 KST 시간:", now.format());
+        console.log("다음 리필 KST 시간:", refillTime.format());
         console.log("남은 시간 (밀리초):", diff);
 
         if (diff <= 0) {
-          setTimeUntilRefill("0m");
+          setTimeUntilRefill("Waiting");
           if (!hasFetchedAfterRefill.current) {
             fetchUserData();
             hasFetchedAfterRefill.current = true; // 한 번만 호출
+            console.log("fetchUserData 호출됨");
           }
         } else {
           const remainingDuration = dayjs.duration(diff);
@@ -94,10 +100,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
         setTimeUntilRefill("Waiting");
       }
     };
+
     updateRefillTime();
-    const interval = setInterval(updateRefillTime, 60000);
+    const interval = setInterval(updateRefillTime, 60000); // 1분마다 업데이트
     return () => clearInterval(interval);
   }, [diceRefilledAt, fetchUserData]);
+  
+  
 
   // Mapping from front-end tile IDs to server tile sequences
   const tileIdToSequenceMap: { [key: number]: number } = {
