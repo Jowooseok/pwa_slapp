@@ -64,37 +64,39 @@ const GameBoard: React.FC<GameBoardProps> = ({
 }) => {
   const { items, diceRefilledAt, boards, fetchUserData, error } = useUserStore();
   const [timeUntilRefill, setTimeUntilRefill] = useState("");
-  const hasFetchedAfterRefill = useRef(false); // 플래그 추가
 
   useEffect(() => {
     const updateRefillTime = () => {
       if (diceRefilledAt) {
-        // 소수점 이하 3자리로 제한
-        const trimmedDiceRefilledAt = diceRefilledAt.substring(0, 23) + "Z"; // ISO 8601 형식 보정
-        console.log("Original diceRefilledAt:", trimmedDiceRefilledAt);
+        console.log("Original diceRefilledAt:", diceRefilledAt);
         
-        // KST로 파싱
-        const refillTime = dayjs.tz(trimmedDiceRefilledAt, "Asia/Seoul");
+        // KST로 직접 파싱 (ISO 8601 형식에 시간대 정보 포함)
+        const refillTime = dayjs.tz(diceRefilledAt, "Asia/Seoul");
         const now = dayjs().tz("Asia/Seoul");
         const diff = refillTime.diff(now);
 
         console.log("현재 KST 시간:", now.format());
         console.log("다음 리필 KST 시간:", refillTime.format());
         console.log("남은 시간 (밀리초):", diff);
+        console.log("현재 diceCount:", diceCount);
 
-        if (diff <= 0) {
+        // diff <= 0이고 diceCount가 0일 때만 fetchUserData 호출
+        if (diff <= 0 && diceCount === 0) {
           setTimeUntilRefill("Waiting");
-          if (!hasFetchedAfterRefill.current) {
-            fetchUserData();
-            hasFetchedAfterRefill.current = true; // 한 번만 호출
-            console.log("fetchUserData 호출됨");
-          }
-        } else {
+          fetchUserData()
+            .then(() => {
+              console.log("fetchUserData 호출됨");
+            })
+            .catch(() => {
+              console.error("fetchUserData 호출 실패");
+            });
+        } else if (diff > 0) {
           const remainingDuration = dayjs.duration(diff);
           const hours = remainingDuration.hours();
           const minutes = remainingDuration.minutes();
           setTimeUntilRefill(`${hours}h ${minutes}m`);
-          hasFetchedAfterRefill.current = false; // 리필 시간이 남아있으면 플래그 리셋
+        } else {
+          setTimeUntilRefill("Waiting");
         }
       } else {
         setTimeUntilRefill("Waiting");
@@ -104,7 +106,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     updateRefillTime();
     const interval = setInterval(updateRefillTime, 60000); // 1분마다 업데이트
     return () => clearInterval(interval);
-  }, [diceRefilledAt, fetchUserData]);
+  }, [diceRefilledAt, fetchUserData, diceCount]);
   
   
 
