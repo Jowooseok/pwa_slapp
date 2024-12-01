@@ -92,9 +92,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
             });
         } else if (diff > 0) {
           const remainingDuration = dayjs.duration(diff);
-          const hours = remainingDuration.hours();
           const minutes = remainingDuration.minutes();
-          setTimeUntilRefill(`${hours}h ${minutes}m`);
+          setTimeUntilRefill(` ${minutes}m`);
         } else {
           setTimeUntilRefill("Waiting");
         }
