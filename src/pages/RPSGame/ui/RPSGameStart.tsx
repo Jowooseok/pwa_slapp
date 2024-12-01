@@ -43,12 +43,12 @@ const RPSGameStart: React.FC<RPSGameStartProps> = ({
     event.preventDefault(); // 기본 폼 제출을 막습니다.
     const amount = parseInt(betAmount);
     console.log(`handleStartClick called with amount: ${amount}`);
-    if (amount > 0 && amount <= allowedBetting) {
+    if (amount > 0 && amount <= allowedBetting+1) {
       console.log("Starting game with betAmount:", amount);
       setBetAmountStore(amount); // betAmount를 설정
       onStart(); // 게임 시작
     } else {
-      alert(`베팅 금액은 1 스타 이상, 최대 ${allowedBetting} 스타까지 가능합니다.`);
+      alert(`베팅 금액은 1 스타 이상, 최대 ${allowedBetting+1} 스타까지 가능합니다.`);
     }
   };
 
