@@ -5,8 +5,6 @@ import { fetchHomeData } from '@/entities/User/api/userApi';
 import api from '@/shared/api/axiosInstance';
 import { rollDiceAPI, RollDiceResponseData } from '@/features/DiceEvent/api/rollDiceApi';
 
-
-
 // 월간 보상 정보 인터페이스
 interface MonthlyPrize {
   year: number;
@@ -26,12 +24,17 @@ interface WeekAttendance {
   sun: boolean | null;
 }
 
-
 // 사용자 상태 인터페이스
 interface UserState {
   // 사용자 관련 상태들
   userId: string | null;
   setUserId: (userId: string | null) => void;
+
+  referrerId: string | null; // 추가된 부분: 초대한 친구 아이디
+  setReferrerId: (referrerId: string | null) => void; // 추가된 부분
+
+  isAuto: boolean; // 추가된 부분: 오토 여부
+  setIsAuto: (isAuto: boolean) => void; // 추가된 부분
 
   starPoints: number;
   setStarPoints: (value: number | ((prev: number) => number)) => void;
@@ -48,8 +51,8 @@ interface UserState {
   userLv: number;
   setUserLv: (userLv: number) => void;
 
-  characterType: 'dog' | 'cat';
-  setCharacterType: (type: 'dog' | 'cat') => void;
+  characterType: 'dog' | 'cat' | null; // 수정된 부분: null 허용
+  setCharacterType: (type: 'dog' | 'cat' | null) => void; // 수정된 부분: null 허용
 
   slToken: number;
   setSlToken: (value: number | ((prev: number) => number)) => void;
@@ -65,7 +68,6 @@ interface UserState {
 
   currentMiniGame: string;
   setCurrentMiniGame: (game: string) => void;
-
 
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
@@ -93,7 +95,6 @@ interface UserState {
 
   boards: Board[];
   setBoards: (boards: Board[]) => void;
-
 }
 
 // 필요한 인터페이스 정의
@@ -104,6 +105,9 @@ interface Items {
   timeDiceTimes: number;
   boardRewardTimes: number;
   ticketTimes: number;
+  spinTimes: number; // 추가된 필드
+  autoNftCount: number; // 추가된 필드
+  rewardNftCount: number; // 추가된 필드
 }
 
 interface Board {
@@ -114,10 +118,22 @@ interface Board {
   moveType: 'SPIN' | 'RPS' | 'HOME' | 'ANYWHERE' | null;
 }
 
+interface Pet {
+  type: 'DOG' | 'CAT' | null; // 수정된 부분: null 허용
+  level: number | null; // 수정된 부분: null 허용
+}
+
+// 사용자 상태를 관리하는 Zustand 스토어 생성
 export const useUserStore = create<UserState>((set, get) => ({
   // 초기 상태 값 설정
   userId: null,
   setUserId: (userId) => set({ userId }),
+
+  referrerId: null, // 추가된 부분: 초기값 설정
+  setReferrerId: (referrerId) => set({ referrerId }), // 추가된 부분
+
+  isAuto: false, // 추가된 부분: 초기값 설정
+  setIsAuto: (isAuto) => set({ isAuto }), // 추가된 부분
 
   position: 0,
   setPosition: (value: number | ((prev: number) => number)) =>
@@ -146,11 +162,11 @@ export const useUserStore = create<UserState>((set, get) => ({
   userLv: 1,
   setUserLv: (userLv) => set({ userLv }),
 
-  characterType: 'cat',
-  setCharacterType: (type) => set({ characterType: type }),
+  characterType: null, // 수정된 부분: 초기값을 null로 설정
+  setCharacterType: (type) => set({ characterType: type }), // 수정된 부분: null 허용
 
   slToken: 0,
-  setSlToken: (value) =>
+  setSlToken: (value: number | ((prev: number) => number)) =>
     set((state) => ({
       slToken: typeof value === "function" ? value(state.slToken) : value,
     })),
@@ -180,12 +196,58 @@ export const useUserStore = create<UserState>((set, get) => ({
   currentMiniGame: '',
   setCurrentMiniGame: (game) => set({ currentMiniGame: game }),
 
-
   isLoading: false,
   setIsLoading: (isLoading) => set({ isLoading }),
 
   error: null,
   setError: (error) => set({ error }),
+
+  diceResult: 0,
+  rollDice: async (gauge: number): Promise<RollDiceResponseData> => {
+    set({ isLoading: true, error: null });
+  
+    const sequence = get().position; // 현재 위치 가져오기
+  
+    try {
+      const data = await rollDiceAPI(gauge, sequence);
+  
+      // 상태 업데이트를 여기서 하지 않고, 데이터만 반환합니다.
+      set({
+        rank: data.rank,
+        starPoints: data.star,
+        lotteryCount: data.ticket,
+        diceCount: data.dice,
+        slToken: data.slToken,
+        isLoading: false,
+        error: null,
+        // position: data.tileSequence, // position 업데이트는 나중에
+      });
+  
+      return data; // 데이터를 반환합니다.
+    } catch (error: any) {
+      set({ isLoading: false, error: error.message || 'Roll dice failed' });
+      throw error;
+    }
+  },
+
+  diceRefilledAt: null,
+  setDiceRefilledAt: (value) => set({ diceRefilledAt: value }),
+
+  items: {
+    goldCount: 0,
+    silverCount: 0,
+    bronzeCount: 0,
+    timeDiceTimes: 0,
+    boardRewardTimes: 0,
+    ticketTimes: 0,
+    spinTimes: 0, // 추가된 필드 초기값 설정
+    autoNftCount: 0, // 추가된 필드 초기값 설정
+    rewardNftCount: 0, // 추가된 필드 초기값 설정
+  },
+  setItems: (items) => set({ items }),
+
+  boards: [],
+  setBoards: (boards) => set({ boards }),
 
   // 사용자 데이터 설정 함수
   fetchUserData: async () => {
@@ -198,6 +260,7 @@ export const useUserStore = create<UserState>((set, get) => ({
   
       // 서버 응답에서 필요한 데이터 추출
       const {
+        user,
         nowDice,
         rank,
         pet,
@@ -208,23 +271,42 @@ export const useUserStore = create<UserState>((set, get) => ({
       } = data;
   
       set({
+        userId: user.userId,
+        referrerId: user.referrerId, // 추가된 부분: referrerId 설정
+        isAuto: user.isAuto, // 추가된 부분: isAuto 설정
+
         position: nowDice.tileSequence,
         diceCount: nowDice.dice,
         starPoints: rank.star,
         lotteryCount: rank.ticket,
-        userLv: pet.level,
-        characterType: pet.type.toLowerCase() as 'dog' | 'cat',
+        userLv: pet.level || 1, // pet.level이 null일 경우 기본값 1
+        characterType: pet.type ? pet.type.toLowerCase() as 'dog' | 'cat' : null, // 수정된 부분: pet.type이 null일 수 있음
+
         slToken: rank.slToken,
         rank: rank.rank,
-        diceRefilledAt: rank.diceRefilledAt, // 추가된 부분
-        items, // 추가된 부분
-        boards, // 추가된 부분
+        diceRefilledAt: rank.diceRefilledAt, // 추가된 부분: diceRefilledAt 설정
+
+        items: {
+          goldCount: items.goldCount || 0,
+          silverCount: items.silverCount || 0,
+          bronzeCount: items.bronzeCount || 0,
+          timeDiceTimes: items.timeDiceTimes || 0,
+          boardRewardTimes: items.boardRewardTimes || 0,
+          ticketTimes: items.ticketTimes || 0,
+          spinTimes: items.spinTimes || 0, // 추가된 필드 설정
+          autoNftCount: items.autoNftCount || 0, // 추가된 필드 설정
+          rewardNftCount: items.rewardNftCount || 0, // 추가된 필드 설정
+        },
+
+        boards: boards,
+
         monthlyPrize: {
           year: monthlyPrize.year,
           month: monthlyPrize.month,
           prizeType: monthlyPrize.prizeType,
           amount: monthlyPrize.amount,
         },
+
         weekAttendance: {
           mon: weekAttendance.mon,
           tue: weekAttendance.tue,
@@ -234,8 +316,43 @@ export const useUserStore = create<UserState>((set, get) => ({
           sat: weekAttendance.sat,
           sun: weekAttendance.sun,
         },
+
         isLoading: false,
         error: null,
+      });
+
+      console.log("fetchUserData - 데이터 업데이트 완료:", {
+        userId: user.userId,
+        referrerId: user.referrerId, // 추가된 부분
+        isAuto: user.isAuto, // 추가된 부분
+        position: nowDice.tileSequence,
+        diceCount: nowDice.dice,
+        starPoints: rank.star,
+        lotteryCount: rank.ticket,
+        userLv: pet.level,
+        characterType: pet.type ? pet.type.toLowerCase() as 'dog' | 'cat' : null, // 수정된 부분
+        slToken: rank.slToken,
+        rank: rank.rank,
+        diceRefilledAt: rank.diceRefilledAt, // 추가된 부분
+        items: {
+          goldCount: items.goldCount || 0,
+          silverCount: items.silverCount || 0,
+          bronzeCount: items.bronzeCount || 0,
+          timeDiceTimes: items.timeDiceTimes || 0,
+          boardRewardTimes: items.boardRewardTimes || 0,
+          ticketTimes: items.ticketTimes || 0,
+          spinTimes: items.spinTimes || 0, // 추가된 필드 설정
+          autoNftCount: items.autoNftCount || 0, // 추가된 필드 설정
+          rewardNftCount: items.rewardNftCount || 0, // 추가된 필드 설정
+        },
+        boards: boards,
+        monthlyPrize: {
+          year: monthlyPrize.year,
+          month: monthlyPrize.month,
+          prizeType: monthlyPrize.prizeType,
+          amount: monthlyPrize.amount,
+        },
+        weekAttendance: weekAttendance,
       });
     } catch (error: any) {
       console.error('fetchUserData 실패:', error);
@@ -243,7 +360,6 @@ export const useUserStore = create<UserState>((set, get) => ({
       throw error;
     }
   },
-  
 
   // 로그인 함수
   login: async (initData: string): Promise<void> => {
@@ -316,14 +432,17 @@ export const useUserStore = create<UserState>((set, get) => ({
   logout: () => {
     console.log('Step: logout 실행. 토큰 및 userId 제거 및 상태 초기화.');
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken'); // 추가된 부분: refreshToken 제거
     set({
       userId: null,
+      referrerId: null, // 추가된 부분: referrerId 초기화
+      isAuto: false, // 추가된 부분: isAuto 초기화
       position: 0,
       diceCount: 0,
       starPoints: 0,
       lotteryCount: 0,
       userLv: 1,
-      characterType: 'cat',
+      characterType: null, // 수정된 부분: characterType 초기화
       slToken: 0,
       rank: 0,
       monthlyPrize: {
@@ -344,6 +463,18 @@ export const useUserStore = create<UserState>((set, get) => ({
       currentMiniGame: '',
       isLoading: false,
       error: null,
+      items: {
+        goldCount: 0,
+        silverCount: 0,
+        bronzeCount: 0,
+        timeDiceTimes: 0,
+        boardRewardTimes: 0,
+        ticketTimes: 0,
+        spinTimes: 0, // 추가된 필드 초기화
+        autoNftCount: 0, // 추가된 필드 초기화
+        rewardNftCount: 0, // 추가된 필드 초기화
+      },
+      boards: [],
     });
   },
 
@@ -372,47 +503,4 @@ export const useUserStore = create<UserState>((set, get) => ({
     }
   },  
 
-  diceResult: 0,
-  rollDice: async (gauge: number): Promise<RollDiceResponseData> => {
-    set({ isLoading: true, error: null });
-  
-    const sequence = get().position; // 현재 위치 가져오기
-  
-    try {
-      const data = await rollDiceAPI(gauge, sequence);
-  
-      // 상태 업데이트를 여기서 하지 않고, 데이터만 반환합니다.
-      set({
-        rank: data.rank,
-        starPoints: data.star,
-        lotteryCount: data.ticket,
-        diceCount: data.dice,
-        slToken: data.slToken,
-        isLoading: false,
-        error: null,
-        // position: data.tileSequence, // position 업데이트는 나중에
-      });
-  
-      return data; // 데이터를 반환합니다.
-    } catch (error: any) {
-      set({ isLoading: false, error: error.message || 'Roll dice failed' });
-      throw error;
-    }
-  },
-
-  diceRefilledAt: null,
-  setDiceRefilledAt: (value) => set({ diceRefilledAt: value }),
-
-  items: {
-    goldCount: 0,
-    silverCount: 0,
-    bronzeCount: 0,
-    timeDiceTimes: 0,
-    boardRewardTimes: 0,
-    ticketTimes: 0,
-  },
-  setItems: (items) => set({ items }),
-
-  boards: [],
-  setBoards: (boards) => set({ boards }),
 }));
