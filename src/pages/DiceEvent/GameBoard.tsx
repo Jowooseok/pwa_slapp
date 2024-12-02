@@ -94,14 +94,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
         // diff <= 0이고 diceCount가 0일 때만 fetchUserData 호출
         if (diff <= 0 && diceCount === 0) {
-          setTimeUntilRefill("Waiting");
-          fetchUserData()
-            .then(() => {
-              console.log("fetchUserData 호출됨");
-            })
-            .catch(() => {
-              console.error("fetchUserData 호출 실패");
-            });
+          setTimeUntilRefill("Refill dice");
         } else if (diff > 0) {
           const remainingDuration = dayjs.duration(diff);
           const minutes = remainingDuration.minutes();
@@ -406,11 +399,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   </div>
                 </div>
                 <div className="flex flex-row items-center justify-end gap-1">
-                <AiOutlineInfoCircle className=" w-5 h-5" />
+                  <AiOutlineInfoCircle className=" w-5 h-5" />
                   <p className="text-end text-sm font-medium">
-                  The NFT reward multiplier is additive.
+                    The NFT reward multiplier is additive.
                   </p>
-                
                 </div>
                 <NFTRewardList />
               </div>
@@ -448,8 +440,30 @@ const GameBoard: React.FC<GameBoardProps> = ({
           </button>
         </div>
         <div className="flex flex-row text-white items-center justify-center gap-1 mt-6">
-          <BsDice5Fill className="w-3 h-3" />
-          <p>: {timeUntilRefill}</p>
+          {timeUntilRefill === "Refill dice" ? (
+            <motion.div
+              onClick={() => {
+                console.log("Refill button clicked");
+                // dice 리필 api
+              }}
+              className="flex flex-row items-center justify-center gap-1 cursor-pointer "
+              animate={{
+                opacity: [1, 0.5, 1], // 반짝이는 효과
+              }}
+              transition={{
+                duration: 1, // 1초 동안 애니메이션 반복
+                repeat: Infinity, // 무한 반복
+              }}
+            >
+              <BsDice5Fill className="w-3 h-3" />
+              <p>: Refill Dice</p>
+            </motion.div>
+          ) : (
+            <>
+              <BsDice5Fill className="w-3 h-3" />
+              <p>: {timeUntilRefill}</p>
+            </>
+          )}
         </div>
       </div>
 
