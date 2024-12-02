@@ -13,9 +13,17 @@ import GameBoard from "./GameBoard";
 import { Board } from "@/features/DiceEvent";
 import RPSGame from "../RPSGame";
 import SpinGame from "../SpinGame";
-import { useUserStore } from '@/entities/User/model/userModel';
+import { useUserStore } from "@/entities/User/model/userModel";
 import LoadingSpinner from "@/shared/components/ui/loadingSpinner";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shared/components/ui";
+import {formatNumber}  from "@/shared/utils/formatNumber";
+import LevelRewards from "@/widgets/LevelRewards";
 
 const DiceEventPage: React.FC = () => {
   const {
@@ -28,7 +36,7 @@ const DiceEventPage: React.FC = () => {
     monthlyPrize,
     isAuto, // isAuto 상태 가져오기
   } = useUserStore();
-  
+
   const game = useDiceGame();
   const [initialX, setInitialX] = useState<number>(140);
   const [initialY, setInitialY] = useState<number>(474);
@@ -66,7 +74,7 @@ const DiceEventPage: React.FC = () => {
       Images.DogLv19to20,
     ];
 
-    if (characterType === 'cat') {
+    if (characterType === "cat") {
       return catImages[index] || catImages[catImages.length - 1];
     } else {
       return dogImages[index] || dogImages[dogImages.length - 1];
@@ -93,9 +101,9 @@ const DiceEventPage: React.FC = () => {
     };
 
     handleResize();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   if (isLoading) {
@@ -127,10 +135,18 @@ const DiceEventPage: React.FC = () => {
       ) : (
         <>
           <div className="w-full flex justify-center mb-4 mt-8 gap-4">
-            <UserLevel
-              userLv={userLv}
-              charactorImageSrc={charactorImageSrc}
-            />
+            <Dialog>
+              <DialogTrigger>
+                <UserLevel
+                  userLv={userLv}
+                  charactorImageSrc={charactorImageSrc}
+                />
+              </DialogTrigger>
+              <DialogContent className=" bg-[#21212F] border-none rounded-3xl text-white h-svh md:h-auto overflow-y-auto  font-semibold">
+                <LevelRewards />
+              </DialogContent>
+            </Dialog>
+
             <MonthlyPrize
               month={monthlyPrize.month}
               prizeType={monthlyPrize.prizeType}
@@ -154,19 +170,20 @@ const DiceEventPage: React.FC = () => {
             handleMouseUp={game.handleMouseUp}
             isLuckyVisible={game.isLuckyVisible} // "LUCKY" 상태 전달
           />
-          {game.selectingTile && !isAuto && ( // isAuto가 false일 때만 모달 표시
-            <div className="absolute md:-top-40 -top-20 left-0 w-full h-full flex justify-center items-center z-20">
-              <div className="absolute top-0 left-0 w-full h-full bg-black opacity-75"></div>
-              <div className="text-white text-lg z-30 flex flex-col items-center justify-center mb-96 md:mb-[442px] font-semibold md:text-xl">
-                <img
-                  src={Images.Airplane}
-                  alt="airplane"
-                  className="h-20 md:h-28"
-                />
-                Select a tile to move
+          {game.selectingTile &&
+            !isAuto && ( // isAuto가 false일 때만 모달 표시
+              <div className="absolute md:-top-40 -top-20 left-0 w-full h-full flex justify-center items-center z-20">
+                <div className="absolute top-0 left-0 w-full h-full bg-black opacity-75"></div>
+                <div className="text-white text-lg z-30 flex flex-col items-center justify-center mb-96 md:mb-[442px] font-semibold md:text-xl">
+                  <img
+                    src={Images.Airplane}
+                    alt="airplane"
+                    className="h-20 md:h-28"
+                  />
+                  Select a tile to move
+                </div>
               </div>
-            </div>
-          )}
+            )}
           <Board
             position={position}
             charactorImageSrc={charactorImageSrc}
@@ -182,7 +199,6 @@ const DiceEventPage: React.FC = () => {
           <br /> <br /> <br />
           <br />
           <br />
-
           <div className="hidden md:block md:mb-40"> &nbsp;</div>
         </>
       )}
