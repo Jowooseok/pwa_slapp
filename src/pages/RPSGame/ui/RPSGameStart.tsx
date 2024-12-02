@@ -48,7 +48,7 @@ const RPSGameStart: React.FC<RPSGameStartProps> = ({
       setBetAmountStore(amount); // betAmount를 설정
       onStart(); // 게임 시작
     } else {
-      alert(`베팅 금액은 1 스타 이상, 최대 ${allowedBetting+1} 스타까지 가능합니다.`);
+      alert(`The betting amount must be at least 1 star and up to a maximum of ${allowedBetting + 1} stars.`);
     }
   };
 
