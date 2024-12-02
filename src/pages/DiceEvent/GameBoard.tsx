@@ -406,10 +406,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   </div>
                 </div>
                 <div className="flex flex-row items-center justify-end gap-1">
+                <AiOutlineInfoCircle className=" w-5 h-5" />
                   <p className="text-end text-sm font-medium">
-                    How these are calculated?
+                  The NFT reward multiplier is additive.
                   </p>
-                  <AiOutlineInfoCircle className=" w-5 h-5" />
+                
                 </div>
                 <NFTRewardList />
               </div>
