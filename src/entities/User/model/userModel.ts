@@ -4,6 +4,8 @@ import create from 'zustand';
 import { fetchHomeData } from '@/entities/User/api/userApi';
 import api from '@/shared/api/axiosInstance';
 import { rollDiceAPI, RollDiceResponseData } from '@/features/DiceEvent/api/rollDiceApi';
+import { refillDiceAPI } from '@/features/DiceEvent/api/refillDiceApi'; // 분리된 API 함수 임포트
+
 
 // 월간 보상 정보 인터페이스
 interface MonthlyPrize {
@@ -95,6 +97,8 @@ interface UserState {
 
   boards: Board[];
   setBoards: (boards: Board[]) => void;
+
+  refillDice: () => Promise<void>;
 }
 
 // 필요한 인터페이스 정의
@@ -502,5 +506,21 @@ export const useUserStore = create<UserState>((set, get) => ({
       return false;
     }
   },  
+
+  refillDice: async () => {
+    set({ error: null });
+    try {
+      const data: RollDiceResponseData = await refillDiceAPI();
+
+      // 주사위 리필 후 사용자 데이터 갱신
+      await get().fetchUserData();
+
+      console.log('주사위 리필 성공:', data);
+    } catch (error: any) {
+      console.error('주사위 리필 중 에러 발생:', error);
+      set({ error: error.message || '주사위 리필에 실패했습니다.' });
+      throw error; // 에러를 다시 던져 컴포넌트에서 처리할 수 있도록 함
+    }
+  },
 
 }));

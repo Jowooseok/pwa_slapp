@@ -72,8 +72,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
     error,
     isAuto,
     setIsAuto,
+    refillDice, // refillDice 함수 추가
   } = useUserStore();
   const [timeUntilRefill, setTimeUntilRefill] = useState("");
+  const [isRefilling, setIsRefilling] = useState(false); // 리필 중 상태 관리
 
   useEffect(() => {
     const updateRefillTime = () => {
@@ -237,6 +239,20 @@ const GameBoard: React.FC<GameBoardProps> = ({
       </Tile>
     );
   };
+
+    // Refill Dice API 호출 함수
+    const handleRefillDice = async () => {
+      try {
+        setIsRefilling(true); // 리필 중 상태 활성화
+        await refillDice();
+        console.log("주사위 리필 성공");
+        setIsRefilling(false); // 리필 완료
+      } catch (error: any) {
+        console.error("주사위 리필 실패:", error);
+        // 추가적인 에러 처리 (예: 사용자에게 알림)
+        setIsRefilling(false); // 리필 완료
+      }
+    };
 
   return (
     <div className="grid grid-cols-6 grid-rows-6 gap-1 text-xs md:text-base relative">
@@ -442,10 +458,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         <div className="flex flex-row text-white items-center justify-center gap-1 mt-6">
           {timeUntilRefill === "Refill dice" ? (
             <motion.div
-              onClick={() => {
-                console.log("Refill button clicked");
-                // dice 리필 api
-              }}
+            onClick={handleRefillDice}
               className="flex flex-row items-center justify-center gap-1 cursor-pointer "
               animate={{
                 opacity: [1, 0.5, 1], // 반짝이는 효과
