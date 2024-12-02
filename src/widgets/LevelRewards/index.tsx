@@ -27,7 +27,7 @@ const levelRewards: LevelReward[] = [
 const LevelRewards: React.FC = () => {
   return (
     <div className="flex flex-col gap-4 w-full">
-      <h1 className="text-center font-bold text-xl mb-4">Level Rewards</h1>
+      <h1 className="text-center font-bold text-xl ">Level Rewards</h1>
 
       <div className="bg-[#1F1E27] border-2 border-[#35383F] flex flex-col p-5 rounded-3xl gap-4">
         {levelRewards.map((reward) => (
