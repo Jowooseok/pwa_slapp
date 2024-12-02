@@ -91,7 +91,7 @@ export const useDiceGame = () => {
 
       const moveStep = () => {
         currentPosition = (currentPosition + 1) % 20;
-        console.log('현재 위치:', currentPosition);
+     
         setPosition(currentPosition);
 
         if (currentPosition === 0) {

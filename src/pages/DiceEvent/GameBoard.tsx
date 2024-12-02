@@ -135,7 +135,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           console.log("Auto rolling dice");
           diceRef.current?.roll();
         }
-      }, 10000); // 10초
+      }, 5000); // 5초
     } else {
       console.log("Auto mode 비활성화됨");
     }

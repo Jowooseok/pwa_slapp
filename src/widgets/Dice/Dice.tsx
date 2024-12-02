@@ -76,7 +76,8 @@ const Dice = forwardRef(({ onRollComplete, gaugeValue }: DiceProps, ref) => {
       }
     } catch (error) {
       console.error("주사위 굴리기 오류:", error);
-      alert("주사위 굴리기에 실패했습니다. 다시 시도해주세요.");
+      alert("Another connection has been detected. The game will restart.");
+      window.location.reload();
       setIsRolling(false);
     }
   };
