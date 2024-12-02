@@ -84,6 +84,12 @@ const DiceEventPage: React.FC = () => {
   const charactorImageSrc = getCharacterImageSrc();
 
   useEffect(() => {
+    return () => {
+      game.setIsAuto(false);
+    };
+  }, []);
+
+  useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
 

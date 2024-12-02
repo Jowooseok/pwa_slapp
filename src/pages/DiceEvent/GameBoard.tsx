@@ -129,7 +129,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (diceCount > 0 && !buttonDisabled) {
         diceRef.current?.roll();
       }
-      // 10초마다 주사위 굴리기
+      // 5초마다 주사위 굴리기
       autoInterval = setInterval(() => {
         if (diceCount > 0 && !buttonDisabled) {
           console.log("Auto rolling dice");

@@ -30,6 +30,7 @@ export const useDiceGame = () => {
     error,
     setError,
     isAuto, // isAuto 상태 추가
+    setIsAuto,
   } = useUserStore();
 
   const [moving, setMoving] = useState<boolean>(false);
@@ -389,6 +390,8 @@ const handleRollComplete = useCallback(
     setSlToken,
     isLuckyVisible, // expose the new state
     error, // 에러 상태 노출
+    setIsAuto,
+    isAuto,
   };
 };
 
