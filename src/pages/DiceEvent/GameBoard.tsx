@@ -22,6 +22,7 @@ import duration from "dayjs/plugin/duration";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc"; // UTC 플러그인 추가
 import { RollDiceResponseData } from "@/features/DiceEvent/api/rollDiceApi";
+import NFTRewardList from "@/widgets/NFTRewardCard";
 
 dayjs.extend(duration);
 dayjs.extend(utc); // UTC 플러그인 적용
@@ -410,81 +411,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   </p>
                   <AiOutlineInfoCircle className=" w-5 h-5" />
                 </div>
-
-                {/* Additional information section */}
-                <div className="flex flex-col bg-[#1F1E27] p-5 rounded-3xl border-2 border-[#35383F] font-medium gap-4 ">
-                  <div className=" relative space-y-2">
-                    <div className="flex flex-row items-center gap-2">
-                      <img src={Images.Gold} alt="gold" className="w-6 h-6" />
-                      <p className="font-semibold">Gold NFT</p>
-                    </div>
-                    <div className="pl-8 text-sm space-y-1">
-                      <div className="flex flex-row items-center gap-2">
-                        <IoDice className="w-5 h-5" />
-                        <p>Dice Generation : x4</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoGameController className="w-5 h-5" />
-                        <p>Game Board Rewards : x20</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoTicket className="w-5 h-5" />
-                        <p>Raffle Tickets Rewards: x60</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className=" relative space-y-2">
-                    <div className="flex flex-row items-center gap-2">
-                      <img
-                        src={Images.Silver}
-                        alt="Silver"
-                        className="w-6 h-6"
-                      />
-                      <p className="font-semibold">Silver NFT</p>
-                    </div>
-                    <div className="pl-8 text-sm space-y-1">
-                      <div className="flex flex-row items-center gap-2">
-                        <IoDice className="w-5 h-5" />
-                        <p>Dice Generation : x3</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoGameController className="w-5 h-5" />
-                        <p>Game Board Rewards : x15</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoTicket className="w-5 h-5" />
-                        <p>Raffle Tickets Rewards: x30</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className=" relative space-y-2">
-                    <div className="flex flex-row items-center gap-2">
-                      <img
-                        src={Images.Bronze}
-                        alt="Bronze"
-                        className="w-6 h-6"
-                      />
-                      <p className="font-semibold">Bronze NFT</p>
-                    </div>
-                    <div className="pl-8 text-sm space-y-1">
-                      <div className="flex flex-row items-center gap-2">
-                        <IoDice className="w-5 h-5" />
-                        <p>Dice Generation : x2</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoGameController className="w-5 h-5" />
-                        <p>Game Board Rewards : x10</p>
-                      </div>
-                      <div className="flex flex-row items-center gap-2">
-                        <IoTicket className="w-5 h-5" />
-                        <p>Raffle Tickets Rewards: x10</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <button className=" font-medium bg-[#0147E5] rounded-full h-14 w-[165px] self-center">
-                  Shop NFT
-                </button>
+                <NFTRewardList />
               </div>
             </DialogContent>
           </Dialog>
