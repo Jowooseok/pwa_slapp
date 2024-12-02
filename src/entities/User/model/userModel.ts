@@ -26,13 +26,6 @@ interface WeekAttendance {
   sun: boolean | null;
 }
 
-// 활동량 데이터 인터페이스
-interface ActivityData {
-  accountAge: number;
-  activityLevel: number;
-  telegramPremium: number;
-  ogStatus: number;
-}
 
 // 사용자 상태 인터페이스
 interface UserState {
@@ -73,8 +66,6 @@ interface UserState {
   currentMiniGame: string;
   setCurrentMiniGame: (game: string) => void;
 
-  activityData: ActivityData | null;
-  setActivityData: (activityData: ActivityData | null) => void;
 
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
@@ -189,8 +180,6 @@ export const useUserStore = create<UserState>((set, get) => ({
   currentMiniGame: '',
   setCurrentMiniGame: (game) => set({ currentMiniGame: game }),
 
-  activityData: null,
-  setActivityData: (activityData) => set({ activityData }),
 
   isLoading: false,
   setIsLoading: (isLoading) => set({ isLoading }),
@@ -307,10 +296,6 @@ export const useUserStore = create<UserState>((set, get) => ({
       // 회원가입 요청 보내기
       await api.post('/auth/signup', { initData, petType });
 
-      // 활동량 데이터 하드코딩
-      console.log('Step: signup 성공. 활동량 게이지 업데이트');
-      set({ activityData: { accountAge: 30, activityLevel: 75, telegramPremium: 1, ogStatus: 1 } }); // 예시 하드코딩 값
-
       set({ isLoading: false, error: null });
     } catch (error: any) {
       console.error('Step: signup 실패:', error);
@@ -357,7 +342,6 @@ export const useUserStore = create<UserState>((set, get) => ({
         sun: null,
       },
       currentMiniGame: '',
-      activityData: null,
       isLoading: false,
       error: null,
     });
