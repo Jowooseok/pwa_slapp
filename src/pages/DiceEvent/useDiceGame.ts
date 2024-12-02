@@ -29,6 +29,7 @@ export const useDiceGame = () => {
     setSlToken,
     error,
     setError,
+    isAuto, // isAuto 상태 추가
   } = useUserStore();
 
   const [moving, setMoving] = useState<boolean>(false);
@@ -129,7 +130,9 @@ export const useDiceGame = () => {
               }, 300);
               break;
             case 18:
-              setSelectingTile(true);
+              if (!isAuto) { // isAuto가 false일 때만 활성화
+                setSelectingTile(true);
+              }
               setMoving(false);
               onMoveComplete(18); // 최종 위치 전달
               break;
@@ -148,6 +151,7 @@ export const useDiceGame = () => {
       setSelectingTile,
       showReward,
       setLotteryCount,
+      isAuto, // isAuto 의존성 추가
     ]
   );
 
@@ -186,13 +190,27 @@ export const useDiceGame = () => {
       }
 
       movePiece(previousPosition, newPosition, (finalPosition) => {
-        if (finalPosition === 5) {
-          setIsRPSGameActive(true);
-          rpsGameStore.fetchAllowedBetting();
-        } else if (finalPosition === 15) {
-          setIsSpinGameActive(true);
-        } else {
+        if (isAuto && [5, 15, 18].includes(finalPosition)) {
+          // Auto 모드이고 특정 타일에 도착했을 때 게임을 활성화하지 않음
+          console.log(`Auto 모드: 타일 ${finalPosition} 도착, 게임 활성화 건너뜀`);
           setButtonDisabled(false);
+        } else {
+          // Auto 모드가 아니거나 특정 타일이 아닌 경우 기존 로직 수행
+          switch (finalPosition) {
+            case 5:
+              setIsRPSGameActive(true);
+              rpsGameStore.fetchAllowedBetting();
+              break;
+            case 15:
+              setIsSpinGameActive(true);
+              break;
+            case 18:
+              setSelectingTile(true);
+              break;
+            default:
+              setButtonDisabled(false);
+              break;
+          }
         }
         setIsRolling(false); // 주사위 굴리기 완료 후 상태 리셋
       });
@@ -216,6 +234,7 @@ export const useDiceGame = () => {
       setIsLuckyVisible,
       gaugeValue,
       rpsGameStore,
+      isAuto, // isAuto 추가
     ]
   );
 
@@ -288,6 +307,7 @@ export const useDiceGame = () => {
       setIsSpinGameActive,
       rpsGameStore,
       setError,
+      isAuto, // isAuto 필요 시 추가
     ]
   );
 

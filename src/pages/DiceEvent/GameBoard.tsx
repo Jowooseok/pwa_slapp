@@ -1,5 +1,5 @@
 // src/pages/DiceEvent/GameBoard.tsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Tile from "./tile";
 import { StarTile, DiceTile, AirplaneTile, Gauge } from "@/features/DiceEvent";
@@ -62,14 +62,25 @@ const GameBoard: React.FC<GameBoardProps> = ({
   handleMouseUp,
   isLuckyVisible,
 }) => {
-  const { items, diceRefilledAt, boards, fetchUserData, error } = useUserStore();
+  // Zustand 스토어에서 필요한 상태와 함수 가져오기
+  const {
+    items,
+    diceRefilledAt,
+    boards,
+    fetchUserData,
+    error,
+    isAuto,
+    setIsAuto,
+  } = useUserStore();
   const [timeUntilRefill, setTimeUntilRefill] = useState("");
 
   useEffect(() => {
     const updateRefillTime = () => {
       if (diceRefilledAt) {
         console.log("Original diceRefilledAt:", diceRefilledAt);
-        
+
+        console.log("autoNft count : ", items.autoNftCount);
+
         // KST로 직접 파싱 (ISO 8601 형식에 시간대 정보 포함)
         const refillTime = dayjs.tz(diceRefilledAt, "Asia/Seoul");
         const now = dayjs().tz("Asia/Seoul");
@@ -105,9 +116,36 @@ const GameBoard: React.FC<GameBoardProps> = ({
     updateRefillTime();
     const interval = setInterval(updateRefillTime, 60000); // 1분마다 업데이트
     return () => clearInterval(interval);
-  }, [diceRefilledAt, fetchUserData, diceCount]);
-  
-  
+  }, [diceRefilledAt, fetchUserData, diceCount, items.autoNftCount]);
+
+  // isAuto가 true일 때 10초마다 diceRef.current.roll() 호출
+  useEffect(() => {
+    let autoInterval: NodeJS.Timeout;
+
+    if (isAuto) {
+      console.log("Auto mode 활성화됨");
+      // 즉시 주사위 굴리기
+      if (diceCount > 0 && !buttonDisabled) {
+        diceRef.current?.roll();
+      }
+      // 10초마다 주사위 굴리기
+      autoInterval = setInterval(() => {
+        if (diceCount > 0 && !buttonDisabled) {
+          console.log("Auto rolling dice");
+          diceRef.current?.roll();
+        }
+      }, 10000); // 10초
+    } else {
+      console.log("Auto mode 비활성화됨");
+    }
+
+    return () => {
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        console.log("Auto rolling 중지됨");
+      }
+    };
+  }, [isAuto, diceCount, buttonDisabled, diceRef]);
 
   // Mapping from front-end tile IDs to server tile sequences
   const tileIdToSequenceMap: { [key: number]: number } = {
@@ -397,7 +435,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   </div>
                   <div className=" relative space-y-2">
                     <div className="flex flex-row items-center gap-2">
-                      <img src={Images.Silver} alt="Silver" className="w-6 h-6" />
+                      <img
+                        src={Images.Silver}
+                        alt="Silver"
+                        className="w-6 h-6"
+                      />
                       <p className="font-semibold">Silver NFT</p>
                     </div>
                     <div className="pl-8 text-sm space-y-1">
@@ -417,7 +459,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   </div>
                   <div className=" relative space-y-2">
                     <div className="flex flex-row items-center gap-2">
-                      <img src={Images.Bronze} alt="Bronze" className="w-6 h-6" />
+                      <img
+                        src={Images.Bronze}
+                        alt="Bronze"
+                        className="w-6 h-6"
+                      />
                       <p className="font-semibold">Bronze NFT</p>
                     </div>
                     <div className="pl-8 text-sm space-y-1">
@@ -443,23 +489,34 @@ const GameBoard: React.FC<GameBoardProps> = ({
             </DialogContent>
           </Dialog>
 
+          {/* 수정된 Auto 스위치 부분 */}
           <div className=" absolute flex flex-col items-center text-white -right-11 md:-right-24 md:-bottom-24 -bottom-14 ">
-            <Switch className=" w-[26px] h-4 md:h-6 md:w-11 text-[#0147E5]" />
-            <p className=" text-xs font-semibold md:text-sm">Auto</p>
+            <Switch
+              className="w-[26px] h-4 md:h-6 md:w-11 text-[#0147E5]"
+              checked={isAuto} // isAuto 상태에 따라 스위치의 체크 상태를 설정
+              onCheckedChange={() => {
+                console.log("Auto Switch toggled");
+                setIsAuto(!isAuto);
+              }} // 스위치 토글 시 isAuto 상태를 반전
+              disabled={items.autoNftCount < 1} // items.autoNftCount가 1 미만일 때 스위치 비활성화
+            />
+            <p className="text-xs font-semibold md:text-sm">Auto</p>
           </div>
+
+          {/* 수정된 "Roll Dice" 버튼 */}
           <button
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onTouchStart={handleMouseDown}
             onTouchEnd={handleMouseUp}
             className={`bg-white rounded-full h-10 w-24 self-center absolute -bottom-5 left-3 md:left-2 md:w-40 md:h-14 border border-[#E5E5E5] text-sm md:text-lg font-medium ${
-              buttonDisabled || diceCount < 1
+              buttonDisabled || diceCount < 1 || isAuto
                 ? "opacity-50 cursor-not-allowed"
                 : ""
             }`}
-            disabled={buttonDisabled || diceCount < 1}
+            disabled={buttonDisabled || diceCount < 1 || isAuto} // isAuto일 때도 비활성화
           >
-            Roll Dice
+            {isAuto ? "Auto Play" : "Roll Dice"}
           </button>
         </div>
         <div className="flex flex-row text-white items-center justify-center gap-1 mt-6">

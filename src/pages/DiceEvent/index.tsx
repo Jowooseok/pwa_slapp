@@ -26,6 +26,7 @@ const DiceEventPage: React.FC = () => {
     characterType,
     position,
     monthlyPrize,
+    isAuto, // isAuto 상태 가져오기
   } = useUserStore();
   
   const game = useDiceGame();
@@ -153,7 +154,7 @@ const DiceEventPage: React.FC = () => {
             handleMouseUp={game.handleMouseUp}
             isLuckyVisible={game.isLuckyVisible} // "LUCKY" 상태 전달
           />
-          {game.selectingTile && (
+          {game.selectingTile && !isAuto && ( // isAuto가 false일 때만 모달 표시
             <div className="absolute md:-top-40 -top-20 left-0 w-full h-full flex justify-center items-center z-20">
               <div className="absolute top-0 left-0 w-full h-full bg-black opacity-75"></div>
               <div className="text-white text-lg z-30 flex flex-col items-center justify-center mb-96 md:mb-[442px] font-semibold md:text-xl">
@@ -181,7 +182,6 @@ const DiceEventPage: React.FC = () => {
           <br /> <br /> <br />
           <br />
           <br />
-
 
           <div className="hidden md:block md:mb-40"> &nbsp;</div>
         </>
