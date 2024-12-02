@@ -18,7 +18,8 @@ const Dice = forwardRef(({ onRollComplete, gaugeValue }: DiceProps, ref) => {
   const [faceOrder, setFaceOrder] = useState<number[]>([1, 2, 3, 4, 5, 6]);
   const [isRolling, setIsRolling] = useState(false);
 
-  const { position } = useUserStore(); // 현재 위치 가져오기
+  // useUserStore에서 현재 위치와 isAuto 상태 가져오기
+  const { position, isAuto } = useUserStore();
 
   useImperativeHandle(ref, () => ({
     roll: () => handleRoll(),
@@ -30,8 +31,11 @@ const Dice = forwardRef(({ onRollComplete, gaugeValue }: DiceProps, ref) => {
     setIsRolling(true);
 
     try {
-      // 서버에 주사위 결과 요청 시 현재 위치 전달
-      const data = await rollDiceAPI(gaugeValue, position);
+      // isAuto가 true일 때는 게이지 값을 0부터 6까지의 랜덤 정수로 설정
+      const currentGaugeValue = isAuto ? Math.floor(Math.random() * 7) : gaugeValue;
+
+      // 서버에 주사위 결과 요청 시 현재 위치와 랜덤한 gaugeValue 전달
+      const data = await rollDiceAPI(currentGaugeValue, position);
       const targetFace = data.diceResult;
 
       // 애니메이션 처리
