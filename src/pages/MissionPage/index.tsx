@@ -122,13 +122,7 @@ const MissionPage: React.FC = () => {
         </p>
       </div>
       <h1 className=" font-semibold text-lg ml-[2px] mb-4">Daily Mission</h1>
-      <Link to="/mini-game">
-        <DailyMissionCard
-          title="Dice Roll Game"
-          alt="3d-dice-image"
-          image={Images.Dice3D}
-        />
-      </Link>{' '}
+
       <Link to="/invite-friends">
         <DailyMissionCard
           title="Invite Friends"
