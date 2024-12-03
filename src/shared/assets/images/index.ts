@@ -63,7 +63,6 @@ import BGSpinGame from './bg-spingame.png';
 import Spin from './spin.png';
 import SpinPin from './spin-pin.png';
 import SpinExample from './spin-example.png';
-import LosingTicket from './losing-ticket.png';
 import RPSGameExample from './RPSGame-example.png';
 import RPSGame from './RPSGame.png';
 import Rock from './rock.png';
@@ -95,6 +94,7 @@ import Gold from "./gold.png";
 import Silver from "./silver.png";
 import Bronze from "./bronze.png";
 import Lucky from "./lucky.png";
+import Boom from "./boom.png";
 
 const Images = {
   HorizontalLogo,
@@ -162,7 +162,6 @@ const Images = {
   Spin,
   SpinPin,
   SpinExample,
-  LosingTicket,
   RPSGameExample,
   RPSGame,
   Rock,
@@ -193,6 +192,7 @@ const Images = {
   Silver,
   Bronze,
   Lucky,
+  Boom
 };
 
 export default Images;
