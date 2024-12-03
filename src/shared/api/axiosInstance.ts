@@ -1,3 +1,5 @@
+// src/shared/api/axiosInstance.ts
+
 import axios from 'axios';
 import { useUserStore } from '@/entities/User/model/userModel';
 
@@ -45,7 +47,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-
 // 응답 인터셉터 설정
 api.interceptors.response.use(
   (response) => response,
@@ -78,6 +79,5 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
 
 export default api;

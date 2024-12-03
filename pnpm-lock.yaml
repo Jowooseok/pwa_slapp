@@ -164,6 +164,9 @@ importers:
       react-router-dom:
         specifier: ^6.23.1
         version: 6.28.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-scroll:
+        specifier: 1.9.0
+        version: 1.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwind-merge:
         specifier: ^2.3.0
         version: 2.5.5
@@ -204,6 +207,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.2.6
         version: 18.3.1
+      '@types/react-scroll':
+        specifier: 1.8.10
+        version: 1.8.10
       '@vitejs/plugin-react':
         specifier: ^4.0.1
         version: 4.3.3(vite@4.5.5(@types/node@20.17.7)(sass@1.81.0)(terser@5.36.0))
@@ -2130,6 +2136,9 @@ packages:
   '@types/react-qr-reader@2.1.7':
     resolution: {integrity: sha512-6K6DQeqP7c2oohcfvBpExlOawVsB2/C+7ZZL/fkCkNzYYAKDJnNHnuP3F5ChMl0mpoYEdqkqkllxqfM0VslEiw==}
 
+  '@types/react-scroll@1.8.10':
+    resolution: {integrity: sha512-RD4Z7grbdNGOKwKnUBKar6zNxqaW3n8m9QSrfvljW+gmkj1GArb8AFBomVr6xMOgHPD3v1uV3BrIf01py57daQ==}
+
   '@types/react-transition-group@4.4.11':
     resolution: {integrity: sha512-RM05tAniPZ5DZPzzNFP+DmrcOdD0efDUxMy3145oljWSl3x9ZV5vhme98gTxFrj2lhXvmGNnUiuDyJgY9IKkNA==}
 
@@ -3747,6 +3756,9 @@ packages:
   lodash.sortby@4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
 
+  lodash.throttle@4.1.1:
+    resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
+
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
@@ -4379,6 +4391,12 @@ packages:
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
+
+  react-scroll@1.9.0:
+    resolution: {integrity: sha512-mamNcaX9Ng+JeSbBu97nWwRhYvL2oba+xR2GxvyXsbDeGP+gkYIKZ+aDMMj/n20TbV9SCWm/H7nyuNTSiXA6yA==}
+    peerDependencies:
+      react: ^15.5.4 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^15.5.4 || ^16.0.0 || ^17.0.0 || ^18.0.0
 
   react-style-singleton@2.2.1:
     resolution: {integrity: sha512-ZWj0fHEMyWkHzKYUr2Bs/4zU6XLmq9HsgBURm7g5pAVfyn49DgUiNgY2d4lXRlYSiCif9YBGpQleewkcqddc7g==}
@@ -7585,6 +7603,10 @@ snapshots:
     dependencies:
       '@types/react': 18.3.12
 
+  '@types/react-scroll@1.8.10':
+    dependencies:
+      '@types/react': 18.3.12
+
   '@types/react-transition-group@4.4.11':
     dependencies:
       '@types/react': 18.3.12
@@ -9463,6 +9485,8 @@ snapshots:
 
   lodash.sortby@4.7.0: {}
 
+  lodash.throttle@4.1.1: {}
+
   lodash@4.17.21: {}
 
   long@4.0.0: {}
@@ -10048,6 +10072,13 @@ snapshots:
     dependencies:
       '@remix-run/router': 1.21.0
       react: 18.3.1
+
+  react-scroll@1.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      lodash.throttle: 4.1.1
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   react-style-singleton@2.2.1(@types/react@18.3.12)(react@18.3.1):
     dependencies:
@@ -10851,6 +10882,7 @@ snapshots:
       clsx: 2.1.1
       cmdk: 1.0.4(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       date-fns: 3.6.0
+      dayjs: 1.11.13
       embla-carousel-autoplay: 8.5.1(embla-carousel@8.5.1)
       embla-carousel-react: 8.5.1(react@18.3.1)
       ethers: 5.7.2
@@ -10869,6 +10901,7 @@ snapshots:
       react-qr-code: 2.0.15(react@18.3.1)
       react-qr-scanner: 1.0.0-alpha.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-router-dom: 6.28.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-scroll: 1.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwind-merge: 2.5.5
       tailwindcss-animate: 1.0.7(tailwindcss@3.4.15(ts-node@10.9.2(@types/node@20.17.7)(typescript@5.7.2)))
       vaul: 0.9.9(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

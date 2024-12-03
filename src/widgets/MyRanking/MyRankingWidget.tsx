@@ -27,11 +27,11 @@ const MyRankingWidget: React.FC = () => {
 
   return (
     <div
-      className="flex flex-col items-center justify-center text-white cursor-pointer"
+      className="flex flex-col items-center justify-center text-white cursor-pointer w-full"
       onClick={handleRankingClick}
     >
       <h1 className="font-jalnan text-3xl">My Rank</h1>
-      <div className="bg-box mt-4 px-8 md:w-[595.95px] w-[332px] h-24 md:h-32 flex">
+      <div className="bg-box mt-4 px-8  w-full h-24 md:h-32 flex">
         {/* My Rank 섹션 */}
         <div className="w-[121px] h-full flex flex-col items-center justify-center gap-2">
           <p className="text-base font-semibold">My Rank</p>
