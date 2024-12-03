@@ -5,7 +5,7 @@ import InstallPrompt from "./components/InstallPrompt";
 import DiceEvent from "@/pages/DiceEvent";
 import WalletPage from "@/pages/WalletPage";
 import MissionPage from "@/pages/MissionPage";
-import RankPage from "@/pages/RankPage";
+import Reward from "@/pages/RewardPage";
 import DiceEventLayout from "./layout/DiceEventLayout";
 import InviteFriends from "@/pages/InviteFriends";
 import SlotMachine from "@/pages/SlotMachine";
@@ -80,7 +80,7 @@ const App: React.FC = () => {
             {renderDiceEventLayout("/home", <Home />)}
             {renderDiceEventLayout("/dice-event", <DiceEvent />)}
             {renderDiceEventLayout("/mission", <MissionPage />)}
-            {renderDiceEventLayout("/rank", <RankPage />)}
+            {renderDiceEventLayout("/reward", <Reward />)}
             {renderDiceEventLayout("/invite-friends", <InviteFriends />)}
             {renderDiceEventLayout("/test", <SlotMachine />)}
             {renderDiceEventLayout("/wallet", <WalletPage />)}
