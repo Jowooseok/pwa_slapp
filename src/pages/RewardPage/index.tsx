@@ -274,7 +274,7 @@ const Reward: React.FC = () => {
               className={`border rounded-full mt-6 flex items-center justify-center w-[80px] h-7 font-medium text-xs mb-8 ${
                 isLoadingLeaderboard
                   ? "bg-gray-500 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
+                  : " hover:bg-blue-500"
               } text-white`}
               disabled={isLoadingLeaderboard}
             >
