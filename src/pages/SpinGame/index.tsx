@@ -13,7 +13,6 @@ import { HiX } from "react-icons/hi";
 import api from "@/shared/api/axiosInstance";
 import { useUserStore } from "@/entities/User/model/userModel";
 
-
 const data = [
   // 스타 보상
   {
@@ -28,13 +27,13 @@ const data = [
   },
   // 주사위 보상
   {
-    option: "5 Dice",
+    option: "1 Dice",
     image: {
       uri: `${Images.Dice}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    prize: { type: "DICE", amount: 5 },
+    prize: { type: "DICE", amount: 1 },
     style: { backgroundColor: "#F3F3E9" },
   },
   // 스타 보상
@@ -50,13 +49,13 @@ const data = [
   },
   // 주사위 보상
   {
-    option: "10 Dice",
+    option: "2 Dice",
     image: {
       uri: `${Images.Dice}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    prize: { type: "DICE", amount: 10 },
+    prize: { type: "DICE", amount: 2 },
     style: { backgroundColor: "#39A1E8" },
   },
   // 스타 보상
@@ -72,13 +71,13 @@ const data = [
   },
   // 주사위 보상
   {
-    option: "20 Dice",
+    option: "5 Dice",
     image: {
       uri: `${Images.Dice}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    prize: { type: "DICE", amount: 20 },
+    prize: { type: "DICE", amount: 5 },
     style: { backgroundColor: "#FBA629" },
   },
   // 스타 보상
@@ -94,13 +93,13 @@ const data = [
   },
   // 주사위 보상
   {
-    option: "30 Dice",
+    option: "10 Dice",
     image: {
       uri: `${Images.Dice}`,
       sizeMultiplier: 0.5,
       offsetY: 150,
     },
-    prize: { type: "DICE", amount: 30 },
+    prize: { type: "DICE", amount: 10 },
     style: { backgroundColor: "#2FAF74" },
   },
   // 토큰 보상
@@ -125,18 +124,29 @@ const data = [
     prize: { type: "TICKET", amount: 1 },
     style: { backgroundColor: "#CA3D77" },
   },
+  {
+    option: "Boom!",
+    image: {
+      uri: `${Images.Boom}`, // BOOM에 해당하는 이미지 경로 추가
+      sizeMultiplier: 0.5,
+      offsetY: 150,
+    },
+    prize: { type: "BOOM", amount: 0 },
+    style: { backgroundColor: "#333333" }, 
+  },
 ];
 
 const SpinGameStart: React.FC<{ onStart: () => void }> = ({ onStart }) => {
   return (
-    <div className=" flex flex-col items-center justify-center px-12 pb-8 h-full w-full"      
-     style={{
-      backgroundImage: `url(${Images.BGSpinGame})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }}>
-
-<h1 className="text-[#fde047] font-jalnan text-center text-[36px] mt-8 ">
+    <div
+      className=" flex flex-col items-center justify-center px-12 pb-8 h-full w-full"
+      style={{
+        backgroundImage: `url(${Images.BGSpinGame})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <h1 className="text-[#fde047] font-jalnan text-center text-[36px] mt-8 ">
         Spin the Wheel,
         <br />
         Win Prizes!
@@ -167,25 +177,19 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [prizeData, setPrizeData] = useState<{ spinType: string; amount: number } | null>(
-    null
-  );
+  const [prizeData, setPrizeData] = useState<{
+    spinType: string;
+    amount: number;
+  } | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
 
-
-  const {
-    setStarPoints,
-    setDiceCount,
-    setSlToken,
-    setLotteryCount,
-  } = useUserStore();
+  const { setStarPoints, setDiceCount, setSlToken, setLotteryCount } =
+    useUserStore();
 
   const handleSpinClick = async () => {
-
     if (isSpinning) return;
 
     try {
-
       setIsSpinning(true); // 스핀 시작
 
       // /play-spin API 호출
@@ -215,7 +219,7 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
     } catch (error) {
       console.error("Error calling play-spin API:", error);
       window.location.reload();
-    }finally {
+    } finally {
       setIsSpinning(false); // 스핀 완료
     }
   };
@@ -234,10 +238,11 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
         setSlToken((prev: number) => prev + amount);
       } else if (spinType === "TICKET") {
         setLotteryCount((prev: number) => prev + amount);
+      } else if (spinType === "BOOM") {
+        console.log("Boom! Better luck next time!");
       }
     }
     setIsDialogOpen(true);
-
   };
 
   const handleCloseDialog = () => {
@@ -256,25 +261,35 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
         return "Coins";
       case "TICKET":
         return "Raffle Ticket";
+      case "BOOM":
+        return "Boom! Try Again";
       default:
         return spinType ?? "Unknown";
     }
   };
 
   return (
-    <div className="relative flex flex-col items-center h-screen justify-center  w-full" style={{
-      backgroundImage: `url(${Images.BGSpinGame})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }}>
-<h1 className="text-[#fde047] font-jalnan text-center text-[36px] mt-8 md:mb-12" >
+    <div
+      className="relative flex flex-col items-center h-screen justify-center  w-full"
+      style={{
+        backgroundImage: `url(${Images.BGSpinGame})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <h1 className="text-[#fde047] font-jalnan text-center text-[36px] mt-8 md:mb-12">
         Spin the Wheel,
         <br />
         Win Prizes!
       </h1>
-     
-      <img src={Images.Spin} alt="Spin-game" className="w-[320px] md:w-[360px] md:mt-16" loading="lazy" />
-      
+
+      <img
+        src={Images.Spin}
+        alt="Spin-game"
+        className="w-[320px] md:w-[360px] md:mt-16"
+        loading="lazy"
+      />
+
       <img
         src={Images.SpinPin}
         alt="Spin-game"
@@ -301,17 +316,17 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
       </div>
 
       <button
-  onClick={handleSpinClick}
-  disabled={isSpinning || mustSpin} // 스핀 중이거나 반드시 스핀해야 하는 상태일 때 비활성화
-  className={`flex items-center justify-center h-14 mt-4 w-[342px] rounded-full font-medium ${
-    isSpinning || mustSpin
-      ? "bg-[#21212f] opacity-65 text-white cursor-not-allowed" // 비활성화된 스타일
-      : "bg-[#21212f] text-white" // 활성화된 스타일
-  }`}
->
-  {isSpinning ? "Spinning..." : "Spin the Wheel"} {/* 스핀 중일 때 텍스트 변경 */}
-</button>
-
+        onClick={handleSpinClick}
+        disabled={isSpinning || mustSpin} // 스핀 중이거나 반드시 스핀해야 하는 상태일 때 비활성화
+        className={`flex items-center justify-center h-14 mt-4 w-[342px] rounded-full font-medium ${
+          isSpinning || mustSpin
+            ? "bg-[#21212f] opacity-65 text-white cursor-not-allowed" // 비활성화된 스타일
+            : "bg-[#21212f] text-white" // 활성화된 스타일
+        }`}
+      >
+        {isSpinning ? "Spinning..." : "Spin the Wheel"}{" "}
+        {/* 스핀 중일 때 텍스트 변경 */}
+      </button>
 
       <AlertDialog open={isDialogOpen}>
         <AlertDialogContent className="rounded-3xl bg-[#21212F] text-white border-none">
@@ -335,13 +350,22 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
               </div>
             </div>
             <div className="text-center space-y-2">
-              <p className="text-xl font-semibold">
-                Congratulations! You won {prizeData?.amount}{" "}
-                {getPrizeDisplayName(prizeData?.spinType)}!
-              </p>
-              <p className="text-[#a3a3a3]">
-                This reward has been added to your account.
-              </p>
+              {prizeData?.spinType === "BOOM" ? (
+                <>
+                  <p className="text-xl font-semibold ">Boom!</p>
+                  <p className="text-[#a3a3a3]">Better luck next time!</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-xl font-semibold">
+                    Congratulations! You won {prizeData?.amount}{" "}
+                    {getPrizeDisplayName(prizeData?.spinType)}!
+                  </p>
+                  <p className="text-[#a3a3a3]">
+                    This reward has been added to your account.
+                  </p>
+                </>
+              )}
             </div>
             <div className="space-y-3 w-full">
               <button
@@ -366,9 +390,7 @@ const SpinGame: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
   };
 
   return (
-    <div
-      className="flex flex-col  z-50 h-screen w-full items-center min-w-[600px]"
-    >
+    <div className="flex flex-col  z-50 h-screen w-full items-center min-w-[600px]">
       {showSpin ? (
         <Spin onSpinEnd={onSpinEnd} />
       ) : (
