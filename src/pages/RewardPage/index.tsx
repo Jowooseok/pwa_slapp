@@ -171,7 +171,7 @@ const Reward: React.FC = () => {
       </ScrollElement>
 
       {/** 이번달 추첨권 경품 보여주기 */}
-      <div className="flex flex-col gap-3 justify-center items-center mb-14">
+      <div className="flex flex-col gap-3 justify-center items-center mb-14 ">
         <div className="relative text-center font-jalnan text-3xl mb-6 z-10">
           <h1 className="z-30">
             This Month's
@@ -184,7 +184,7 @@ const Reward: React.FC = () => {
             className="absolute -top-1 -right-12 w-[68px] h-[68px] -z-10"
           />
         </div>
-        <div>
+      
           {/* 상위 3위 래플 보상 */}
           {raffleProducts.map((award, index) =>
             <RewardItem
@@ -205,7 +205,7 @@ const Reward: React.FC = () => {
             />
           )}
         </div>
-      </div>
+      
 
       <MyRankingWidget />
 
