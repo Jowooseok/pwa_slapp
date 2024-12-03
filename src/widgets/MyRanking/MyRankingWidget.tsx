@@ -21,8 +21,8 @@ const MyRankingWidget: React.FC = () => {
   }, [rank, starPoints, lotteryCount, slToken]);
 
   const handleRankingClick = () => {
-    setSelected('/rank');
-    navigate('/rank');
+    setSelected('/reward');
+    navigate('/reward');
   };
 
   return (
@@ -30,7 +30,7 @@ const MyRankingWidget: React.FC = () => {
       className="flex flex-col items-center justify-center text-white cursor-pointer"
       onClick={handleRankingClick}
     >
-      <h1 className="font-jalnan text-3xl">Ranking</h1>
+      <h1 className="font-jalnan text-3xl">My Rank</h1>
       <div className="bg-box mt-4 px-8 md:w-[595.95px] w-[332px] h-24 md:h-32 flex">
         {/* My Rank 섹션 */}
         <div className="w-[121px] h-full flex flex-col items-center justify-center gap-2">

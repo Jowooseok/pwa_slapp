@@ -95,6 +95,8 @@ import Silver from "./silver.png";
 import Bronze from "./bronze.png";
 import Lucky from "./lucky.png";
 import Boom from "./boom.png";
+import Trophy from "./trophy.png";
+import GoldMedal from "./goldmedal.png";
 
 const Images = {
   HorizontalLogo,
@@ -192,7 +194,9 @@ const Images = {
   Silver,
   Bronze,
   Lucky,
-  Boom
+  Boom,
+  Trophy,
+  GoldMedal,
 };
 
 export default Images;
