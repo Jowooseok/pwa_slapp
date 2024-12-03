@@ -50,7 +50,7 @@ const Attendance: React.FC = () => {
         ))}
       </div>
       <p className="flex items-start justify-start w-full font-medium text-xs md:text-sm mt-2 px-2 mb-8 text-white">
-        * Rewards: 1000 Star Points
+        * Rewards: 1,000 Star Points
       </p>
     </div>
   );
