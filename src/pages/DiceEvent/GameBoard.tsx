@@ -393,6 +393,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   />
                   <p>x {items.bronzeCount}</p>
                 </div>
+                <div className="flex flex-row gap-1 items-center ">
+                  <img
+                    src={Images.RewardNFT}
+                    alt="Reward NFT"
+                    className=" w-4 h-4 md:w-6 md:h-6"
+                  />
+                  <p>x {items.rewardNftCount}</p>
+                </div>
               </div>
             </DialogTrigger>
             <DialogContent className=" bg-[#21212F] border-none rounded-3xl text-white h-svh md:h-auto overflow-y-auto ">

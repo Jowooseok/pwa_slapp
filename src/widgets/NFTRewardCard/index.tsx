@@ -57,6 +57,16 @@ const NFTRewardList: React.FC = () => {
         { icon: <IoTicket className="w-5 h-5" />, description: 'Raffle Tickets Rewards: x10' },
       ],
     },
+    {
+      imgSrc: Images.RewardNFT,
+      altText: 'Reward NFT',
+      title: 'Reward NFT',
+      rewards: [
+     
+        { icon: <IoGameController className="w-5 h-5" />, description: 'Board & Spin Reward : x5' },
+      
+      ],
+    },
   ];
 
   return (
@@ -66,7 +76,7 @@ const NFTRewardList: React.FC = () => {
           <NFTRewardCard key={index} {...nft} />
         ))}
       </div>
-      <button className="font-medium bg-[#0147E5] rounded-full h-14 w-[165px] self-center">
+      <button className=" sticky bottom-0 font-medium bg-[#0147E5] rounded-full h-14 w-[165px] self-center">
         Shop NFT
       </button>
     </div>

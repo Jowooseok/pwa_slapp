@@ -97,6 +97,7 @@ import Lucky from "./lucky.png";
 import Boom from "./boom.png";
 import Trophy from "./trophy.png";
 import GoldMedal from "./goldmedal.png";
+import RewardNFT from "./rewardNFT.png";
 
 const Images = {
   HorizontalLogo,
@@ -197,6 +198,7 @@ const Images = {
   Boom,
   Trophy,
   GoldMedal,
+  RewardNFT,
 };
 
 export default Images;
