@@ -11,6 +11,7 @@ import { LeaderBoardEntry, Award } from "@/entities/RewardPage/types"; // 필요
 import RewardItem from "@/widgets/RewardItem"; // RewardItem 컴포넌트 임포트
 import { Link as ScrollLink, Element as ScrollElement } from "react-scroll"; // react-scroll 임포트
 import { useNavigate } from "react-router-dom"; // React Router 훅
+import { useUserStore } from "@/entities/User/model/userModel"; // useUserStore 임포트
 
 const Reward: React.FC = () => {
   const {
@@ -29,9 +30,22 @@ const Reward: React.FC = () => {
 
   const navigate = useNavigate(); // React Router 훅
 
+  // useUserStore에서 필요한 데이터 가져오기
+  const {
+    rank,
+    starPoints,
+    lotteryCount,
+    slToken,
+    fetchUserData,
+    isLoading: isUserLoading,
+    error: userError,
+  } = useUserStore();
+
   useEffect(() => {
+    // Reward 페이지가 로드될 때 리워드 데이터와 사용자 데이터를 불러옵니다.
     fetchLeaderHome();
-  }, [fetchLeaderHome]);
+    fetchUserData();
+  }, [fetchLeaderHome, fetchUserData]);
 
   // "View More" 버튼 핸들러
   const handleViewMore = () => {
@@ -40,12 +54,16 @@ const Reward: React.FC = () => {
     }
   };
 
-  if (isLoadingHome) {
+  if (isLoadingHome || isUserLoading) {
     return <LoadingSpinner />;
   }
 
   if (errorHome) {
     return <div className="text-center text-red-500">Error: {errorHome}</div>;
+  }
+
+  if (userError) {
+    return <div className="text-center text-red-500">Error: {userError}</div>;
   }
 
   // 랭킹 상품 데이터 배열 정의
@@ -113,14 +131,10 @@ const Reward: React.FC = () => {
       {/** 클릭 시 이전 랭킹(상품)결과로 이동 */}
       <div
         className="first-to-third-pace-box h-36 rounded-3xl mb-14 flex flex-row items-center justify-around p-5 cursor-pointer"
-        onClick={() => {
-          // 이전 보상 페이지로 이동하는 로직 추가
-          // 예: navigate('/previous-rewards');
-          console.log("Navigate to Previous Rewards");
-        }}
+        onClick={() => navigate('/previous-rewards')}
         role="button"
         tabIndex={0}
-        onKeyPress={(e) => { if (e.key === 'Enter') { console.log("Navigate to Previous Rewards"); } }}
+        onKeyPress={(e) => { if (e.key === 'Enter') navigate('/previous-rewards'); }}
       >
         <div className="flex flex-col gap-2">
           <p className="text-xl font-semibold">Previous Rewards</p>
@@ -171,7 +185,7 @@ const Reward: React.FC = () => {
       </ScrollElement>
 
       {/** 이번달 추첨권 경품 보여주기 */}
-      <div className="flex flex-col gap-3 justify-center items-center mb-14 ">
+      <div className="flex flex-col gap-3 justify-center items-center mb-14">
         <div className="relative text-center font-jalnan text-3xl mb-6 z-10">
           <h1 className="z-30">
             This Month's
@@ -204,9 +218,10 @@ const Reward: React.FC = () => {
               isTop={false}
             />
           )}
-        </div>
-      
+        
+      </div>
 
+      {/* My Ranking Widget */}
       <MyRankingWidget />
 
       {/** Leader Board */}
@@ -221,7 +236,7 @@ const Reward: React.FC = () => {
                 key={entry.userId}
                 className="h-16 w-full rounded-3xl first-to-third-pace-box flex flex-row items-center justify-around"
               >
-                <div className="flex flex-row gap-4 text-lg font-medium items-center">
+                <div className="flex flex-row gap-4  font-medium items-center">
                   <p>{entry.rank}</p>
                   <p className="truncate max-w-[120px]" title={entry.userId}>
                     {truncateString(entry.userId, 10)}

@@ -22,16 +22,21 @@ const MyRankingWidget: React.FC = () => {
 
   const handleRankingClick = () => {
     setSelected('/reward');
-    navigate('/reward');
+    if (window.location.pathname !== '/reward') {
+      navigate('/reward');
+    }
   };
 
   return (
     <div
       className="flex flex-col items-center justify-center text-white cursor-pointer w-full"
       onClick={handleRankingClick}
+      role="button"
+      tabIndex={0}
+      onKeyPress={(e) => { if (e.key === 'Enter') handleRankingClick(); }}
     >
       <h1 className="font-jalnan text-3xl">My Rank</h1>
-      <div className="bg-box mt-4 px-8  w-full h-24 md:h-32 flex">
+      <div className="bg-box mt-4 px-8 w-full h-24 md:h-32 flex">
         {/* My Rank 섹션 */}
         <div className="w-[121px] h-full flex flex-col items-center justify-center gap-2">
           <p className="text-base font-semibold">My Rank</p>
