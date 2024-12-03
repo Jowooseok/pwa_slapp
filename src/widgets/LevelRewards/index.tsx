@@ -21,7 +21,7 @@ const levelRewards: LevelReward[] = [
   { level: 9, dice: 70, points: 20000, tickets: 5, bgColor: '#F59E0B' },
   { level: 10, dice: 100, points: 30000, tickets: 7, bgColor: '#FACC15' },
   { level: 15, dice: 200, points: 50000, tickets: 15, bgColor: '#22C55E' },
-  { level: 20, dice: 500, points: 100000, tickets: 30, bgColor: '#0147E5' },
+  { level: 20, dice: 500, points: 100000, tickets: 100, bgColor: '#0147E5' },
 ];
 
 const LevelRewards: React.FC = () => {
