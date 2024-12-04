@@ -76,7 +76,7 @@ const NFTRewardList: React.FC = () => {
           <NFTRewardCard key={index} {...nft} />
         ))}
       </div>
-      <button className=" sticky bottom-0 font-medium bg-[#0147E5] rounded-full h-14 w-[165px] self-center">
+      <button onClick={()=>{alert("상점기능 준비중입니다.")}} className=" sticky bottom-0 font-medium bg-[#0147E5] rounded-full h-14 w-[165px] self-center">
         Shop NFT
       </button>
     </div>
