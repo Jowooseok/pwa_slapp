@@ -8,7 +8,6 @@ import MissionPage from "@/pages/MissionPage";
 import Reward from "@/pages/RewardPage";
 import DiceEventLayout from "./layout/DiceEventLayout";
 import InviteFriends from "@/pages/InviteFriends";
-import SlotMachine from "@/pages/SlotMachine";
 import SignUpPage from "@/pages/SignUp";
 import MainPage from "@/pages/MainPage";
 import Home from "@/pages/Home";
@@ -26,6 +25,7 @@ import SignupPassword from "@/pages/Password";
 import FindPassword from "@/pages/FindPassword";
 import MyPoint from "@/pages/MyPoint";
 import SplashScreen from "./components/SplashScreen";
+import PreviousRewards from "@/pages/PreviousRewards";
 
 const queryClient = new QueryClient();
 
@@ -82,8 +82,8 @@ const App: React.FC = () => {
             {renderDiceEventLayout("/mission", <MissionPage />)}
             {renderDiceEventLayout("/reward", <Reward />)}
             {renderDiceEventLayout("/invite-friends", <InviteFriends />)}
-            {renderDiceEventLayout("/test", <SlotMachine />)}
             {renderDiceEventLayout("/wallet", <WalletPage />)}
+            {renderDiceEventLayout("/previous-rewards", <PreviousRewards />)}
 
             {/* Hidden Pages */}
             {renderDiceEventLayout("/login", <Login />, true)}

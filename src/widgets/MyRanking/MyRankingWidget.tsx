@@ -1,5 +1,3 @@
-// src/widgets/MyRanking/MyRankingWidget.tsx
-
 import React from 'react';
 import Images from '@/shared/assets/images';
 import { formatNumber } from '@/shared/utils/formatNumber';
@@ -27,9 +25,12 @@ const MyRankingWidget: React.FC = () => {
     }
   };
 
+  // 경로에 따라 동적으로 너비 클래스 설정
+  const widgetWidthClass = window.location.pathname === '/dice-event' ? 'w-[332px]' : 'w-full';
+
   return (
     <div
-      className="flex flex-col items-center justify-center text-white cursor-pointer w-full"
+      className={`flex flex-col items-center justify-center text-white cursor-pointer ${widgetWidthClass} md:w-full`}
       onClick={handleRankingClick}
       role="button"
       tabIndex={0}
@@ -100,6 +101,7 @@ const MyRankingWidget: React.FC = () => {
                 end={slToken} 
                 duration={1} 
                 separator="," 
+                preserveValue={true}
               />
             </p>
           </div>
