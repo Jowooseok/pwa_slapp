@@ -375,11 +375,11 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
               ) : (
                 <>
                   <p className="text-xl font-semibold">
-                    Congratulations! You won {prizeData&&formatNumber(prizeData?.amount)}{" "}
+                    Congratulations! <br/>You won {prizeData&&formatNumber(prizeData?.amount)}{" "}
                     {getPrizeDisplayName(prizeData?.spinType)}!
                   </p>
                   <p className="text-[#a3a3a3]">
-                    This reward has been added to your account.
+                    This reward has been added to <br/>your account.
                   </p>
                 </>
               )}
