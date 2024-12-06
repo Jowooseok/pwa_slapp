@@ -302,20 +302,17 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   zIndex: 50,
                 }}
               >
-                {reward.type === "star" && (
+                {reward.type === "STAR" && (
                   <div className="flex flex-col items-center">
                     <img src={Images.Star} alt="star" className="h-6" />
                     <span className="mt-1 ">+{reward.value}</span>
                   </div>
                 )}
-                {reward.type === "dice" && (
+                {reward.type === "DICE" && (
                   <div className="flex flex-col items-center">
                     <img src={Images.Dice} alt="dice" className="h-6" />
                     <span className="mt-1">+{reward.value}</span>
                   </div>
-                )}
-                {reward.type === "airplane" && (
-                  <img src={Images.Airplane} alt="airplane" className="h-6" />
                 )}
                 {reward.type === "lottery" && (
                   <div className="flex flex-col items-center">

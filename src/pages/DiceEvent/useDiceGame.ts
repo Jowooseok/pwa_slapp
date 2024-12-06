@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import { useGauge } from "@/features/DiceEvent";
 import { useRPSGameStore } from "../RPSGame/store";
-import { useUserStore } from "@/entities/User/model/userModel";
+import { useUserStore, Board } from "@/entities/User/model/userModel"; // 'Board' 임포트 추가
 import { anywhereAPI } from "@/features/DiceEvent/api/anywhereApi";
 import { RollDiceResponseData } from '@/features/DiceEvent/api/rollDiceApi';
 
@@ -31,6 +31,7 @@ export const useDiceGame = () => {
     setError,
     isAuto, // isAuto 상태 추가
     setIsAuto,
+    boards, // boards 디스트럭처링 추가
   } = useUserStore();
 
   const [moving, setMoving] = useState<boolean>(false);
@@ -92,7 +93,7 @@ export const useDiceGame = () => {
 
       const moveStep = () => {
         currentPosition = (currentPosition + 1) % 20;
-     
+
         setPosition(currentPosition);
 
         if (currentPosition === 0) {
@@ -156,89 +157,96 @@ export const useDiceGame = () => {
     ]
   );
 
-// 주사위 결과 처리 함수 - 보상 중복 적용 제거
-const handleRollComplete = useCallback(
-  (value: number, data: RollDiceResponseData) => {
-    console.log('handleRollComplete 호출됨');
+  // 주사위 결과 처리 함수 - 보상 중복 적용 제거
+  const handleRollComplete = useCallback(
+    (value: number, data: RollDiceResponseData) => {
+      console.log('handleRollComplete 호출됨');
 
-    const previousPosition = position; // 이전 위치 저장
-    const newPosition = data.tileSequence; // 서버에서 받은 새로운 위치
+      const previousPosition = position; // 이전 위치 저장
+      const newPosition = data.tileSequence; // 서버에서 받은 새로운 위치
 
-    // 서버 응답 데이터를 상태에 업데이트
-    setRank(data.rank);
-    setStarPoints(data.star);
-    setLotteryCount(data.ticket);
-    setDiceCount(data.dice);
-    setSlToken(data.slToken);
-    setPosition(newPosition); // 여기서 position 업데이트
+      // 서버 응답 데이터를 상태에 업데이트
+      setRank(data.rank);
+      setStarPoints(data.star);
+      setLotteryCount(data.ticket);
+      setDiceCount(data.dice);
+      setSlToken(data.slToken);
+      setPosition(newPosition); // 여기서 position 업데이트
 
-    // 주사위를 굴렸으므로 diceCount는 이미 업데이트 되었으므로 추가 감소 없음
-    // setDiceCount((prev) => prev - 1); // 제거
+      // 주사위를 굴렸으므로 diceCount는 이미 업데이트 되었으므로 추가 감소 없음
+      // setDiceCount((prev) => prev - 1); // 제거
 
-    // 주사위 값 및 애니메이션 처리
-    setShowDiceValue(true);
-    setRolledValue(value);
-    setTimeout(() => {
-      setShowDiceValue(false);
-    }, 1000);
-    setButtonDisabled(true);
+      // 주사위 값 및 애니메이션 처리
+      setShowDiceValue(true);
+      setRolledValue(value);
+      setTimeout(() => {
+        setShowDiceValue(false);
+      }, 1000);
+      setButtonDisabled(true);
 
-    // "LUCKY" 이미지 표시 조건 확인 (isAuto가 false인 경우에만)
-    const expectedDiceValue = getExpectedDiceValue(gaugeValue);
-    if (!isAuto && value === expectedDiceValue) {
-      setIsLuckyVisible(true);
-      setTimeout(() => setIsLuckyVisible(false), 800); //0.8초 후 사라짐
-    }
-
-    movePiece(previousPosition, newPosition, (finalPosition) => {
-      if (isAuto && [5, 15, 18].includes(finalPosition)) {
-        // Auto 모드이고 특정 타일에 도착했을 때 게임을 활성화하지 않음
-        console.log(`Auto 모드: 타일 ${finalPosition} 도착, 게임 활성화 건너뜀`);
-        setButtonDisabled(false);
-      } else {
-        // Auto 모드가 아니거나 특정 타일이 아닌 경우 기존 로직 수행
-        switch (finalPosition) {
-          case 5:
-            setIsRPSGameActive(true);
-            rpsGameStore.fetchAllowedBetting();
-            break;
-          case 15:
-            setIsSpinGameActive(true);
-            break;
-          case 18:
-            setSelectingTile(true);
-            break;
-          default:
-            setButtonDisabled(false);
-            break;
-        }
+      // "LUCKY" 이미지 표시 조건 확인 (isAuto가 false인 경우에만)
+      const expectedDiceValue = getExpectedDiceValue(gaugeValue);
+      if (!isAuto && value === expectedDiceValue) {
+        setIsLuckyVisible(true);
+        setTimeout(() => setIsLuckyVisible(false), 800); //0.8초 후 사라짐
       }
-      setIsRolling(false); // 주사위 굴리기 완료 후 상태 리셋
-    });
-  },
-  [
-    position,
-    setPosition,
-    setRank,
-    setStarPoints,
-    setLotteryCount,
-    setDiceCount,
-    setSlToken,
-    movePiece,
-    setButtonDisabled,
-    setRolledValue,
-    setShowDiceValue,
-    setIsRPSGameActive,
-    setIsSpinGameActive,
-    setIsRolling,
-    getExpectedDiceValue,
-    setIsLuckyVisible,
-    gaugeValue,
-    rpsGameStore,
-    isAuto, // isAuto 추가
-  ]
-);
 
+      movePiece(previousPosition, newPosition, (finalPosition) => {
+        // 타일 데이터 가져오기
+        const tileData = boards.find((tile: Board) => tile.sequence === finalPosition);
+
+        if (tileData?.tileType === 'REWARD' && tileData.rewardType && tileData.rewardAmount) {
+          showReward(tileData.rewardType, tileData.rewardAmount);
+        }
+
+        if (isAuto && [5, 15, 18].includes(finalPosition)) {
+          // Auto 모드이고 특정 타일에 도착했을 때 게임을 활성화하지 않음
+          console.log(`Auto 모드: 타일 ${finalPosition} 도착, 게임 활성화 건너뜀`);
+          setButtonDisabled(false);
+        } else {
+          // Auto 모드가 아니거나 특정 타일이 아닌 경우 기존 로직 수행
+          switch (finalPosition) {
+            case 5:
+              setIsRPSGameActive(true);
+              rpsGameStore.fetchAllowedBetting();
+              break;
+            case 15:
+              setIsSpinGameActive(true);
+              break;
+            case 18:
+              setSelectingTile(true);
+              break;
+            default:
+              setButtonDisabled(false);
+              break;
+          }
+        }
+        setIsRolling(false); // 주사위 굴리기 완료 후 상태 리셋
+      });
+    },
+    [
+      position,
+      setPosition,
+      setRank,
+      setStarPoints,
+      setLotteryCount,
+      setDiceCount,
+      setSlToken,
+      movePiece,
+      setButtonDisabled,
+      setRolledValue,
+      setShowDiceValue,
+      setIsRPSGameActive,
+      setIsSpinGameActive,
+      setIsRolling,
+      getExpectedDiceValue,
+      setIsLuckyVisible,
+      gaugeValue,
+      rpsGameStore,
+      isAuto, // isAuto 추가
+      boards, // boards 추가
+    ]
+  );
 
   // 주사위 굴리기 함수
   const rollDice = useCallback(() => {
@@ -310,6 +318,7 @@ const handleRollComplete = useCallback(
       rpsGameStore,
       setError,
       isAuto, // isAuto 필요 시 추가
+      boards, // boards 필요 시 추가
     ]
   );
 

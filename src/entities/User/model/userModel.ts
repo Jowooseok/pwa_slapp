@@ -114,7 +114,7 @@ interface Items {
   rewardNftCount: number; // 추가된 필드
 }
 
-interface Board {
+export interface Board {
   rewardAmount: number | null;
   tileType: 'HOME' | 'REWARD' | 'SPIN' | 'RPS' | 'MOVE' | 'JAIL';
   rewardType: 'STAR' | 'DICE' | null;
