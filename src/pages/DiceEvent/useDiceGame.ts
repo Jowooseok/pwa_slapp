@@ -32,6 +32,7 @@ export const useDiceGame = () => {
     isAuto, // isAuto 상태 추가
     setIsAuto,
     boards, // boards 디스트럭처링 추가
+    items, // items 디스트럭처링 추가
   } = useUserStore();
 
   const [moving, setMoving] = useState<boolean>(false);
