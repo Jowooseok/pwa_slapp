@@ -12,6 +12,7 @@ import {
 import { HiX } from "react-icons/hi";
 import api from "@/shared/api/axiosInstance";
 import { useUserStore } from "@/entities/User/model/userModel";
+import { formatNumber } from "@/shared/utils/formatNumber";
 
 const data = [
   // 스타 보상
@@ -345,7 +346,7 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
       </button>
 
       <AlertDialog open={isDialogOpen}>
-        <AlertDialogContent className="rounded-3xl bg-[#21212F] text-white border-none">
+        <AlertDialogContent className="rounded-3xl bg-[#21212F] text-white border-none max-w-[90%] md:max-w-lg">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-center font-bold text-xl">
               <div className="flex flex-row items-center justify-between">
@@ -374,7 +375,7 @@ const Spin: React.FC<{ onSpinEnd: () => void }> = ({ onSpinEnd }) => {
               ) : (
                 <>
                   <p className="text-xl font-semibold">
-                    Congratulations! You won {prizeData?.amount}{" "}
+                    Congratulations! You won {prizeData&&formatNumber(prizeData?.amount)}{" "}
                     {getPrizeDisplayName(prizeData?.spinType)}!
                   </p>
                   <p className="text-[#a3a3a3]">
