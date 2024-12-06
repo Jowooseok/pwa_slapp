@@ -241,10 +241,10 @@ export const useUserStore = create<UserState>((set, get) => ({
     goldCount: 0,
     silverCount: 0,
     bronzeCount: 0,
-    timeDiceTimes: 0,
-    boardRewardTimes: 0,
-    ticketTimes: 0,
-    spinTimes: 0, // 추가된 필드 초기값 설정
+    timeDiceTimes: 1,
+    boardRewardTimes: 1,
+    ticketTimes: 1,
+    spinTimes: 1, // 추가된 필드 초기값 설정
     autoNftCount: 0, // 추가된 필드 초기값 설정
     rewardNftCount: 0, // 추가된 필드 초기값 설정
   },
@@ -294,10 +294,10 @@ export const useUserStore = create<UserState>((set, get) => ({
           goldCount: items.goldCount || 0,
           silverCount: items.silverCount || 0,
           bronzeCount: items.bronzeCount || 0,
-          timeDiceTimes: items.timeDiceTimes || 0,
-          boardRewardTimes: items.boardRewardTimes || 0,
-          ticketTimes: items.ticketTimes || 0,
-          spinTimes: items.spinTimes || 0, // 추가된 필드 설정
+          timeDiceTimes: items.timeDiceTimes || 1,
+          boardRewardTimes: items.boardRewardTimes || 1,
+          ticketTimes: items.ticketTimes || 1,
+          spinTimes: items.spinTimes || 1, // 추가된 필드 설정
           autoNftCount: items.autoNftCount || 0, // 추가된 필드 설정
           rewardNftCount: items.rewardNftCount || 0, // 추가된 필드 설정
         },
