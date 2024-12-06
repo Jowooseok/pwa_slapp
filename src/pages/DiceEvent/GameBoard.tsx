@@ -23,6 +23,7 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc"; // UTC 플러그인 추가
 import { RollDiceResponseData } from "@/features/DiceEvent/api/rollDiceApi";
 import NFTRewardList from "@/widgets/NFTRewardCard";
+import { PiSpinnerBallFill } from "react-icons/pi";
 
 dayjs.extend(duration);
 dayjs.extend(utc); // UTC 플러그인 적용
@@ -410,6 +411,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   <div className="flex flex-row items-center gap-2">
                     <IoTicket className="w-6 h-6" />
                     <p>Raffle Tickets Rewards: x{items.ticketTimes}</p>
+                  </div>
+                  <div className="flex flex-row items-center gap-2">
+                    <PiSpinnerBallFill className="w-6 h-6" />
+                    <p>Spin Rewards: x{items.spinTimes}</p>
                   </div>
                 </div>
                 <div className="flex flex-row items-center justify-end gap-1">
