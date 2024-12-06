@@ -98,6 +98,7 @@ import Boom from "./boom.png";
 import Trophy from "./trophy.png";
 import GoldMedal from "./goldmedal.png";
 import RewardNFT from "./rewardNFT.png";
+import Usdt from "./usdt.png";
 
 const Images = {
   HorizontalLogo,
@@ -199,6 +200,7 @@ const Images = {
   Trophy,
   GoldMedal,
   RewardNFT,
+  Usdt,
 };
 
 export default Images;
