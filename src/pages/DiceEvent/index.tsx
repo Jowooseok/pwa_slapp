@@ -148,7 +148,7 @@ const DiceEventPage: React.FC = () => {
                   charactorImageSrc={charactorImageSrc}
                 />
               </DialogTrigger>
-              <DialogContent className=" bg-[#21212F] border-none rounded-3xl text-white h-svh overflow-y-auto  font-semibold">
+              <DialogContent className=" bg-[#21212F] border-none rounded-3xl text-white h-svh overflow-x-hidden font-semibold  overflow-y-auto max-w-[90%] md:max-w-lg max-h-[80%]">
                 <LevelRewards />
               </DialogContent>
             </Dialog>
