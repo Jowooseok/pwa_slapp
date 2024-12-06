@@ -24,6 +24,7 @@ import utc from "dayjs/plugin/utc"; // UTC 플러그인 추가
 import { RollDiceResponseData } from "@/features/DiceEvent/api/rollDiceApi";
 import NFTRewardList from "@/widgets/NFTRewardCard";
 import { PiSpinnerBallFill } from "react-icons/pi";
+import { formatNumber } from "@/shared/utils/formatNumber";
 
 dayjs.extend(duration);
 dayjs.extend(utc); // UTC 플러그인 적용
@@ -306,13 +307,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 {reward.type === "STAR" && (
                   <div className="flex flex-col items-center">
                     <img src={Images.Star} alt="star" className="h-6" />
-                    <span className="mt-1 ">+{reward.value}</span>
+                    <span className="mt-1 ">+{formatNumber(reward.value*items.boardRewardTimes)}</span>
                   </div>
                 )}
                 {reward.type === "DICE" && (
                   <div className="flex flex-col items-center">
                     <img src={Images.Dice} alt="dice" className="h-6" />
-                    <span className="mt-1">+{reward.value}</span>
+                    <span className="mt-1">+{formatNumber(reward.value*items.boardRewardTimes)}</span>
                   </div>
                 )}
                 {reward.type === "lottery" && (
@@ -322,7 +323,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                       alt="lottery"
                       className="h-6"
                     />
-                    <span className="mt-1">+{reward.value}</span>
+                    <span className="mt-1">+{formatNumber(reward.value*items.ticketTimes)}</span>
                   </div>
                 )}
               </motion.div>
