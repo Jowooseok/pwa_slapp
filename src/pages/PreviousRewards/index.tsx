@@ -1,3 +1,5 @@
+// src/pages/PreviousRewards/index.tsx
+
 import React, { useEffect, useState } from "react";
 import { TopTitle } from "@/shared/components/ui";
 import Images from "@/shared/assets/images";
@@ -209,7 +211,9 @@ const PreviousRewards: React.FC = () => {
                   dialogRankings.map((r) => (
                     <div
                       key={r.rank}
-                      className={`flex flex-row gap-10 border-b pb-2 truncate`}
+                      className={`flex flex-row gap-10 border-b pb-2 truncate ${
+                        r.userId === myUserId ? "text-[#fde047] font-bold" : ""
+                      }`}
                     >
                       <p>{r.rank}</p>
                       <p>{r.userId}</p>
