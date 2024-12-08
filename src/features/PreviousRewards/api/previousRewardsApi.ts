@@ -1,3 +1,5 @@
+//src\features\PreviousRewards\api\previousRewardsApi.ts
+
 import api from '@/shared/api/axiosInstance';
 
 export interface RangeRankingData {

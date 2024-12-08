@@ -1,3 +1,5 @@
+//src\entities\PreviousRewards\api\previousRewardsApi.ts
+
 import api from '@/shared/api/axiosInstance';
 
 export interface InitialDataResponse {
