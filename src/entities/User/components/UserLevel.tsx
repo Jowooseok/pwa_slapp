@@ -40,7 +40,7 @@ const UserLevel: React.FC<{
       />
       <div className="flex flex-row items-center w-full px-4 gap-2">
         <p className="font-semibold text-[8px] md:text-xs">Lv.{userLv}</p>
-        <div className="flex flex-row border border-[#F59E0B] rounded-full w-full h-2 gap-[0.5px]">
+        <div className="flex flex-row border border-[#F59E0B] rounded-full w-full h-2">
           {/* 레벨 진행 바 */}
           {[...Array(100)].map((_, i) => {
             let barColor = '';
