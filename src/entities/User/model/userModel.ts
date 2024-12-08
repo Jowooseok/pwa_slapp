@@ -116,6 +116,10 @@ interface UserState {
   addAutoItem: () => Promise<void>;
   removeAutoItem: () => Promise<void>;
   addAllItems: () => Promise<void>;
+  addDice : () => Promise<void>;
+  removeDice: () => Promise<void>;
+  addSLToken: () => Promise<void>;
+  removeSLToken: () => Promise<void>;
 
 
 }
@@ -715,4 +719,68 @@ export const useUserStore = create<UserState>((set, get) => ({
     }
   },
 
+  addDice: async () => {
+    try {
+      const response = await api.get('/test/items/dice');
+      if (response.data.code === 'OK') {
+        set({ diceCount: response.data.data.diceCount });
+        console.log('주사위 아이템 추가 성공:', response.data.data);
+      } else {
+        throw new Error(response.data.message || '주사위 아이템 추가 실패');
+      }
+    } catch (error: any) {
+      console.error('주사위 아이템 추가 실패:', error);
+      set({ error: error.message || '주사위 아이템 추가에 실패했습니다.' });
+      throw error;
+    }
+  },
+
+  removeDice: async () => {
+    try {
+      const response = await api.get('/test/items/dice/delete');
+      if (response.data.code === 'OK') {
+
+        set({ diceCount: response.data.data.diceCount });
+        console.log('주사위 아이템 삭제 성공:', response.data.data);
+      } else {
+        throw new Error(response.data.message || '주사위 아이템 삭제 실패');
+      }
+    } catch (error: any) {
+      console.error('주사위 아이템 삭제 실패:', error);
+      set({ error: error.message || '주사위 아이템 삭제에 실패했습니다.' });
+      throw error;
+    }
+  },
+
+  addSLToken: async () => {
+    try {
+      const response = await api.get('/test/items/sl');
+      if (response.data.code === 'OK') {
+        set({ slToken: response.data.data.slCount });
+        console.log('SL 토큰 아이템 추가 성공:', response.data.data);
+      } else {
+        throw new Error(response.data.message || 'SL 토큰 아이템 추가 실패');
+      }
+    } catch (error: any) {
+      console.error('SL 토큰 아이템 추가 실패:', error);
+      set({ error: error.message || 'SL 토큰 아이템 추가에 실패했습니다.' });
+      throw error;
+    }
+  },
+
+  removeSLToken: async () => {
+    try {
+      const response = await api.get('/test/items/sl/delete');
+      if (response.data.code === 'OK') {
+        set({ slToken: response.data.data.slCount });
+        console.log('SL 토큰 아이템 삭제 성공:', response.data.data);
+      } else {
+        throw new Error(response.data.message || 'SL 토큰 아이템 삭제 실패');
+      }
+    } catch (error: any) {
+      console.error('SL 토큰 아이템 삭제 실패:', error);
+      set({ error: error.message || 'SL 토큰 아이템 삭제에 실패했습니다.' });
+      throw error;
+    }
+  },
 }));
