@@ -455,7 +455,7 @@ const handleAddAll = async () => {
             />
           </div>
           <p className="absolute text-white text-sm font-semibold drop-shadow bottom-6 right-5 z-20 md:bottom-11 md:right-9">
-            x {diceCount}
+            x {formatNumber(diceCount)}
           </p>
           {/* "LUCKY" image animation */}
           <AnimatePresence>
