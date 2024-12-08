@@ -100,6 +100,9 @@ interface UserState {
 
   refillDice: () => Promise<void>;
 
+  pet: Pet; // pet 속성 추가
+
+
   // **추가된 함수들**
   addGoldItem: () => Promise<void>;
   removeGoldItem: () => Promise<void>;
@@ -140,10 +143,17 @@ export interface Board {
 interface Pet {
   type: 'DOG' | 'CAT' | null; // 수정된 부분: null 허용
   level: number | null; // 수정된 부분: null 허용
+  exp: number; // 경험치 추가
 }
 
 // 사용자 상태를 관리하는 Zustand 스토어 생성
 export const useUserStore = create<UserState>((set, get) => ({
+
+  pet : {
+    type: null,
+    level: null,
+    exp: 0,
+  },
   // 초기 상태 값 설정
   userId: null,
   setUserId: (userId) => set({ userId }),
@@ -230,16 +240,21 @@ export const useUserStore = create<UserState>((set, get) => ({
     try {
       const data = await rollDiceAPI(gauge, sequence);
   
-      // 상태 업데이트를 여기서 하지 않고, 데이터만 반환합니다.
+      // 서버 응답에서 level과 exp를 상태에 직접 설정
       set({
         rank: data.rank,
         starPoints: data.star,
         lotteryCount: data.ticket,
         diceCount: data.dice,
         slToken: data.slToken,
+        userLv: data.level, // 레벨 업데이트
+        pet: {
+          ...get().pet,
+          level: data.level,
+          exp: data.exp,
+        },
         isLoading: false,
         error: null,
-        // position: data.tileSequence, // position 업데이트는 나중에
       });
   
       return data; // 데이터를 반환합니다.
@@ -248,6 +263,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       throw error;
     }
   },
+  
 
   diceRefilledAt: null,
   setDiceRefilledAt: (value) => set({ diceRefilledAt: value }),
@@ -293,18 +309,18 @@ export const useUserStore = create<UserState>((set, get) => ({
         userId: user.userId,
         referrerId: user.referrerId, // 추가된 부분: referrerId 설정
         isAuto: user.isAuto, // 추가된 부분: isAuto 설정
-
+  
         position: nowDice.tileSequence,
         diceCount: nowDice.dice,
         starPoints: rank.star,
         lotteryCount: rank.ticket,
-        userLv: pet.level || 1, // pet.level이 null일 경우 기본값 1
+        userLv: pet.level || 1, // 서버에서 받은 레벨 설정, 기본값 1
         characterType: pet.type ? pet.type.toLowerCase() as 'dog' | 'cat' : null, // 수정된 부분: pet.type이 null일 수 있음
-
+  
         slToken: rank.slToken,
         rank: rank.rank,
         diceRefilledAt: rank.diceRefilledAt, // 추가된 부분: diceRefilledAt 설정
-
+  
         items: {
           goldCount: items.goldCount || 0,
           silverCount: items.silverCount || 0,
@@ -316,16 +332,16 @@ export const useUserStore = create<UserState>((set, get) => ({
           autoNftCount: items.autoNftCount || 0, // 추가된 필드 설정
           rewardNftCount: items.rewardNftCount || 0, // 추가된 필드 설정
         },
-
+  
         boards: boards,
-
+  
         monthlyPrize: {
           year: monthlyPrize.year,
           month: monthlyPrize.month,
           prizeType: monthlyPrize.prizeType,
           amount: monthlyPrize.amount,
         },
-
+  
         weekAttendance: {
           mon: weekAttendance.mon,
           tue: weekAttendance.tue,
@@ -335,43 +351,15 @@ export const useUserStore = create<UserState>((set, get) => ({
           sat: weekAttendance.sat,
           sun: weekAttendance.sun,
         },
-
+  
+        pet: {
+          type: pet.type ? pet.type.toLowerCase() as 'DOG' | 'CAT' : null,
+          level: pet.level || 1, // 서버에서 받은 레벨 설정, 기본값 1
+          exp: pet.exp || 0, // 서버에서 받은 경험치 설정, 기본값 0
+        },
+  
         isLoading: false,
         error: null,
-      });
-
-      console.log("fetchUserData - 데이터 업데이트 완료:", {
-        userId: user.userId,
-        referrerId: user.referrerId, // 추가된 부분
-        isAuto: user.isAuto, // 추가된 부분
-        position: nowDice.tileSequence,
-        diceCount: nowDice.dice,
-        starPoints: rank.star,
-        lotteryCount: rank.ticket,
-        userLv: pet.level,
-        characterType: pet.type ? pet.type.toLowerCase() as 'dog' | 'cat' : null, // 수정된 부분
-        slToken: rank.slToken,
-        rank: rank.rank,
-        diceRefilledAt: rank.diceRefilledAt, // 추가된 부분
-        items: {
-          goldCount: items.goldCount || 0,
-          silverCount: items.silverCount || 0,
-          bronzeCount: items.bronzeCount || 0,
-          timeDiceTimes: items.timeDiceTimes || 0,
-          boardRewardTimes: items.boardRewardTimes || 0,
-          ticketTimes: items.ticketTimes || 0,
-          spinTimes: items.spinTimes || 0, // 추가된 필드 설정
-          autoNftCount: items.autoNftCount || 0, // 추가된 필드 설정
-          rewardNftCount: items.rewardNftCount || 0, // 추가된 필드 설정
-        },
-        boards: boards,
-        monthlyPrize: {
-          year: monthlyPrize.year,
-          month: monthlyPrize.month,
-          prizeType: monthlyPrize.prizeType,
-          amount: monthlyPrize.amount,
-        },
-        weekAttendance: weekAttendance,
       });
     } catch (error: any) {
       console.error('fetchUserData 실패:', error);
@@ -379,6 +367,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       throw error;
     }
   },
+  
 
   // 로그인 함수
   login: async (initData: string): Promise<void> => {
@@ -537,6 +526,8 @@ export const useUserStore = create<UserState>((set, get) => ({
       throw error; // 에러를 다시 던져 컴포넌트에서 처리할 수 있도록 함
     }
   },
+
+    
 
    // 테스트용 아이템 추가 함수들
    addGoldItem: async () => {
