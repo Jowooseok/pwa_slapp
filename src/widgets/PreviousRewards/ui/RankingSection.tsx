@@ -91,21 +91,19 @@ const RankingSection: React.FC<RankingSectionProps> = ({
           return (
             <div
               key={r.rank}
-              className="relative flex flex-row items-center p-4 border-b gap-4 "
+              className={`relative flex flex-row items-center p-4 border-b gap-4 `}
             >
               <p>{r.rank}</p>
               <div className="flex flex-col gap-1">
                 <p>{r.userId}</p>
-                <div className="flex flex-row items-center gap-1">
+                <div className={`flex flex-row items-center gap-1 `}>
                   <img
                     src={r.selectedRewardType === "USDT" ? Images.Usdt : Images.TokenReward}
                     alt="token"
                     className="w-5 h-5"
                   />
                   <p
-                    className={`text-sm font-semibold ${
-                      r.itsMe ? "text-[#fde047]" : ""
-                    }`}
+                    className={`text-sm font-semibold `}
                   >
                     {r.slRewards.toLocaleString()}{" "}
                     <span className="font-normal text-[#a3a3a3]">
@@ -137,9 +135,7 @@ const RankingSection: React.FC<RankingSectionProps> = ({
                 />
                 <p className="text-sm font-semibold">
                   500{" "}
-                  <span className="font-normal text-[#a3a3a3]">
-                    (or 50 USDT)
-                  </span>{" "}
+            
                 </p>
               </div>
             </div>
@@ -155,7 +151,7 @@ const RankingSection: React.FC<RankingSectionProps> = ({
               dialogRankings.map((r) => (
                 <div
                   key={r.rank}
-                  className="flex flex-row gap-10 border-b pb-2 truncate"
+                  className={`flex flex-row gap-10 border-b pb-2 truncate ${r.itsMe ? "text-[#FDE047] font-bold" : ""}`}
                 >
                   <p>{r.rank}</p>
                   <p>{r.userId}</p>
@@ -176,9 +172,7 @@ const RankingSection: React.FC<RankingSectionProps> = ({
             <img src={Images.TokenReward} alt="token" className="w-5 h-5" />
             <p className="text-sm font-semibold">
               25{" "}
-              <span className="font-normal text-[#a3a3a3]">
-                (or 2.5 USDT)
-              </span>{" "}
+            
             </p>
           </div>
         </div>
@@ -194,9 +188,7 @@ const RankingSection: React.FC<RankingSectionProps> = ({
             <img src={Images.TokenReward} alt="token" className="w-5 h-5" />
             <p className="text-sm font-semibold">
               10{" "}
-              <span className="font-normal text-[#a3a3a3]">
-                (or 1 USDT)
-              </span>{" "}
+          
             </p>
           </div>
         </div>

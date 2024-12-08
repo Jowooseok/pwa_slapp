@@ -1,4 +1,4 @@
-//src\pages\PreviousRewards\index.tsx
+// src/pages/PreviousRewards/index.tsx
 
 import React, { useEffect, useState } from "react";
 import { TopTitle } from "@/shared/components/ui";
@@ -20,6 +20,9 @@ import { useRaffleFeatureStore } from '@/features/PreviousRewards/model/raffleFe
 import { selectRankingReward, selectRaffleReward } from "@/features/PreviousRewards/api/rewardApi";
 import { PlayerData } from "@/features/PreviousRewards/types/PlayerData";
 
+import LoadingSpinner from "@/shared/components/ui/loadingSpinner"; // LoadingSpinner 임포트
+import ErrorMessage from "@/shared/components/ui/ErrorMessage"; // 에러 메시지 컴포넌트 임포트 (선택 사항)
+
 interface RewardData {
   rank: number;
   userId: string;
@@ -27,6 +30,7 @@ interface RewardData {
   usdtRewards: number;
   nftType: string | null;
   selectedRewardType: string | null;
+  itsMe?: boolean; // 추가된 필드
 }
 
 const PreviousRewards: React.FC = () => {
@@ -46,7 +50,7 @@ const PreviousRewards: React.FC = () => {
   } = usePreviousRewardsFeatureStore();
 
   const {
-    myRankings,
+    myRankings: raffleMyRankings, // 이름 충돌 방지를 위해 별칭 사용
     topRankings: raffleTopRankings,
     isLoadingInitialRaffle,
     errorInitialRaffle,
@@ -68,7 +72,7 @@ const PreviousRewards: React.FC = () => {
   const [rewardDialogOpen, setRewardDialogOpen] = useState(false);
   const [selectedMyData, setSelectedMyData] = useState<RewardData | null>(null);
 
-  const round = 1; // 예시
+  const round = 1; // 예시 라운드 번호. 실제 라운드 번호로 대체하세요.
 
   useEffect(() => {
     loadInitialRanking();
@@ -77,11 +81,11 @@ const PreviousRewards: React.FC = () => {
   useEffect(() => {
     // 래플 탭 진입 시 데이터 없으면 로딩
     if (currentTab === "raffle") {
-      if (!myRankings || myRankings.length === 0 || !raffleTopRankings || raffleTopRankings.length === 0) {
+      if (!raffleMyRankings || raffleMyRankings.length === 0 || !raffleTopRankings || raffleTopRankings.length === 0) {
         loadInitialRaffle();
       }
     }
-  }, [currentTab, loadInitialRaffle, myRankings, raffleTopRankings]);
+  }, [currentTab, loadInitialRaffle, raffleMyRankings, raffleTopRankings]);
 
   const handleRangeClick = async (start: number, end: number) => {
     if (currentTab === "ranking") {
@@ -93,28 +97,30 @@ const PreviousRewards: React.FC = () => {
     setDialogOpen(true);
   };
 
-  const myData = myRanking && myRanking[0] ? myRanking[0] : null;
+  const myData = myRanking && myRanking.length > 0 ? myRanking[0] : null;
   const isReceived = myData?.selectedRewardType === "USDT" || myData?.selectedRewardType === "SL";
 
-  const currentRaffleItem = myRankings && myRankings.length > 0 ? myRankings[currentRaffleIndex] : null;
+  const currentRaffleItem = raffleMyRankings && raffleMyRankings.length > 0 ? raffleMyRankings[currentRaffleIndex] : null;
   const raffleIsReceived = currentRaffleItem?.selectedRewardType === "USDT" || currentRaffleItem?.selectedRewardType === "SL";
 
   // dialogRankings, dialogRaffleRankings -> PlayerData 형태 변환
   const dialogRankingsPlayerData = dialogRankings.map(r => ({
     ...r,
     nftType: r.nftType ?? null,
-    selectedRewardType: r.selectedRewardType ?? null
+    selectedRewardType: r.selectedRewardType ?? null,
+    // itsMe는 서버에서 이미 설정됨
   }));
 
   const dialogRaffleRankingsPlayerData = dialogRaffleRankings.map(r => ({
     ...r,
     nftType: r.nftType ?? null,
-    selectedRewardType: r.selectedRewardType ?? null
+    selectedRewardType: r.selectedRewardType ?? null,
+    // itsMe는 서버에서 이미 설정됨
   }));
 
   const handleGetReward = async (data: RewardData) => {
     if (data.selectedRewardType !== null) {
-      alert("Already received your reward!");
+      alert("이미 보상을 선택하셨습니다!");
       return;
     }
 
@@ -174,18 +180,18 @@ const PreviousRewards: React.FC = () => {
       });
     }
 
-    alert("Reward received!");
+    alert("보상을 성공적으로 받았습니다!");
     setSelectedMyData((prev) => prev ? { ...prev, ...updatedData } : null);
     setRewardDialogOpen(false);
   };
 
   // 로딩/에러 처리
   if (currentTab === "ranking") {
-    if (isLoadingInitial) return <div className="text-white">Loading...</div>;
-    if (errorInitial) return <div className="text-red-500">{errorInitial}</div>;
+    if (isLoadingInitial) return <LoadingSpinner />;
+    if (errorInitial) return <ErrorMessage message={errorInitial} />;
   } else {
-    if (isLoadingInitialRaffle) return <div className="text-white">Loading Raffle...</div>;
-    if (errorInitialRaffle) return <div className="text-red-500">{errorInitialRaffle}</div>;
+    if (isLoadingInitialRaffle) return <LoadingSpinner />;
+    if (errorInitialRaffle) return <ErrorMessage message={errorInitialRaffle} />;
   }
 
   return (
@@ -199,7 +205,7 @@ const PreviousRewards: React.FC = () => {
         onSelect={(type) => handleSelectRewardType(type)}
       />
 
-      <Tabs defaultValue="ranking" className=" w-full rounded-none" onValueChange={(val) => setCurrentTab(val as "ranking"|"raffle")}>
+      <Tabs defaultValue="ranking" className="w-full rounded-none" onValueChange={(val) => setCurrentTab(val as "ranking" | "raffle")}>
         <TabsList className="grid w-full grid-cols-2 rounded-none outline-none bg-[#0D1226]">
           <TabsTrigger
             value="ranking"
@@ -220,9 +226,15 @@ const PreviousRewards: React.FC = () => {
             myData={myData ? {
               ...myData,
               nftType: myData.nftType ?? null,
-              selectedRewardType: myData.selectedRewardType ?? null
+              selectedRewardType: myData.selectedRewardType ?? null,
+              itsMe: myData.itsMe ?? false, // 추가된 필드
             } : null}
-            topRankings={topRankings.map(r => ({...r, nftType: r.nftType ?? null, selectedRewardType: r.selectedRewardType ?? null}))}
+            topRankings={topRankings.map(r => ({
+              ...r,
+              nftType: r.nftType ?? null,
+              selectedRewardType: r.selectedRewardType ?? null,
+              itsMe: r.itsMe ?? false, // 추가된 필드
+            }))}
             isReceived={isReceived}
             onGetReward={() => {
               if (!myData) return;
@@ -233,6 +245,7 @@ const PreviousRewards: React.FC = () => {
                 usdtRewards: myData.usdtRewards ?? 0,
                 nftType: myData.nftType ?? null,
                 selectedRewardType: myData.selectedRewardType ?? null,
+                itsMe: myData.itsMe ?? false, // 추가된 필드
               });
             }}
             dialogOpen={dialogOpen}
@@ -247,12 +260,27 @@ const PreviousRewards: React.FC = () => {
 
         <TabsContent value="raffle">
           <RaffleSection
-            myRankings={(myRankings ?? []).map(r=>({...r, nftType: r.nftType ?? null, selectedRewardType: r.selectedRewardType ?? null}))}
-            raffleTopRankings={(raffleTopRankings ?? []).map(r=>({...r, nftType: r.nftType ?? null, selectedRewardType: r.selectedRewardType ?? null}))}
+            myRankings={(raffleMyRankings ?? []).map(r => ({
+              ...r,
+              nftType: r.nftType ?? null,
+              selectedRewardType: r.selectedRewardType ?? null,
+              itsMe: r.itsMe ?? false, // 추가된 필드
+            }))}
+            raffleTopRankings={(raffleTopRankings ?? []).map(r => ({
+              ...r,
+              nftType: r.nftType ?? null,
+              selectedRewardType: r.selectedRewardType ?? null,
+              itsMe: r.itsMe ?? false, // 추가된 필드
+            }))}
             currentRaffleIndex={currentRaffleIndex}
             setCurrentRaffleIndex={setCurrentRaffleIndex}
             raffleIsReceived={raffleIsReceived}
-            currentRaffleItem={currentRaffleItem ? {...currentRaffleItem, nftType: currentRaffleItem.nftType ?? null, selectedRewardType: currentRaffleItem.selectedRewardType ?? null} : null}
+            currentRaffleItem={currentRaffleItem ? {
+              ...currentRaffleItem,
+              nftType: currentRaffleItem.nftType ?? null,
+              selectedRewardType: currentRaffleItem.selectedRewardType ?? null,
+              itsMe: currentRaffleItem.itsMe ?? false, // 추가된 필드
+            } : null}
             onGetReward={() => {
               if (!currentRaffleItem) return;
               handleGetReward({
@@ -262,6 +290,7 @@ const PreviousRewards: React.FC = () => {
                 usdtRewards: currentRaffleItem.usdtRewards,
                 nftType: currentRaffleItem.nftType ?? null,
                 selectedRewardType: currentRaffleItem.selectedRewardType ?? null,
+                itsMe: currentRaffleItem.itsMe ?? false, // 추가된 필드
               });
             }}
             dialogOpen={dialogOpen}

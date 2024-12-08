@@ -1,30 +1,17 @@
 // src/entities/PreviousRewards/api/raffleApi.ts
+
 import api from '@/shared/api/axiosInstance';
+import { PlayerData } from '@/features/PreviousRewards/types/PlayerData';
 
 export interface RaffleInitialDataResponse {
-  myRankings: Array<{
-    userId: string;
-    rank: number;
-    slRewards: number;
-    usdtRewards: number;
-    nftType: string | null;
-    selectedRewardType: string | null;
-  }>;
-  rankings: Array<{
-    userId: string;
-    rank: number;
-    slRewards: number;
-    usdtRewards: number;
-    nftType: string | null;
-    itsMe?: boolean;
-    selectedRewardType: string | null;
-  }>;
+  myRankings: PlayerData[];
+  rankings: PlayerData[];
 }
 
 // 래플 초기 데이터 조회 API
 export const fetchInitialRaffleAPI = async (): Promise<RaffleInitialDataResponse> => {
   const response = await api.get("/leader/raffle/initial");
-  console.log("rapple = ", response);
+  console.log("raffle = ", response);
   return response.data.data as RaffleInitialDataResponse;
 };
 
@@ -35,6 +22,7 @@ export interface RaffleRangeRankingData {
   usdtRewards: number;
   nftType: string | null;
   selectedRewardType?: string | null;
+  itsMe?: boolean; // 추가된 필드
 }
 
 // 래플 범위별 랭킹 조회 API

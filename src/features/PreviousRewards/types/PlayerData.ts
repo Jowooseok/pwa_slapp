@@ -1,4 +1,5 @@
-// src\features\PreviousRewards\types\PlayerData.ts
+// src/features/PreviousRewards/types/PlayerData.ts
+
 export interface PlayerData {
     userId: string;
     rank: number;
@@ -6,6 +7,6 @@ export interface PlayerData {
     usdtRewards: number;
     nftType: string | null;
     selectedRewardType: string | null; // 반드시 null 또는 string
-    itsMe?: boolean;
+    itsMe?: boolean; 
   }
   
