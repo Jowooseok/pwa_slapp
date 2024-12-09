@@ -125,7 +125,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     return () => clearInterval(interval);
   }, [diceRefilledAt, fetchUserData, diceCount, items.autoNftCount]);
 
-  // isAuto가 true일 때 5초마다 diceRef.current.roll() 호출
+  // isAuto가 true일 때 1초마다 diceRef.current.roll() 호출
   useEffect(() => {
     let autoInterval: NodeJS.Timeout;
 
@@ -141,7 +141,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           console.log("Auto rolling dice");
           diceRef.current?.roll();
         }
-      }, 5000); // 5초
+      }, 1000); // 1초
     } else {
       console.log("Auto mode 비활성화됨");
     }
