@@ -158,7 +158,15 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
           </div>
 
           {/* 게임 보드 및 애니메이션 */}
-          <div className="mt-8 relative">
+          <motion.div
+  initial={{ y: 300, opacity: 0 }} // 아래에서 시작 (y: 300)
+  animate={{ y: 0, opacity: 1 }} // 제자리로 이동하며 나타남
+  transition={{
+    duration: 1, // 애니메이션 지속 시간
+    ease: "easeOut", // 애니메이션 효과
+  }}
+  className="mt-8 relative"
+>
             <img
               src={Images.RPSGame}
               alt="RPS Game"
@@ -269,7 +277,7 @@ const RPSGame: React.FC<RPSGameProps> = ({ onGameEnd, onCancel }) => {
                 onClick={() => handleSpin("scissors")}
               />
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
       <RPSResultDialog
