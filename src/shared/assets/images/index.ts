@@ -99,6 +99,8 @@ import Trophy from "./trophy.png";
 import GoldMedal from "./goldmedal.png";
 import RewardNFT from "./rewardNFT.png";
 import Usdt from "./usdt.png";
+import LinkedIn from "./LinkedIn.png";
+import MissionCompleted from "./mission-completed.png"
 
 const Images = {
   HorizontalLogo,
@@ -201,6 +203,9 @@ const Images = {
   GoldMedal,
   RewardNFT,
   Usdt,
+  LinkedIn,
+  MissionCompleted,
+
 };
 
 export default Images;

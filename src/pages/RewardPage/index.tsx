@@ -85,7 +85,7 @@ const Reward: React.FC = () => {
   return (
     <div className="flex flex-col px-6 md:px-0 text-white mb-44 w-full ">
       <TopTitle title="Rewards" />
-      <div className="flex flex-row items-center justify-between mb-11">
+      <div className="flex flex-row items-center justify-between mb-11 font-semibold">
         {/* "Last month's Results" 클릭 시 다른 페이지로 이동 */}
         <div
           className="text-center cursor-pointer"

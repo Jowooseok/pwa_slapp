@@ -22,7 +22,7 @@ const InviteFriends: React.FC = () => {
 
   return (
     <div className="flex flex-col mx-6 mb-44 text-white items-center md:mx-28">
-      <TopTitle title="Invite Friends" />
+      <TopTitle title="Invite Friends" back={true} />
       <p>Referral Code</p>
       <button
         className="flex flex-row gap-2 items-center border border-white rounded-full w-56 md:w-80 h-16 justify-center mt-2 px-4"
