@@ -556,17 +556,13 @@ const handleRemoveSLToken = async () => {
               </DialogHeader>
               <div className="flex flex-col mt-4 gap-4">
                 <div className="flex flex-col bg-[#1F1E27] p-5 rounded-3xl border-2 border-[#35383F] font-medium gap-2">
-                  <div className="flex flex-row items-center gap-2">
-                    <IoDice className="w-6 h-6" />
-                    <p>Dice Generation : x{items.timeDiceTimes}</p>
-                  </div>
-                  <div className="flex flex-row items-center gap-2">
+                                <div className="flex flex-row items-center gap-2">
                     <IoGameController className="w-6 h-6" />
-                    <p>Game Board Rewards : x{items.boardRewardTimes}</p>
+                    <p>Game Board Points : x{items.boardRewardTimes}</p>
                   </div>
                   <div className="flex flex-row items-center gap-2">
                     <IoTicket className="w-6 h-6" />
-                    <p>Raffle Tickets Rewards: x{items.ticketTimes}</p>
+                    <p>Raffle Tickets : x{items.ticketTimes}</p>
                   </div>
                   <div className="flex flex-row items-center gap-2">
                     <PiSpinnerBallFill className="w-6 h-6" />

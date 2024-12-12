@@ -201,7 +201,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       lotteryCount: typeof value === 'function' ? value(state.lotteryCount) : value,
     })),
 
-  userLv: 1,
+  userLv: 100,
   setUserLv: (userLv) => set({ userLv }),
 
   characterType: null, // 수정된 부분: 초기값을 null로 설정
