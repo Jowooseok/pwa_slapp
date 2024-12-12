@@ -77,7 +77,7 @@ const DiceEventPage: React.FC = () => {
 
   // 레벨 업 감지: userLv가 이전 레벨보다 커질 때만 팝업 표시
   useEffect(() => {
-    console.log(userLv)
+    console.log("userlv :", userLv, "prevlevel :", prevLevel)
     if (userLv > prevLevel) {
       setShowLevelUpDialog(true);
     }

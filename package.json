@@ -46,6 +46,7 @@
     "@twa-dev/sdk": "^7.0.0",
     "@types/react-qr-reader": "^2.1.7",
     "@vitejs/plugin-basic-ssl": "^1.1.0",
+    "antd": "5.22.4",
     "axios": "^1.7.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

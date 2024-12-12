@@ -327,7 +327,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         diceCount: nowDice.dice,
         starPoints: rank.star,
         lotteryCount: rank.ticket,
-        userLv: pet.level || 1, // 서버에서 받은 레벨 설정, 기본값 1
+        userLv: pet.level || 100, // 서버에서 받은 레벨 설정, 기본값 1
         characterType: pet.type ? pet.type.toLowerCase() as 'dog' | 'cat' : null, // 수정된 부분: pet.type이 null일 수 있음
   
         slToken: rank.slToken,
@@ -462,7 +462,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       diceCount: 0,
       starPoints: 0,
       lotteryCount: 0,
-      userLv: 1,
+      userLv: 100,
       characterType: null, // 수정된 부분: characterType 초기화
       slToken: 0,
       rank: 0,

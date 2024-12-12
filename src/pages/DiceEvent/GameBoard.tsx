@@ -98,20 +98,19 @@ const GameBoard: React.FC<GameBoardProps> = ({
   useEffect(() => {
     const updateRefillTime = () => {
       if (diceRefilledAt) {
-
         // KST로 직접 파싱 (ISO 8601 형식에 시간대 정보 포함)
         const refillTime = dayjs.tz(diceRefilledAt, "Asia/Seoul");
         const now = dayjs().tz("Asia/Seoul");
         const diff = refillTime.diff(now);
-
-
-        // diff <= 0이고 diceCount가 0일 때만 fetchUserData 호출
+  
         if (diff <= 0 && diceCount === 0) {
           setTimeUntilRefill("Refill dice");
         } else if (diff > 0) {
           const remainingDuration = dayjs.duration(diff);
           const minutes = remainingDuration.minutes();
-          setTimeUntilRefill(` ${minutes}m`);
+          const seconds = remainingDuration.seconds();
+          // 남은 시간을 분 초로 표시
+          setTimeUntilRefill(`${minutes}m ${seconds}s`);
         } else {
           setTimeUntilRefill("Waiting");
         }
@@ -119,11 +118,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
         setTimeUntilRefill("Waiting");
       }
     };
-
+  
     updateRefillTime();
-    const interval = setInterval(updateRefillTime, 60000); // 1분마다 업데이트
+    const interval = setInterval(updateRefillTime, 1000); // 1초마다 업데이트
     return () => clearInterval(interval);
   }, [diceRefilledAt, fetchUserData, diceCount, items.autoNftCount]);
+  
 
   // isAuto가 true일 때 1초마다 diceRef.current.roll() 호출
   useEffect(() => {
@@ -254,18 +254,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
 
       // Refill Dice API 호출 함수
-  const handleRefillDice = async () => {
-    try {
-      setIsRefilling(true); // 리필 중 상태 활성화
-      await refillDice();
-      console.log("주사위 리필 성공");
-      setIsRefilling(false); // 리필 완료
-    } catch (error: any) {
-      console.error("주사위 리필 실패:", error);
-      // 추가적인 에러 처리 (예: 사용자에게 알림)
-      setIsRefilling(false); // 리필 완료
-    }
-  };
+      const handleRefillDice = async () => {
+        try {
+          setIsRefilling(true); 
+          await refillDice(); 
+          // refillDice 호출 후 fetchUserData를 통해 diceRefilledAt이 갱신된다고 가정
+          // 여기서 별도로 diceRefilledAt을 조정할 필요 없음
+          setIsRefilling(false);
+        } catch (error: any) {
+          console.error("주사위 리필 실패:", error);
+          setIsRefilling(false);
+        }
+      };
 
  // 테스트용 아이템 추가/삭제 핸들러
  const handleAddGold = async () => {
