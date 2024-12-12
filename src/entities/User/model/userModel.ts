@@ -527,19 +527,26 @@ export const useUserStore = create<UserState>((set, get) => ({
   refillDice: async () => {
     set({ error: null });
     try {
-      const data: RollDiceResponseData = await refillDiceAPI();
+      const data = await refillDiceAPI();
 
-      // 주사위 리필 후 사용자 데이터 갱신
-      await get().fetchUserData();
-
+      const { nowDice, rank }  = data;
+      
+      // 주사위 리필 후 diceCount만 업데이트
+      set({
+        diceCount: nowDice.dice,
+        diceRefilledAt: rank.diceRefilledAt,
+        isLoading: false,
+        error: null,
+      });
+  
       console.log('주사위 리필 성공:', data);
     } catch (error: any) {
       console.error('주사위 리필 중 에러 발생:', error);
       set({ error: error.message || '주사위 리필에 실패했습니다.' });
-      throw error; // 에러를 다시 던져 컴포넌트에서 처리할 수 있도록 함
+      throw error; 
     }
   },
-
+  
     
 
    // 테스트용 아이템 추가 함수들
