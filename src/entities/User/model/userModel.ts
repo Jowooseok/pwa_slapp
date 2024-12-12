@@ -5,6 +5,7 @@ import { fetchHomeData } from '@/entities/User/api/userApi';
 import api from '@/shared/api/axiosInstance';
 import { rollDiceAPI, RollDiceResponseData } from '@/features/DiceEvent/api/rollDiceApi';
 import { refillDiceAPI } from '@/features/DiceEvent/api/refillDiceApi'; // 분리된 API 함수 임포트
+import { autoAPI } from '@/features/DiceEvent/api/autoApi';
 
 
 // 월간 보상 정보 인터페이스
@@ -102,6 +103,8 @@ interface UserState {
 
   pet: Pet; // pet 속성 추가
   setPet: (update: Partial<Pet>) => void; // pet 속성 업데이트 함수 추가
+
+  autoSwitch: () => Promise<void>;
 
 
   // **추가된 함수들**
@@ -543,6 +546,26 @@ export const useUserStore = create<UserState>((set, get) => ({
     } catch (error: any) {
       console.error('주사위 리필 중 에러 발생:', error);
       set({ error: error.message || '주사위 리필에 실패했습니다.' });
+      throw error; 
+    }
+  },
+
+  
+  autoSwitch: async () => {
+    set({ error: null });
+    try {
+      const data = await autoAPI();
+
+      const { isAuto }  = data;
+    
+      set({
+        isAuto
+      });
+  
+      console.log('스위치 변경 성공:', data);
+    } catch (error: any) {
+      console.error('스위치 변경 중 에러 발생:', error);
+      set({ error: error.message || '스위치 변경에 실패했습니다.' });
       throw error; 
     }
   },

@@ -91,6 +91,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     addSLToken,
     removeDice,
     removeSLToken,
+    autoSwitch,
   } = useUserStore();
   const [timeUntilRefill, setTimeUntilRefill] = useState("");
   const [isRefilling, setIsRefilling] = useState(false); // 리필 중 상태 관리
@@ -114,6 +115,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
     } catch (error: any) {
       console.error("주사위 리필 실패:", error);
       setIsRefilling(false);
+    }
+  };
+
+  const handleAutoSwitch = async () => {
+    try {
+      await autoSwitch();
+    } catch (error: any) {
+      console.error("오토 스위치 변경 실패:", error);
     }
   };
 
@@ -713,10 +722,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
             <Switch
               className="w-[26px] h-4 md:h-6 md:w-11 text-[#0147E5]"
               checked={isAuto} // isAuto 상태에 따라 스위치의 체크 상태를 설정
-              onCheckedChange={() => {
-                console.log("Auto Switch toggled");
-                setIsAuto(!isAuto);
-              }} // 스위치 토글 시 isAuto 상태를 반전
+              onCheckedChange={handleAutoSwitch} // 스위치 토글 시 isAuto 상태를 반전
               disabled={items.autoNftCount < 1} // items.autoNftCount가 1 미만일 때 스위치 비활성화
             />
             <p className="text-xs font-semibold md:text-sm">Auto</p>
