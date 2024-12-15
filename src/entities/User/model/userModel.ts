@@ -145,7 +145,7 @@ interface Items {
 export interface Board {
   rewardAmount: number | null;
   tileType: 'HOME' | 'REWARD' | 'SPIN' | 'RPS' | 'MOVE' | 'JAIL';
-  rewardType: 'STAR' | 'DICE' | null;
+  rewardType: 'STAR' | 'DICE' |  null;
   sequence: number;
   moveType: 'SPIN' | 'RPS' | 'HOME' | 'ANYWHERE' | null;
 }
