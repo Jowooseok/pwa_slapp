@@ -6,6 +6,7 @@ import api from '@/shared/api/axiosInstance';
 import { rollDiceAPI, RollDiceResponseData } from '@/features/DiceEvent/api/rollDiceApi';
 import { refillDiceAPI } from '@/features/DiceEvent/api/refillDiceApi'; // 분리된 API 함수 임포트
 import { autoAPI } from '@/features/DiceEvent/api/autoApi';
+import { completeTutorialAPI} from '@/features/DiceEvent/api/completeTutorialApi';
 
 
 // 월간 보상 정보 인터페이스
@@ -55,6 +56,7 @@ interface UserState {
   setUserLv: (userLv: number) => void;
 
   completeTutorial  : boolean;
+  setCompleteTutorial : (completeTutorial : boolean) => void;
 
   characterType: 'dog' | 'cat' | null; // 수정된 부분: null 허용
   setCharacterType: (type: 'dog' | 'cat' | null) => void; // 수정된 부분: null 허용
@@ -107,6 +109,8 @@ interface UserState {
   setPet: (update: Partial<Pet>) => void; // pet 속성 업데이트 함수 추가
 
   autoSwitch: () => Promise<void>;
+
+  completeTutorialFunc: () => Promise<void>;
 
 
   // **추가된 함수들**
@@ -210,6 +214,7 @@ export const useUserStore = create<UserState>((set, get) => ({
   setUserLv: (userLv) => set({ userLv }),
 
   completeTutorial: true,
+  setCompleteTutorial: (completeTutorial) => set({ completeTutorial }),
 
   characterType: null, // 수정된 부분: 초기값을 null로 설정
   setCharacterType: (type) => set({ characterType: type }), // 수정된 부분: null 허용
@@ -309,6 +314,8 @@ export const useUserStore = create<UserState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const data = await fetchHomeData();
+
+      console.log(data)
       if (!data) {
         throw new Error('No data returned from /home API');
       }
@@ -574,6 +581,27 @@ export const useUserStore = create<UserState>((set, get) => ({
       throw error; 
     }
   },
+
+  completeTutorialFunc: async () => {
+    set({ error: null });
+    try {
+      const data = await completeTutorialAPI();
+
+      const { completeTutorial }  = data;
+    
+      set({
+        completeTutorial
+      });
+  
+      console.log('튜토리얼 완료:', data);
+    } catch (error: any) {
+      console.error('튜토리얼 중 에러 발생:', error);
+      set({ error: error.message || '튜토리얼에 실패했습니다.' });
+      throw error; 
+    }
+  },
+
+
   
     
 

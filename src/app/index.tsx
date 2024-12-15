@@ -28,6 +28,7 @@ import SplashScreen from "./components/SplashScreen";
 import PreviousRewards from "@/pages/PreviousRewards";
 import { TourProvider } from "@reactour/tour";
 import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
+import { useUserStore } from "@/entities/User/model/userModel";
 
 const queryClient = new QueryClient();
 
@@ -94,15 +95,9 @@ const steps = [
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const [customCurrentStep, setCustomCurrentStep] = useState(0)
+  const {completeTutorialFunc} = useUserStore();
   const disableBody = (target:any) => disableBodyScroll(target)
   const enableBody = (target:any) => enableBodyScroll(target)
-
-  
-  useEffect(() => {
-    console.log(customCurrentStep)
-  }, [customCurrentStep] );
-
 
   useEffect(() => {
     // 스플래시 화면을 일정 시간 후에 숨김
@@ -148,19 +143,20 @@ const App: React.FC = () => {
       <TourProvider
         steps={steps}    
         afterOpen={disableBody} beforeClose={enableBody}
-        padding={customCurrentStep === 1 ? {
-          mask : 20
-        } : {
-          mask : 10
-        }}
-        onClickMask={({ setCurrentStep, currentStep, steps, setIsOpen }) => {
+        onClickMask={async({ setCurrentStep, currentStep, steps, setIsOpen })  => {
           if (steps) {
             if (currentStep === steps.length - 1) {
+              await completeTutorialFunc();
               setIsOpen(false);
            
             }
             setCurrentStep((s) => (s === steps.length - 1 ? 0 : s + 1));
           }
+        }}
+
+        onClickClose={ async({ setIsOpen }) => {
+          await completeTutorialFunc();
+          setIsOpen(false);
         }}
  
         styles={{
