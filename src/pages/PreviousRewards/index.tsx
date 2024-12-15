@@ -186,7 +186,8 @@ const PreviousRewards: React.FC = () => {
       });
     }
 
-    alert("보상을 성공적으로 받았습니다!");
+    alert("Reward received successfully!");
+
     setSelectedMyData((prev) => prev ? { ...prev, ...updatedData } : null);
     setRewardDialogOpen(false);
   };
