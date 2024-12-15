@@ -195,7 +195,7 @@ const PreviousRewards: React.FC = () => {
 
   return (
     <div className="flex flex-col mb-44 text-white items-center w-full">
-      <TopTitle title="Last month's results" back={true} />
+      <TopTitle title="Last month's results" className="px-6" back={true} />
 
       <RewardSelectionDialog
         open={rewardDialogOpen}
