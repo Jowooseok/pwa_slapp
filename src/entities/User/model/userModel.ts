@@ -54,6 +54,8 @@ interface UserState {
   userLv: number;
   setUserLv: (userLv: number) => void;
 
+  completeTutorial  : boolean;
+
   characterType: 'dog' | 'cat' | null; // 수정된 부분: null 허용
   setCharacterType: (type: 'dog' | 'cat' | null) => void; // 수정된 부분: null 허용
 
@@ -207,6 +209,8 @@ export const useUserStore = create<UserState>((set, get) => ({
   userLv: 100,
   setUserLv: (userLv) => set({ userLv }),
 
+  completeTutorial: true,
+
   characterType: null, // 수정된 부분: 초기값을 null로 설정
   setCharacterType: (type) => set({ characterType: type }), // 수정된 부분: null 허용
 
@@ -325,6 +329,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         userId: user.userId,
         referrerId: user.referrerId, // 추가된 부분: referrerId 설정
         isAuto: user.isAuto, // 추가된 부분: isAuto 설정
+        completeTutorial: user.completeTutorial,
   
         position: nowDice.tileSequence,
         diceCount: nowDice.dice,

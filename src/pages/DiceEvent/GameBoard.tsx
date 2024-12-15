@@ -73,6 +73,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
     diceRefilledAt,
     boards,
     fetchUserData,
+    completeTutorial,
     error,
     isAuto,
     setIsAuto,
@@ -107,13 +108,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
   }, [timeUntilRefill]);
 
   useEffect(() => {
-
-    const timer = setTimeout(() => {{
-      setIsOpen(true);
-    }}  , 1000);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    // completeTutorial가 false일 때만 setIsOpen(true) 실행
+    if (!completeTutorial) {
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+      }, 1000);
+  
+      return () => clearTimeout(timer);
+    }
+  }, [completeTutorial, setIsOpen]);
+  
 
 
     // Refill Dice API 호출 함수
@@ -619,8 +623,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
             </DialogContent>
           </Dialog>
 
+          {/**릴리스용 */}
+          <div onClick={()=>{setIsOpen(true)}} className="absolute cursor-pointer text-white -right-11 -top-8 md:-right-24 md:-top-20 font-semibold text-xs md:text-sm md:space-y-1">
+                <FaBookTanakh  className=" w-5 h-5 md:w-8 md:h-8  " />
+              </div>
+
           {/**테스트용 마스터 컨텐츠 */}
-          <Dialog>
+          {/* <Dialog>
             <DialogTrigger>
               <div className="absolute text-white -right-11 -top-8 md:-right-24 md:-top-20 font-semibold text-xs md:text-sm md:space-y-1">
                 <FaBookTanakh  className=" w-5 h-5  " />
@@ -628,7 +637,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
             </DialogTrigger>
             <DialogContent className=" bg-[#21212F] border-none rounded-3xl text-white h-svh md:h-auto overflow-y-auto max-w-[90%] md:max-w-lg max-h-[80%]">
               <div className="flex flex-col gap-4 p-4">
-                {/* 추가 버튼 */}
                 <div className="flex flex-col gap-2">
                   <button
                     onClick={handleAddDice}
@@ -680,7 +688,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   </button>
                 </div>
 
-                {/* 삭제 버튼 */}
                 <div className="flex flex-col gap-2 mt-4">
                   <button
                     onClick={handleRemoveDice}
@@ -727,7 +734,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 </div>
               </div>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
 
           {/* 수정된 Auto 스위치 부분 */}
           <div id="fifth-step" className=" absolute flex flex-col items-center text-white -right-11 md:-right-24 md:-bottom-24 -bottom-14 ">
