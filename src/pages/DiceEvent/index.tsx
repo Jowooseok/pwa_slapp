@@ -242,7 +242,7 @@ const DiceEventPage: React.FC = () => {
           <br />
           <Dialog>
             <DialogTrigger className="w-full flex justify-center">
-              <MyRankingWidget className="max-w-[332px]" />
+              <MyRankingWidget className="max-w-[332px] md:max-w-full" />
             </DialogTrigger>
             <DialogContent className=" flex flex-col bg-[#21212F] border-none rounded-3xl text-white h-svh overflow-x-hidden font-semibold  overflow-y-auto  max-h-[80%]">
               <DialogHeader className="flex w-full items-end">
