@@ -4,18 +4,17 @@ import { formatNumber } from '@/shared/utils/formatNumber';
 import { useUserStore } from '@/entities/User/model/userModel'; // useUserStore 임포트
 import CountUp from 'react-countup'; // CountUp 임포트
 
+interface MyRankingWidgetProps {
+  className?: string;
+}
 
-
-const MyRankingWidget: React.FC = () => {  
+const MyRankingWidget: React.FC<MyRankingWidgetProps> = ({className}) => {  
   // useUserStore에서 필요한 데이터 가져오기
   const { rank, starPoints, lotteryCount, slToken } = useUserStore();
 
-  // 경로에 따라 동적으로 너비 클래스 설정
-  const widgetWidthClass = window.location.pathname === '/dice-event' ? 'w-[332px]' : 'w-full';
-
   return (
     <div
-      className={`flex flex-col items-center justify-center text-white cursor-pointer ${widgetWidthClass} md:w-full `}
+      className={`flex flex-col items-center justify-center text-white cursor-pointer w-full ${className}  `}
       role="button"
       tabIndex={0}
     >

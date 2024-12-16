@@ -9,9 +9,7 @@ import { useRewardStore } from "@/entities/RewardPage/model/rewardModel";
 import LoadingSpinner from "@/shared/components/ui/loadingSpinner";
 import { LeaderBoardEntry, Award } from "@/entities/RewardPage/types"; // 필요한 타입만 임포트
 import RewardItem from "@/widgets/RewardItem"; // RewardItem 컴포넌트 임포트
-import { Link as ScrollLink, Element as ScrollElement } from "react-scroll"; // react-scroll 임포트
 import { useNavigate } from "react-router-dom"; // React Router 훅
-import { useUserStore } from "@/entities/User/model/userModel"; // useUserStore 임포트
 
 const Reward: React.FC = () => {
   const {
@@ -30,22 +28,10 @@ const Reward: React.FC = () => {
 
   const navigate = useNavigate(); // React Router 훅
 
-  // useUserStore에서 필요한 데이터 가져오기
-  const {
-    rank,
-    starPoints,
-    lotteryCount,
-    slToken,
-    fetchUserData,
-    isLoading: isUserLoading,
-    error: userError,
-  } = useUserStore();
-
   useEffect(() => {
     // Reward 페이지가 로드될 때 리워드 데이터와 사용자 데이터를 불러옵니다.
     fetchLeaderHome();
-    fetchUserData();
-  }, [fetchLeaderHome, fetchUserData]);
+  }, [fetchLeaderHome]);
 
   // "View More" 버튼 핸들러
   const handleViewMore = () => {
@@ -54,7 +40,7 @@ const Reward: React.FC = () => {
     }
   };
 
-  if (isLoadingHome || isUserLoading) {
+  if (isLoadingHome ) {
     return <LoadingSpinner />;
   }
 
@@ -62,9 +48,6 @@ const Reward: React.FC = () => {
     return <div className="text-center text-red-500">Error: {errorHome}</div>;
   }
 
-  if (userError) {
-    return <div className="text-center text-red-500">Error: {userError}</div>;
-  }
 
   // 랭킹 상품 데이터 배열 정의
   const rankingProducts = rankingAwards.slice(0, 3); // 상위 3개
@@ -105,7 +88,6 @@ const Reward: React.FC = () => {
       </div>
 
       {/** 이번달 경품 보여주기 */}
-      <ScrollElement name="rankingAwardsSection" className="w-full">
         <div className="flex flex-col gap-3 justify-center items-center mb-14">
           {/* This Month's Ranking Awards */}
           <div className="relative text-center font-jalnan text-3xl mb-6 z-10">
@@ -141,7 +123,6 @@ const Reward: React.FC = () => {
             />
           )}
         </div>
-      </ScrollElement>
 
       {/** 이번달 추첨권 경품 보여주기 */}
       <div className="flex flex-col gap-3 justify-center items-center mb-14">
@@ -184,7 +165,6 @@ const Reward: React.FC = () => {
       <MyRankingWidget />
 
       {/** Leader Board */}
-      <ScrollElement name="leaderBoardSection" className="w-full">
         <div className="mt-14 flex flex-col items-center">
           <h1 className="font-jalnan text-3xl mb-4">Leader Board</h1>
 
@@ -245,7 +225,6 @@ const Reward: React.FC = () => {
             <div className="text-center text-red-500">Error: {errorLeaderboard}</div>
           )}
         </div>
-      </ScrollElement>
     </div>
   );
 };
