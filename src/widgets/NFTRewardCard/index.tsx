@@ -56,24 +56,14 @@ const NFTRewardList: React.FC = () => {
     },
     {
       imgSrc: Images.RewardNFT,
-      altText: 'Reward NFT(x5)',
-      title: 'Reward NFT(x5)',
+      altText: 'Reward NFT(x5 or x2)',
+      title: 'Reward NFT(x5 or x2)',
       rewards: [
-     
         { icon: <IoGameController className="w-5 h-5" />, description: 'Board & Spin Reward : x5' },
-      
-      ],
-    },
-    {
-      imgSrc: Images.RewardNFT,
-      altText: 'Reward NFT(x2)',
-      title: 'Reward NFT(x2)',
-      rewards: [
-     
         { icon: <IoGameController className="w-5 h-5" />, description: 'Board & Spin Reward : x2' },
-      
       ],
     },
+
   ];
 
   return (
