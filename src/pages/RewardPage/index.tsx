@@ -15,6 +15,8 @@ const Reward: React.FC = () => {
     fetchLeaderHome,
     rankingAwards,
     drawAwards,
+    airDropAwards,
+    rank,
     isLoadingHome,
     errorHome,
   } = useRewardStore();
@@ -137,54 +139,47 @@ const Reward: React.FC = () => {
       
       </div>
 
-       {/** 이번달 에어드랍 보상 : 있는 경우만 보여주기 */}
-       <div className="flex flex-col gap-3 justify-center items-center mb-14 text-sm font-medium">
-        <div className="relative text-center font-jalnan text-3xl  z-10">
-          <h1 className="z-30">
-            This Month's
-            <br />
-            NFT AirDrop!
-          </h1>
-          <img
-            src={Images.AirDrop}
-            alt="Raffle"
-               className="absolute -top-1 -left-[64px] w-[70px] h-[70px] -z-10"
-          />
-        </div>
-        <div className="w-full">
-        <div className="flex flex-row justify-between  py-5 border-b border-[#e5e5e5] w-full">
-          <p>Grand Prize Winner</p>
-          <div className="flex flex-row gap-1 items-center">
-            <img src={Images.TokenReward} alt="token-reward" className="w-6 h-6" />
-            <p>{formatNumber(77777)}</p>
+      {/** 이번달 에어드랍 보상 : 있는 경우만 보여주기 */}
+      {airDropAwards && airDropAwards.length > 0 && (
+        <div className="flex flex-col gap-3 justify-center items-center mb-14 text-sm font-medium">
+          <div className="relative text-center font-jalnan text-3xl z-10">
+            <h1 className="z-30">
+              This Month's
+              <br />
+              NFT AirDrop!
+            </h1>
+            <img
+              src={Images.AirDrop}
+              alt="Airdrop"
+              className="absolute -top-1 -left-[64px] w-[70px] h-[70px] -z-10"
+            />
+          </div>
+          <div className="w-full">
+            {airDropAwards.map((award, index) => (
+              <div
+                key={`airdrop-${award.winnerNum}-${index}`}
+                className="flex flex-row justify-between py-5 border-b border-[#e5e5e5] w-full"
+              >
+                <p>
+                  {award.winnerNum
+                    ? award.winnerNum === 1
+                      ? "Grand Prize Winner"
+                      : award.winnerNum <= 5
+                        ? "Top 5 Winners"
+                        : award.winnerNum <= 10
+                          ? "Lucky 10 Winners"
+                          : "Remaining NFT Holders"
+                    : "Remaining NFT Holders"}
+                </p>
+                <div className="flex flex-row gap-1 items-center">
+                  <img src={Images.TokenReward} alt="token-reward" className="w-6 h-6" />
+                  <p>{formatNumber(award.slRewards)}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="flex flex-row justify-between  py-5 border-b border-[#e5e5e5] w-full">
-          <p>Top 5 Winners</p>
-          <div className="flex flex-row gap-1 items-center">
-            <img src={Images.TokenReward} alt="token-reward" className="w-6 h-6" />
-            <p>{formatNumber(7777)}</p>
-          </div>
-        </div>
-        <div className="flex flex-row justify-between  py-5 border-b border-[#e5e5e5] w-full">
-          <p>Lucky 10 Winners</p>
-          <div className="flex flex-row gap-1 items-center">
-            <img src={Images.TokenReward} alt="token-reward" className="w-6 h-6" />
-            <p>{formatNumber(777)}</p>
-          </div>
-        </div>
-        <div className="flex flex-row justify-between  py-5 border-b border-[#e5e5e5] w-full">
-          <p>Remaining NFT Holders</p>
-          <div className="flex flex-row gap-1 items-center">
-            <img src={Images.TokenReward} alt="token-reward" className="w-6 h-6" />
-            <p>{formatNumber(77)}</p>
-          </div>
-        </div>
-        </div>
-      
-  
-      
-      </div>
+      )}
 
     </div>
   );
