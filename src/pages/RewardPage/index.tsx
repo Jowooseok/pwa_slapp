@@ -8,6 +8,7 @@ import { useRewardStore } from "@/entities/RewardPage/model/rewardModel";
 import LoadingSpinner from "@/shared/components/ui/loadingSpinner";
 import RewardItem from "@/widgets/RewardItem"; // RewardItem 컴포넌트 임포트
 import { Link } from "react-router-dom"; // Link 임포트 추가
+import { formatNumber } from "@/shared/utils/formatNumber";
 
 const Reward: React.FC = () => {
   const {
@@ -133,6 +134,55 @@ const Reward: React.FC = () => {
             isTop={false}
           />
         )}
+      
+      </div>
+
+       {/** 이번달 에어드랍 보상 : 있는 경우만 보여주기 */}
+       <div className="flex flex-col gap-3 justify-center items-center mb-14 text-sm font-medium">
+        <div className="relative text-center font-jalnan text-3xl  z-10">
+          <h1 className="z-30">
+            This Month's
+            <br />
+            NFT AirDrop!
+          </h1>
+          <img
+            src={Images.AirDrop}
+            alt="Raffle"
+               className="absolute -top-1 -left-[64px] w-[70px] h-[70px] -z-10"
+          />
+        </div>
+        <div className="w-full">
+        <div className="flex flex-row justify-between  py-5 border-b border-[#e5e5e5] w-full">
+          <p>Grand Prize Winner</p>
+          <div className="flex flex-row gap-1 items-center">
+            <img src={Images.TokenReward} alt="token-reward" className="w-6 h-6" />
+            <p>{formatNumber(77777)}</p>
+          </div>
+        </div>
+        <div className="flex flex-row justify-between  py-5 border-b border-[#e5e5e5] w-full">
+          <p>Top 5 Winners</p>
+          <div className="flex flex-row gap-1 items-center">
+            <img src={Images.TokenReward} alt="token-reward" className="w-6 h-6" />
+            <p>{formatNumber(7777)}</p>
+          </div>
+        </div>
+        <div className="flex flex-row justify-between  py-5 border-b border-[#e5e5e5] w-full">
+          <p>Lucky 10 Winners</p>
+          <div className="flex flex-row gap-1 items-center">
+            <img src={Images.TokenReward} alt="token-reward" className="w-6 h-6" />
+            <p>{formatNumber(777)}</p>
+          </div>
+        </div>
+        <div className="flex flex-row justify-between  py-5 border-b border-[#e5e5e5] w-full">
+          <p>Remaining NFT Holders</p>
+          <div className="flex flex-row gap-1 items-center">
+            <img src={Images.TokenReward} alt="token-reward" className="w-6 h-6" />
+            <p>{formatNumber(77)}</p>
+          </div>
+        </div>
+        </div>
+      
+  
       
       </div>
 

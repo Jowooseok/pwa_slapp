@@ -131,6 +131,7 @@ import spinStar4000 from "./spinstar4000.png";
 import spinStar5000 from "./spinstar5000.png";
 import spinRapple1 from "./spinrapple1.png"
 import spinToken10 from "./spintoken10.png";
+import AirDrop from "./airdrop.png";
 
 
 const Images = {
@@ -265,7 +266,8 @@ const Images = {
   spinStar4000,
   spinStar5000,
   spinRapple1,
-  spinToken10
+  spinToken10,
+  AirDrop,
 };
 
 export default Images;
