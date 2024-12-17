@@ -508,7 +508,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
                   <div className="flex flex-col items-center">
                     <img src={Images.Dice} alt="dice" className="h-6" />
                     <span className="mt-1">
-                      +{formatNumber(reward.value * items.boardRewardTimes)}
+                      +{formatNumber(reward.value)}
                     </span>
                   </div>
                 )}
