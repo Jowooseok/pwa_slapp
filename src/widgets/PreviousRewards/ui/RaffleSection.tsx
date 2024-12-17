@@ -91,7 +91,7 @@ interface RaffleSectionProps {
               >
                 {myRankings.map((item, index) => {
                   const isRaffleReceived =
-                    item.selectedRewardType === "USDT" ||
+                    item.selectedRewardType === "USDC" ||
                     item.selectedRewardType === "SL";
                   return (
                     <SwiperSlide key={index}>
@@ -108,8 +108,8 @@ interface RaffleSectionProps {
                             <div className="flex flex-row items-center gap-1">
                               <img
                                 src={
-                                  item.selectedRewardType === "USDT"
-                                    ? Images.Usdt
+                                  item.selectedRewardType === "USDC"
+                                    ? Images.USDC
                                     : Images.TokenReward
                                 }
                                 alt="token"
@@ -118,8 +118,8 @@ interface RaffleSectionProps {
                               <p className="text-sm font-semibold">
                                 {(item.slRewards ?? 0).toLocaleString()}{" "}
                                 <span className="font-normal text-[#a3a3a3]">
-                                  (or {(item.usdtRewards ?? 0).toLocaleString()}{" "}
-                                  USDT)
+                                  (or {(item.usdcRewards ?? 0).toLocaleString()}{" "}
+                                  USDC)
                                 </span>{" "}
                                 {item.nftType ? `+ ${item.nftType} NFT` : ""}
                               </p>
@@ -158,7 +158,7 @@ interface RaffleSectionProps {
         <div className="flex flex-col mt-8">
           {raffleTopRankings.slice(0, 20).map((r) => {
             const raffleTopReceived =
-              r.selectedRewardType === "USDT" || r.selectedRewardType === "SL";
+              r.selectedRewardType === "USDC" || r.selectedRewardType === "SL";
             return (
               <div
                 key={r.rank}
@@ -170,8 +170,8 @@ interface RaffleSectionProps {
                   <div className="flex flex-row items-center gap-1">
                     <img
                       src={
-                        r.selectedRewardType === "USDT"
-                          ? Images.Usdt
+                        r.selectedRewardType === "USDC"
+                          ? Images.USDC
                           : Images.TokenReward
                       }
                       alt="token"
@@ -180,7 +180,7 @@ interface RaffleSectionProps {
                     <p className="text-sm font-semibold">
                       {r.slRewards.toLocaleString()}{" "}
                       <span className="font-normal text-[#a3a3a3]">
-                        (or {r.usdtRewards.toLocaleString()} USDT)
+                        (or {r.usdcRewards.toLocaleString()} USDC)
                       </span>{" "}
                       {r.nftType ? `+ ${r.nftType} NFT` : ""}
                     </p>

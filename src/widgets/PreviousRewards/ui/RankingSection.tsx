@@ -80,8 +80,8 @@ const RankingSection: React.FC<RankingSectionProps> = ({
                   <div className="flex flex-row items-center gap-1">
                     <img
                       src={
-                        myData.selectedRewardType === "USDT"
-                          ? Images.Usdt
+                        myData.selectedRewardType === "USDC"
+                          ? Images.USDC
                           : Images.TokenReward
                       }
                       alt="token"
@@ -90,7 +90,7 @@ const RankingSection: React.FC<RankingSectionProps> = ({
                     <p className="text-sm font-semibold">
                       {(myData.slRewards ?? 0).toLocaleString()}{" "}
                       <span className="font-normal text-[#a3a3a3]">
-                        (or {(myData.usdtRewards ?? 0).toLocaleString()} USDT)
+                        (or {(myData.usdcRewards ?? 0).toLocaleString()} USDC)
                       </span>{" "}
                       {myData.nftType ? `+ ${myData.nftType} NFT` : ""}
                     </p>
@@ -126,7 +126,7 @@ const RankingSection: React.FC<RankingSectionProps> = ({
       <div className="flex flex-col mt-8">
         {topRankings.slice(0, 20).map((r) => {
           const rReceived =
-            r.selectedRewardType === "USDT" || r.selectedRewardType === "SL";
+            r.selectedRewardType === "USDC" || r.selectedRewardType === "SL";
           return (
             <div
               key={r.rank}
@@ -138,8 +138,8 @@ const RankingSection: React.FC<RankingSectionProps> = ({
                 <div className={`flex flex-row items-center gap-1`}>
                   <img
                     src={
-                      r.selectedRewardType === "USDT"
-                        ? Images.Usdt
+                      r.selectedRewardType === "USDC"
+                        ? Images.USDC
                         : Images.TokenReward
                     }
                     alt="token"
@@ -148,7 +148,7 @@ const RankingSection: React.FC<RankingSectionProps> = ({
                   <p className={`text-sm font-semibold`}>
                     {r.slRewards.toLocaleString()}{" "}
                     <span className="font-normal text-[#a3a3a3]">
-                      (or {r.usdtRewards.toLocaleString()} USDT)
+                      (or {r.usdcRewards.toLocaleString()} USDC)
                     </span>{" "}
                     {r.nftType ? `+ ${r.nftType} NFT` : ""}
                   </p>

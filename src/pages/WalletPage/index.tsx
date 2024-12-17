@@ -268,7 +268,7 @@ const WalletPage: React.FC = () => {
                 <p>Find your wallet in the exchange application.</p>
               </div>
               <p className="text-[#a3a3a3] pl-4">
-                To receive tokens, please enter your USDT ERC-20 wallet address.
+                To receive tokens, please enter your USDC ERC-20 wallet address.
               </p>
             </div>
           </div>

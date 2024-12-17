@@ -98,7 +98,6 @@ import Boom from "./boom.png";
 import Trophy from "./trophy.png";
 import GoldMedal from "./goldmedal.png";
 import RewardNFT from "./rewardNFT.png";
-import Usdt from "./usdt.png";
 import LinkedIn from "./LinkedIn.png";
 import MissionCompleted from "./mission-completed.png"
 import LevelEffect1 from './LvEffect_1.png';
@@ -132,6 +131,7 @@ import spinStar5000 from "./spinstar5000.png";
 import spinRapple1 from "./spinrapple1.png"
 import spinToken10 from "./spintoken10.png";
 import AirDrop from "./airdrop.png";
+import USDC from "./usdc.png";
 
 
 const Images = {
@@ -234,7 +234,6 @@ const Images = {
   Trophy,
   GoldMedal,
   RewardNFT,
-  Usdt,
   LinkedIn,
   MissionCompleted,
   LevelEffect1,
@@ -268,6 +267,7 @@ const Images = {
   spinRapple1,
   spinToken10,
   AirDrop,
+  USDC,
 };
 
 export default Images;
