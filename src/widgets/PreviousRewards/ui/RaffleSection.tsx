@@ -144,7 +144,7 @@ const RaffleSection: React.FC<RaffleSectionProps> = ({
               disabled={raffleIsReceived}
             >
               {currentRaffleItem.selectedRewardType === null
-                ? "Get Rewarded"
+                ? "Select your reward"
                 : `Reward Selected (${currentRaffleItem.selectedRewardType})`}
             </button>
           )}
