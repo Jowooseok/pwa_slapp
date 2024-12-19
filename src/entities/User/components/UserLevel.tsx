@@ -101,7 +101,7 @@ const UserLevel: React.FC<{
       className={`relative flex flex-col items-center justify-center rounded-3xl w-32 h-36 md:w-48 md:h-44 ${levelClassName}`}
       style={{ position: 'relative' }}
     >
-      <Snowfall style={{ borderRadius:"24px" }} snowflakeCount={20} images={images} />
+      <Snowfall style={{ borderRadius:"24px" }} snowflakeCount={10} images={images} />
       {/* 말풍선 + 문구 */}
       <div className="absolute top-1 right-1 flex justify-end w-full px-1 z-30">
         <AnimatePresence>
