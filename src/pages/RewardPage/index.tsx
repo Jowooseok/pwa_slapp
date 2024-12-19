@@ -1,6 +1,6 @@
 // src/pages/RewardPage/index.tsx
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { TopTitle } from "@/shared/components/ui";
 import "./Reward.css";
 import Images from "@/shared/assets/images";
@@ -20,6 +20,10 @@ const Reward: React.FC = () => {
     isLoadingHome,
     errorHome,
   } = useRewardStore();
+
+  // 4위 이후 랭킹 보상, 래플 보상을 보여줄지 여부를 관리하는 상태
+  const [showMoreRanking, setShowMoreRanking] = useState(false);
+  const [showMoreRaffle, setShowMoreRaffle] = useState(false);
 
   useEffect(() => {
     // Reward 페이지가 로드될 때 리워드 데이터를 불러옵니다.
@@ -42,7 +46,7 @@ const Reward: React.FC = () => {
   const raffleProducts = drawAwards.slice(0, 3); // 상위 3개
   const raffleOthers = drawAwards.slice(3); // 그 외
 
-  // 문자열을 자르는 헬퍼 함수
+  // 문자열을 자르는 헬퍼 함수 (현재 사용처는 없으나 유지)
   const truncateString = (str: string, num: number): string => {
     if (str.length <= num) {
       return str;
@@ -91,14 +95,24 @@ const Reward: React.FC = () => {
           />
         )}
 
-        {/* 4위 이후 랭킹 보상 */}
-        {rankingOthers.map((award, index) =>
+        {/* 4위 이후 랭킹 보상 - showMoreRanking이 true일 때만 표시 */}
+        {showMoreRanking && rankingOthers.map((award, index) =>
           <RewardItem
             key={`${award.rangeStart}-${award.rangeEnd}-${index}`}
             rank={award.rangeStart === award.rangeEnd ? award.rangeStart : `${award.rangeStart}-${award.rangeEnd}`}
             award={award}
             isTop={false}
           />
+        )}
+
+        {/* View More 버튼: 4위 이후 보상이 있고, 아직 펼치지 않은 상태에서만 표시 */}
+        {rankingOthers.length > 0 && !showMoreRanking && (
+          <button
+            onClick={() => setShowMoreRanking(true)}
+            className="border border-[#ffffff] text-white text-xs font-semibold px-4 py-2 rounded-full mt-4"
+          >
+            View More
+          </button>
         )}
       </div>
 
@@ -127,14 +141,24 @@ const Reward: React.FC = () => {
           />
         )}
 
-        {/* 4위 이후 래플 보상 */}
-        {raffleOthers.map((award, index) =>
+        {/* 4위 이후 래플 보상 - showMoreRaffle가 true일 때만 표시 */}
+        {showMoreRaffle && raffleOthers.map((award, index) =>
           <RewardItem
             key={`${award.rangeStart}-${award.rangeEnd}-${index}`}
             rank={award.rangeStart === award.rangeEnd ? award.rangeStart : `${award.rangeStart}-${award.rangeEnd}`}
             award={award}
             isTop={false}
           />
+        )}
+
+        {/* View More 버튼: 4위 이후 래플 보상이 있고, 아직 펼치지 않은 상태에서만 표시 */}
+        {raffleOthers.length > 0 && !showMoreRaffle && (
+          <button
+            onClick={() => setShowMoreRaffle(true)}
+            className="border border-[#ffffff] text-white text-xs font-semibold px-4 py-2 rounded-full mt-4"
+          >
+            View More
+          </button>
         )}
       
       </div>
