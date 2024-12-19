@@ -103,7 +103,7 @@ const RankingSection: React.FC<RankingSectionProps> = ({
               >
                 {myData.selectedRewardType === null
                   ? "Select your reward"
-                  : `Reward Selected (${myData.selectedRewardType})`}
+                  : `Reward Issued (${myData.selectedRewardType})`}
               </button>
             </>
           )}
