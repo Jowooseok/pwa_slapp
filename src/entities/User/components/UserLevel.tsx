@@ -29,12 +29,12 @@ const UserLevel: React.FC<{
   const roundedExp = Math.floor(exp);
 
   const messages = [
-    "Energized!",
-    "Feeling <br/>stronger!",
-    "Health <br/>boost!",
-    "Powered <br/>up!",
-    "Ready <br/>to roll!",
-    "On top <br/>form!"
+    "Hey there, <br/>ready to roll?",
+    "Dice are <br/>hot!",
+    "Roll it <br/>again!",
+    "Let's make a <br/>big move!",
+    "All set <br/>to roll?",
+    "Keep those <br/>dice rolling!"
   ];
 
   const [currentMsgIndex, setCurrentMsgIndex] = useState(0);
@@ -43,29 +43,31 @@ const UserLevel: React.FC<{
   useEffect(() => {
     let showTimer: NodeJS.Timeout;
     let hideTimer: NodeJS.Timeout;
-
+  
     const startCycle = () => {
-      setCurrentMsgIndex((prev) => (prev + 1) % messages.length);
+      // 랜덤 인덱스 선택
+      const randomIndex = Math.floor(Math.random() * messages.length);
+      setCurrentMsgIndex(randomIndex);
       setVisible(true);
-
-      // 3초 후 말풍선 숨기기
+  
       hideTimer = setTimeout(() => {
         setVisible(false);
       }, 3000);
-
-      // 8초 후 다음 메시지
+  
+      // 12초 후 다음 메시지 (기존 8초 → 12초)
       showTimer = setTimeout(() => {
         startCycle();
-      }, 8000);
+      }, 12000);
     };
-
+  
     startCycle();
-
+  
     return () => {
       clearTimeout(showTimer);
       clearTimeout(hideTimer);
     };
   }, [messages.length]);
+  
 
   const currentMessageParts = messages[currentMsgIndex].split('<br/>');
 
