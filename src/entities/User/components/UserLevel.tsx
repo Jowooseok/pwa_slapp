@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Snowfall } from 'react-snowfall';
+import Images from '@/shared/assets/images';
 
 const UserLevel: React.FC<{
   userLv: number;
@@ -45,7 +47,6 @@ const UserLevel: React.FC<{
     let hideTimer: NodeJS.Timeout;
   
     const startCycle = () => {
-      // 랜덤 인덱스 선택
       const randomIndex = Math.floor(Math.random() * messages.length);
       setCurrentMsgIndex(randomIndex);
       setVisible(true);
@@ -54,7 +55,7 @@ const UserLevel: React.FC<{
         setVisible(false);
       }, 3000);
   
-      // 12초 후 다음 메시지 (기존 8초 → 12초)
+      // 12초 후 다음 메시지
       showTimer = setTimeout(() => {
         startCycle();
       }, 12000);
@@ -67,15 +68,40 @@ const UserLevel: React.FC<{
       clearTimeout(hideTimer);
     };
   }, [messages.length]);
-  
 
   const currentMessageParts = messages[currentMsgIndex].split('<br/>');
+
+  // 현재 날짜 기준 계절 구분
+  const month = new Date().getMonth() + 1; // 1~12
+  let images: HTMLImageElement[] | undefined;
+
+  if (month >= 3 && month <= 5) {
+    // 봄: 벚꽃잎(예: Images.Spring)
+    const springImg = new Image();
+    springImg.src = Images.Spring;
+    images = [springImg];
+  } else if (month >= 6 && month <= 8) {
+    // 여름: 잎사귀(예: Images.Summer)
+    const summerImg = new Image();
+    summerImg.src = Images.Summer;
+    images = [summerImg];
+  } else if (month >= 9 && month <= 11) {
+    // 가을: 낙엽(예: Images.Fall)
+    const fallImg = new Image();
+    fallImg.src = Images.Fall;
+    images = [fallImg];
+  } else {
+    // 겨울: 이미지 사용 안함(눈송이 기본 형태)
+    images = undefined;
+  }
+
 
   return (
     <div
       className={`relative flex flex-col items-center justify-center rounded-3xl w-32 h-36 md:w-48 md:h-44 ${levelClassName}`}
       style={{ position: 'relative' }}
     >
+      <Snowfall style={{ borderRadius:"24px" }} snowflakeCount={20} images={images} />
       {/* 말풍선 + 문구 */}
       <div className="absolute top-1 right-1 flex justify-end w-full px-1 z-30">
         <AnimatePresence>
@@ -92,7 +118,7 @@ const UserLevel: React.FC<{
                 color: '#333',
                 textAlign: 'center',
                 zIndex: 30,
-                overflow: 'visible', // 꼬리가 밖으로 나와도 보이게
+                overflow: 'visible',
               }}
             >
               {currentMessageParts.map((part, index) => (
@@ -101,14 +127,13 @@ const UserLevel: React.FC<{
                   {index < currentMessageParts.length - 1 && <br />}
                 </React.Fragment>
               ))}
-              {/* 꼬리: bottom을 음수로 줘서 말풍선 아래로 삐져나오게 하고 overflow:visible 로 보이게 함 */}
               <div
                 style={{
                   content: '',
                   position: 'absolute' as const,
-                  bottom: '-3px', // 말풍선 아래로 6px
+                  bottom: '-3px',
                   left: '30%',
-                  transform: 'translateX(-50%) ratate(-30deg)',
+                  transform: 'translateX(-50%)',
                   width: 0,
                   height: 0,
                   borderLeft: '6px solid transparent',

@@ -132,6 +132,10 @@ import spinRapple1 from "./spinrapple1.png"
 import spinToken10 from "./spintoken10.png";
 import AirDrop from "./airdrop.png";
 import USDC from "./usdc.png";
+import Spring from "./spring.png";
+import Summer from "./summer.png";
+import Fall from "./fall.png";
+
 
 
 const Images = {
@@ -268,6 +272,11 @@ const Images = {
   spinToken10,
   AirDrop,
   USDC,
+
+  Spring,
+  Summer,
+  Fall,
+
 };
 
 export default Images;
