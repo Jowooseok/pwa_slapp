@@ -499,7 +499,6 @@ export const useUserStore = create<UserState>((set, get) => ({
         prizeType: '',
         amount: 0,
         eventFinishTime: "",
-
       },
       weekAttendance: {
         mon: null,
