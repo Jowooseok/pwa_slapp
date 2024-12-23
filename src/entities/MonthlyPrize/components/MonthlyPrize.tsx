@@ -7,9 +7,9 @@ import { useNavigationStore } from '@/shared/store/navigationStore';
 
 interface MonthlyPrizeProps {
   month: number;            // 1 ~ 12
-  prizeType: string;        // 예) 'SL', 'GL' 등
-  amount: number;           // 예) 30000
-  eventFinishTime: string;  // 이벤트 종료 시간 (예: '2024-12-31T23:59:59')  
+  prizeType: string;        // 예: 'SL', 'GL'
+  amount: number;           // 예: 30000
+  eventFinishTime: string;  // 이벤트 종료 시간 (예: '2024-12-31T23:59:59')
 }
 
 const MonthlyPrize: React.FC<MonthlyPrizeProps> = ({
@@ -88,11 +88,20 @@ const MonthlyPrize: React.FC<MonthlyPrizeProps> = ({
         {monthNames[month - 1]}
       </div>
 
-      {/* 상품 이미지 */}
-      <img
+      {/* 상품 이미지 (Framer Motion 적용) */}
+      <motion.img
         src={Images.PrizeImage}
         alt="token logo"
         className="h-14 mt-2"
+        animate={{
+          // 살짝 커졌다 돌아오는 확대 애니메이션
+          rotate: [0, 5, 0, -5, 0],
+        }}
+        transition={{
+          duration: 2.5,       // 한 사이클 2.5초
+          repeat: Infinity,    // 무한 반복
+          repeatType: 'reverse', // 앞뒤로 반복 (1->1.08->1->1.08...)
+        }}
       />
 
       {/* 상품 정보 */}
