@@ -15,6 +15,7 @@ interface MonthlyPrize {
   month: number;
   prizeType: string;
   amount: number;
+  eventFinishTime: string | null; // 추가된 부분: 이벤트 종료 시간
 }
 
 // 주간 출석 정보 인터페이스
@@ -241,6 +242,7 @@ export const useUserStore = create<UserState>((set, get) => ({
     month: 0,
     prizeType: '',
     amount: 0,
+    eventFinishTime: null,
   },
   setMonthlyPrize: (monthlyPrize) => set({ monthlyPrize }),
 
@@ -326,7 +328,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       if (!data) {
         throw new Error('No data returned from /home API');
       }
-  
+
       // 서버 응답에서 필요한 데이터 추출
       const {
         user,
@@ -356,6 +358,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         rank: rank.rank,
         previousRank: rank.rank,
         diceRefilledAt: rank.diceRefilledAt, // 추가된 부분: diceRefilledAt 설정
+
   
         items: {
           goldCount: items.goldCount || 0,
@@ -376,6 +379,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           month: monthlyPrize.month,
           prizeType: monthlyPrize.prizeType,
           amount: monthlyPrize.amount,
+          eventFinishTime: monthlyPrize.eventFinishTime, // 추가된 부분: eventFinish
         },
   
         weekAttendance: {
@@ -494,6 +498,8 @@ export const useUserStore = create<UserState>((set, get) => ({
         month: 0,
         prizeType: '',
         amount: 0,
+        eventFinishTime: null,
+
       },
       weekAttendance: {
         mon: null,
