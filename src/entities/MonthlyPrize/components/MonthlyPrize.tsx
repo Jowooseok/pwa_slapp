@@ -31,8 +31,8 @@ const MonthlyPrize: React.FC<MonthlyPrizeProps> = ({
   };
 
   return (
-    <div  onClick={handleRankingClick} className="flex flex-col items-center justify-center w-48 h-36 md:w-96 md:h-44 relative prize-box overflow-visible z-10 gap-2">
-      <div className="absolute h-7 w-20 rounded-full border border-black bg-white flex items-center justify-center text-xs -top-4 z-20 font-medium box-border left-14 md:left-36 inset-2">
+    <div  onClick={handleRankingClick} className="flex flex-col items-center justify-center w-48 h-36 md:w-[340px] md:h-44 relative text-white   overflow-visible z-10 gap-2">
+      <div className="absolute h-7 w-20 rounded-full border border-[#FBDF86] bg-white flex items-center justify-center text-xs -top-4 text-black z-50 font-medium box-border left-14 md:left-32 ">
      {monthNames[month - 1]}
       </div>
       <img src={Images.PrizeImage} alt="token logo" className=" h-14 mt-2" />

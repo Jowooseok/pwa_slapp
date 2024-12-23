@@ -135,6 +135,7 @@ import USDC from "./usdc.png";
 import Spring from "./spring.png";
 import Summer from "./summer.png";
 import Fall from "./fall.png";
+import GiveawayBG from "./giveaway-bg.png";
 
 
 
@@ -276,6 +277,8 @@ const Images = {
   Spring,
   Summer,
   Fall,
+
+  GiveawayBG
 
 };
 
