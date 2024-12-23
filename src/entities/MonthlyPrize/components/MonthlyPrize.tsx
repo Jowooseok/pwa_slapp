@@ -75,7 +75,7 @@ const MonthlyPrize: React.FC<MonthlyPrizeProps> = ({
         relative z-10 flex flex-col items-center justify-center
         w-48 h-36 md:w-[340px] md:h-44
         text-white border-2 border-[#BBA361] rounded-3xl
-        overflow-visible gap-1
+        overflow-visible gap-1 bg-neutral-900 
       "
     >
       {/* 월 라벨 */}
