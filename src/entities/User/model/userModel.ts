@@ -568,7 +568,6 @@ export const useUserStore = create<UserState>((set, get) => ({
         error: null,
       });
   
-      console.log('주사위 리필 성공:', data);
     } catch (error: any) {
       console.error('주사위 리필 중 에러 발생:', error);
       set({ error: error.message || '주사위 리필에 실패했습니다.' });
