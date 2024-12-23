@@ -196,8 +196,8 @@ const DiceEventPage: React.FC = () => {
               </DialogContent>
             </Dialog>
 
-<div className="flex relative max-w-[800px]">
-  <img src={Images.GiveawayBG} alt="giveaway" className=" absolute z-0 -top-[12%]  min-w-[230px] -right-[11%] h-[175px] md:min-w-[416px] md:-right-[11.5%] md:h-[214px]" />
+<div className=" relative">
+ 
     <MonthlyPrize
               month={monthlyPrize.month}
               prizeType={monthlyPrize.prizeType}
