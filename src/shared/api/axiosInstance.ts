@@ -5,7 +5,7 @@ import { useUserStore } from '@/entities/User/model/userModel';
 
 // Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://9dd7-61-81-223-147.ngrok-free.app',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://edbd-39-126-160-119.ngrok-free.app',
   headers: {
     'Content-Type': 'application/json',
     'ngrok-skip-browser-warning': '69420',
